@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9531" systemVersion="14F1021" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="KGk-i7-Jjw" customClass="MessageBoardNewLogoTableViewCell">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="150"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="320" height="149"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo" translatesAutoresizingMaskIntoConstraints="NO" id="B3u-k6-K2S">
+                        <rect key="frame" x="126" y="15" width="69" height="57"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="57" id="HhM-gz-dhB"/>
+                            <constraint firstAttribute="width" constant="69" id="Niz-Je-f3A"/>
+                        </constraints>
+                    </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="POST A  MESSAGE" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AF5-br-nY7">
+                        <rect key="frame" x="50" y="80" width="220" height="21"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="220" id="JYz-yC-ORs"/>
+                            <constraint firstAttribute="height" constant="21" id="Plf-9Y-wTG"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bgl-Qe-eP6">
+                        <rect key="frame" x="177" y="115" width="110" height="25"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="25" id="Epr-EC-oK7"/>
+                            <constraint firstAttribute="width" constant="110" id="i5H-zE-v07"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                        <state key="normal" title="PASSENGER" backgroundImage="req button">
+                            <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                        </state>
+                        <connections>
+                            <action selector="userSelected:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="sV9-vG-0Cn"/>
+                        </connections>
+                    </button>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EGj-Ub-R6f">
+                        <rect key="frame" x="50" y="115" width="110" height="25"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="110" id="0pY-0v-EfC"/>
+                            <constraint firstAttribute="height" constant="25" id="mtU-uR-APH"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                        <state key="normal" title="DRIVER" backgroundImage="req button">
+                            <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                        </state>
+                        <connections>
+                            <action selector="driverSelected:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="CaC-7W-eFA"/>
+                        </connections>
+                    </button>
+                </subviews>
+                <constraints>
+                    <constraint firstAttribute="centerX" secondItem="AF5-br-nY7" secondAttribute="centerX" id="26O-F8-Zv8"/>
+                    <constraint firstItem="AF5-br-nY7" firstAttribute="top" secondItem="B3u-k6-K2S" secondAttribute="bottom" constant="8" id="3Cx-z4-00f"/>
+                    <constraint firstAttribute="trailingMargin" secondItem="bgl-Qe-eP6" secondAttribute="trailing" constant="25" id="Owp-us-qFK"/>
+                    <constraint firstItem="bgl-Qe-eP6" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="EGj-Ub-R6f" secondAttribute="trailing" constant="17" id="PVp-oh-P9f"/>
+                    <constraint firstItem="EGj-Ub-R6f" firstAttribute="top" secondItem="AF5-br-nY7" secondAttribute="bottom" constant="14" id="SUG-XE-sr4"/>
+                    <constraint firstItem="B3u-k6-K2S" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="topMargin" constant="7" id="WN3-hi-fOd"/>
+                    <constraint firstItem="bgl-Qe-eP6" firstAttribute="top" secondItem="AF5-br-nY7" secondAttribute="bottom" constant="14" id="XNe-bf-RQI"/>
+                    <constraint firstAttribute="centerX" secondItem="bgl-Qe-eP6" secondAttribute="centerX" constant="-48" id="Ycd-vP-zrO"/>
+                    <constraint firstAttribute="centerX" secondItem="EGj-Ub-R6f" secondAttribute="centerX" constant="69" id="bR8-lJ-pV3"/>
+                    <constraint firstItem="bgl-Qe-eP6" firstAttribute="width" secondItem="EGj-Ub-R6f" secondAttribute="width" constant="110" id="cwQ-XC-Z89"/>
+                    <constraint firstAttribute="centerX" secondItem="B3u-k6-K2S" secondAttribute="centerX" id="fzB-pY-qSt"/>
+                    <constraint firstItem="EGj-Ub-R6f" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" constant="42" id="pqV-xY-CNR"/>
+                </constraints>
+                <variation key="default">
+                    <mask key="constraints">
+                        <exclude reference="bR8-lJ-pV3"/>
+                        <exclude reference="Ycd-vP-zrO"/>
+                        <exclude reference="cwQ-XC-Z89"/>
+                    </mask>
+                </variation>
+            </tableViewCellContentView>
+            <connections>
+                <outlet property="driverButton" destination="EGj-Ub-R6f" id="cHj-nv-LKJ"/>
+                <outlet property="userButton" destination="bgl-Qe-eP6" id="aG5-bI-TIJ"/>
+            </connections>
+            <point key="canvasLocation" x="135" y="255"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <image name="logo" width="300" height="269"/>
+        <image name="req button" width="1005" height="183"/>
+    </resources>
+</document>

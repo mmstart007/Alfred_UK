@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9531" systemVersion="14F1021" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="135" id="Y4r-g4-wbd" customClass="MessageBoardPersonalDriverHeadTableViewCell">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="150"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Y4r-g4-wbd" id="US7-IQ-3zf">
+                <rect key="frame" x="0.0" y="0.0" width="320" height="149"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo" translatesAutoresizingMaskIntoConstraints="NO" id="xQj-Oc-YoS">
+                        <rect key="frame" x="126" y="12" width="69" height="57"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="69" id="Iqf-fN-TyL"/>
+                            <constraint firstAttribute="height" constant="57" id="k2A-PH-Eni"/>
+                        </constraints>
+                    </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="DRIVER AD" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="s4t-DK-XYq">
+                        <rect key="frame" x="50" y="77" width="220" height="21"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="21" id="AZ5-Wu-iBj"/>
+                            <constraint firstAttribute="width" constant="220" id="nsi-Jr-qBD"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                        <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="J6G-2z-TlF">
+                        <rect key="frame" x="110" y="111" width="100" height="25"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="100" id="FSC-Pb-htl"/>
+                            <constraint firstAttribute="height" constant="25" id="wk1-yd-lHX"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                        <state key="normal" title="START RIDE" backgroundImage="req button">
+                            <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                        </state>
+                    </button>
+                </subviews>
+                <constraints>
+                    <constraint firstAttribute="centerX" secondItem="s4t-DK-XYq" secondAttribute="centerX" id="108-jK-Juz"/>
+                    <constraint firstItem="s4t-DK-XYq" firstAttribute="top" secondItem="xQj-Oc-YoS" secondAttribute="bottom" constant="8" id="7Cp-f2-daG"/>
+                    <constraint firstAttribute="centerX" secondItem="J6G-2z-TlF" secondAttribute="centerX" id="8Cs-FY-vpK"/>
+                    <constraint firstItem="J6G-2z-TlF" firstAttribute="top" secondItem="s4t-DK-XYq" secondAttribute="bottom" constant="13" id="Nyo-8h-L3p"/>
+                    <constraint firstAttribute="centerX" secondItem="xQj-Oc-YoS" secondAttribute="centerX" id="QFc-wE-qhF"/>
+                    <constraint firstAttribute="centerY" secondItem="xQj-Oc-YoS" secondAttribute="centerY" constant="34" id="yEZ-sx-omv"/>
+                </constraints>
+            </tableViewCellContentView>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+            <connections>
+                <outlet property="startRideButton" destination="J6G-2z-TlF" id="e7a-rz-WGr"/>
+            </connections>
+            <point key="canvasLocation" x="251" y="343"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <image name="logo" width="300" height="269"/>
+        <image name="req button" width="1005" height="183"/>
+    </resources>
+</document>

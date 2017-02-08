@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11542" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11524"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="83" id="KGk-i7-Jjw" customClass="LoginButtonTableViewCell">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="83"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="320" height="82"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kJH-fi-EoO">
+                        <rect key="frame" x="130" y="44" width="60" height="30"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="60" id="cDr-zc-zRZ"/>
+                            <constraint firstAttribute="height" constant="30" id="zL9-Pg-era"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <state key="normal" title="Register">
+                            <color key="titleColor" red="0.13234992325305939" green="0.13234992325305939" blue="0.13234992325305939" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        </state>
+                        <connections>
+                            <action selector="registerPush:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="cd3-ym-bzp"/>
+                        </connections>
+                    </button>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9xI-XV-Euq">
+                        <rect key="frame" x="100" y="20" width="120" height="30"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="30" id="Uby-ng-Cz4"/>
+                            <constraint firstAttribute="width" constant="120" id="W6l-Sl-Te7"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <state key="normal" title="Forgot Password!">
+                            <color key="titleColor" red="0.13234992325305939" green="0.13234992325305939" blue="0.13234992325305939" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        </state>
+                        <connections>
+                            <action selector="passwordPush:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="YgK-TU-ROu"/>
+                        </connections>
+                    </button>
+                </subviews>
+                <constraints>
+                    <constraint firstAttribute="centerY" secondItem="kJH-fi-EoO" secondAttribute="centerY" constant="-18" id="Gxx-EM-AzY"/>
+                    <constraint firstAttribute="centerX" secondItem="kJH-fi-EoO" secondAttribute="centerX" id="Ynt-ej-wrb"/>
+                    <constraint firstAttribute="centerX" secondItem="9xI-XV-Euq" secondAttribute="centerX" id="dku-yt-cJl"/>
+                    <constraint firstAttribute="centerY" secondItem="9xI-XV-Euq" secondAttribute="centerY" constant="6" id="pMW-6z-7dq"/>
+                </constraints>
+            </tableViewCellContentView>
+            <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
+            <connections>
+                <outlet property="forgotPasswordButton" destination="9xI-XV-Euq" id="AuZ-9F-aUQ"/>
+                <outlet property="registerButton" destination="kJH-fi-EoO" id="LnT-vG-7OU"/>
+            </connections>
+            <point key="canvasLocation" x="190" y="345.5"/>
+        </tableViewCell>
+    </objects>
+</document>

@@ -1,0 +1,88 @@
+Detecting the iPhone device:
+
+if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone ){
+
+CGFloat screenHeight = [UIScreen mainScreen].bounds.size.height;
+CGFloat screenWidth = [UIScreen mainScreen].bounds.size.width;
+if( screenHeight < screenWidth ){
+screenHeight = screenWidth;
+}
+
+if( screenHeight > 480 && screenHeight < 667 ){
+NSLog(@"iPhone 5/5s");
+} else if ( screenHeight > 480 && screenHeight < 736 ){
+NSLog(@"iPhone 6");
+} else if ( screenHeight > 480 ){
+NSLog(@"iPhone 6 Plus");
+} else {
+NSLog(@"iPhone 4/4s");
+}
+}
+
+
+Getting the address from coordinates:
+
+CLGeocoder *ceo = [[CLGeocoder alloc]init];
+CLLocation *loc = [[CLLocation alloc]initWithLatitude:32.00 longitude:21.322]; //insert your coordinates
+
+[ceo reverseGeocodeLocation:loc
+completionHandler:^(NSArray *placemarks, NSError *error) {
+CLPlacemark *placemark = [placemarks objectAtIndex:0];
+NSLog(@"placemark %@",placemark);
+//String to hold address
+NSString *locatedAt = [[placemark.addressDictionary valueForKey:@"FormattedAddressLines"] componentsJoinedByString:@", "];
+NSLog(@"addressDictionary %@", placemark.addressDictionary);
+
+NSLog(@"placemark %@",placemark.region);
+NSLog(@"placemark %@",placemark.country);  // Give Country Name
+NSLog(@"placemark %@",placemark.locality); // Extract the city name
+NSLog(@"location %@",placemark.name);
+NSLog(@"location %@",placemark.ocean);
+NSLog(@"location %@",placemark.postalCode);
+NSLog(@"location %@",placemark.subLocality);
+
+NSLog(@"location %@",placemark.location);
+//Print the location to console
+NSLog(@"I am currently at %@",locatedAt);
+}
+else {
+NSLog(@"Could not locate");
+}
+];
+
+
+Obtaining permission from the user for user location:
+
+// mapView.mapType = MKMapTypeHybrid;
+/*  self.locationManager = [[CLLocationManager alloc]init];
+self.locationManager.delegate = self;
+if ([self.locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
+[self.locationManager requestWhenInUseAuthorization];
+}
+*/
+
+
+Searching for address:
+
+
+/*NSString *location = @"79 sanford place, jersey city, nj 07307";
+CLGeocoder *geocoder = [[CLGeocoder alloc] init];
+[geocoder geocodeAddressString:location
+completionHandler:^(NSArray* placemarks, NSError* error){
+if (placemarks && placemarks.count > 0) {
+CLPlacemark *topResult = [placemarks objectAtIndex:0];
+MKPlacemark *placemark = [[MKPlacemark alloc] initWithPlacemark:topResult];
+
+MKCoordinateRegion region1 = self.mapView.region;
+// region1.center = placemark.region.center;
+region1.span.longitudeDelta /= 8.0;
+region1.span.latitudeDelta /= 8.0;
+
+[self.mapView setRegion:region1 animated:YES];
+[self.mapView addAnnotation:placemark];
+}
+}
+];
+
+
+*/

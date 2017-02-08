@@ -1,0 +1,17 @@
+
+
+platform :ios, '8.0'
+use_frameworks!
+
+target 'Alfred' do
+pod 'Stripe'
+pod 'SDWebImage', '~>3.7'
+pod 'Parse', '~>1.14'
+pod 'ParseFacebookUtils', '~>1.10'
+pod 'CMMapLauncher'
+pod 'Fabric'
+pod 'Crashlytics'
+pod 'SinchVerification', '0.9-beta1'
+pod 'TWMessageBarManager'
+pod 'MaterialControls', '~> 1.2.2'
+end

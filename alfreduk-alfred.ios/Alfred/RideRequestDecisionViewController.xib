@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9531" systemVersion="14F1021" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="RideRequestDecisionViewController">
+            <connections>
+                <outlet property="bottomLayoutConstraint" destination="Ibo-qK-Qah" id="7vs-0E-z8J"/>
+                <outlet property="decisionTextView" destination="JSz-IU-kU2" id="2bF-0p-0L0"/>
+                <outlet property="leftLayoutConstraint" destination="pfK-E6-oAS" id="Ljg-jL-Wwk"/>
+                <outlet property="popUpView" destination="eFc-ot-kfV" id="arC-az-bA2"/>
+                <outlet property="rightLayoutConstraint" destination="bn5-17-BMm" id="KzH-A8-DOF"/>
+                <outlet property="topLayoutConstraint" destination="y0o-qK-JOZ" id="L2u-0D-gRh"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="eFc-ot-kfV">
+                    <rect key="frame" x="60" y="180" width="200" height="208"/>
+                    <subviews>
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo" translatesAutoresizingMaskIntoConstraints="NO" id="s8R-k0-Ocm">
+                            <rect key="frame" x="66" y="13" width="69" height="62"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="62" id="GFD-g6-6QA"/>
+                                <constraint firstAttribute="width" constant="69" id="ngR-Nf-p72"/>
+                            </constraints>
+                        </imageView>
+                        <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" editable="NO" text="You have been accepted as the driver" textAlignment="center" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JSz-IU-kU2">
+                            <rect key="frame" x="14" y="95" width="172" height="62"/>
+                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="48" id="lq4-gK-dN6"/>
+                                <constraint firstAttribute="width" constant="172" id="tn8-LX-6xq"/>
+                            </constraints>
+                            <fontDescription key="fontDescription" name="Avenir-Book" family="Avenir" pointSize="15"/>
+                            <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                        </textView>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="S9W-2O-ykt">
+                            <rect key="frame" x="8" y="170" width="184" height="30"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="30" id="rNC-z9-fMf"/>
+                            </constraints>
+                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                            <state key="normal" title="OK" backgroundImage="req button">
+                                <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                            </state>
+                            <connections>
+                                <action selector="closeTheView:" destination="-1" eventType="touchUpInside" id="hub-NA-wyL"/>
+                            </connections>
+                        </button>
+                    </subviews>
+                    <color key="backgroundColor" red="0.93725490196078431" green="0.93725490196078431" blue="0.95686274509803926" alpha="1" colorSpace="calibratedRGB"/>
+                    <constraints>
+                        <constraint firstItem="S9W-2O-ykt" firstAttribute="leading" secondItem="eFc-ot-kfV" secondAttribute="leading" constant="8" id="4he-6N-1pC"/>
+                        <constraint firstAttribute="centerX" secondItem="S9W-2O-ykt" secondAttribute="centerX" id="69p-bI-nDf"/>
+                        <constraint firstAttribute="bottom" secondItem="S9W-2O-ykt" secondAttribute="bottom" constant="8" id="EPg-ls-psR"/>
+                        <constraint firstAttribute="centerX" secondItem="s8R-k0-Ocm" secondAttribute="centerX" id="NHt-zo-0KS"/>
+                        <constraint firstAttribute="centerX" secondItem="JSz-IU-kU2" secondAttribute="centerX" id="TGI-Fd-3Eu"/>
+                        <constraint firstItem="s8R-k0-Ocm" firstAttribute="top" secondItem="eFc-ot-kfV" secondAttribute="top" constant="13" id="chv-Qd-IWH"/>
+                        <constraint firstAttribute="centerY" secondItem="JSz-IU-kU2" secondAttribute="centerY" constant="-15" id="vZn-ka-rgX"/>
+                        <constraint firstAttribute="trailing" secondItem="S9W-2O-ykt" secondAttribute="trailing" constant="8" id="y4M-Re-zyZ"/>
+                    </constraints>
+                </view>
+            </subviews>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstAttribute="bottom" secondItem="eFc-ot-kfV" secondAttribute="bottom" constant="180" id="Ibo-qK-Qah"/>
+                <constraint firstAttribute="trailing" secondItem="eFc-ot-kfV" secondAttribute="trailing" constant="60" id="bn5-17-BMm"/>
+                <constraint firstItem="eFc-ot-kfV" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" constant="60" id="pfK-E6-oAS"/>
+                <constraint firstItem="eFc-ot-kfV" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="180" id="y0o-qK-JOZ"/>
+            </constraints>
+            <point key="canvasLocation" x="418" y="294"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="logo" width="300" height="269"/>
+        <image name="req button" width="1005" height="183"/>
+    </resources>
+</document>

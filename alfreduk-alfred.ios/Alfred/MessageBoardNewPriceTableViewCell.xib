@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9531" systemVersion="14F1021" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="50" id="KGk-i7-Jjw" customClass="MessageBoardNewPriceTableViewCell">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="50"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="320" height="49"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <stepper opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="4" minimumValue="1" maximumValue="20" translatesAutoresizingMaskIntoConstraints="NO" id="YoL-PS-Ebb">
+                        <rect key="frame" x="214" y="10" width="94" height="29"/>
+                        <color key="tintColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                        <connections>
+                            <action selector="changePrice:" destination="KGk-i7-Jjw" eventType="valueChanged" id="IZR-9j-M6M"/>
+                        </connections>
+                    </stepper>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Price per seat: " lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="70E-N3-Pgq">
+                        <rect key="frame" x="47" y="14" width="116" height="21"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="115" id="Z6y-1R-pHS"/>
+                            <constraint firstAttribute="height" constant="21" id="ZcY-7l-E03"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="10" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="R5I-LB-Ifo">
+                        <rect key="frame" x="158" y="14" width="42" height="21"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="42" id="84I-Hv-nJq"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="YoL-PS-Ebb" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="topMargin" constant="2" id="0BP-vD-uT9"/>
+                    <constraint firstItem="R5I-LB-Ifo" firstAttribute="leading" secondItem="70E-N3-Pgq" secondAttribute="trailing" constant="-5" id="6ZV-ja-0PJ"/>
+                    <constraint firstItem="R5I-LB-Ifo" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="topMargin" constant="6" id="Aoc-g9-CeV"/>
+                    <constraint firstItem="70E-N3-Pgq" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" constant="39" id="G7O-DC-o50"/>
+                    <constraint firstItem="R5I-LB-Ifo" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="topMargin" constant="6" id="KyG-3d-ahJ"/>
+                    <constraint firstItem="70E-N3-Pgq" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="topMargin" constant="6" id="mUC-IN-24C"/>
+                    <constraint firstItem="YoL-PS-Ebb" firstAttribute="leading" secondItem="R5I-LB-Ifo" secondAttribute="trailing" constant="14" id="oJI-hu-C7M"/>
+                    <constraint firstItem="YoL-PS-Ebb" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="topMargin" constant="2" id="p2S-fm-Jfw"/>
+                </constraints>
+            </tableViewCellContentView>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+            <connections>
+                <outlet property="priceLabel" destination="R5I-LB-Ifo" id="KSd-2E-qWY"/>
+                <outlet property="stepper" destination="YoL-PS-Ebb" id="gYZ-29-bsw"/>
+            </connections>
+            <point key="canvasLocation" x="307" y="301"/>
+        </tableViewCell>
+    </objects>
+</document>
