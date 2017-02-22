@@ -44,8 +44,8 @@
     
     ParseClientConfiguration *configuration = [ParseClientConfiguration configurationWithBlock:^(id<ParseMutableClientConfiguration> configuration) {
         
-        configuration.applicationId = @"u9cS3yySphS2WPsQb39R1OOhkrSKyRVzmr9nhVyg";
-        configuration.clientKey = @"Hh9Qe9YiDjrwQyz9cbtzG4fzkEp8bJCuSIhcGVN0";
+        configuration.applicationId = @"9QHSHL0i0s2QzyQlm9jJHrg2SO4PaUq3RigxCr0C";
+        configuration.clientKey = @"VQQczLwx8qjk5wEVD36bYQuPDTEwguaKFC8uQTtj";
         configuration.server = @"https://parseapi.back4app.com";
     }];
     [Parse initializeWithConfiguration:configuration];
@@ -71,7 +71,6 @@
         
         NSString  *key = [remoteNotification objectForKey:@"key"];
         
-        
     }
     
     [Stripe setDefaultPublishableKey:StripePublicTestKey];
@@ -92,13 +91,9 @@
         //this is deprecated on iOS 8
         [[UIApplication sharedApplication] registerForRemoteNotifications];
     }
-    
-    
-    
+
     self.locationManager = [[CLLocationManager alloc] init];
     [self.locationManager requestWhenInUseAuthorization];
-    
-    
     
     //WARNING: for development purposes, skip login
     /*if ([GBVersionTracking isFirstLaunchEver]) {
@@ -110,16 +105,11 @@
      self.window.rootViewController = navigationController;
      }
      else{
-     
-     
-     
-     */
+    */
+    
     UIStoryboard *mainStoryboard = [UIStoryboard storyboardWithName:@"Main" bundle: nil];
     if (![PFUser currentUser]) {
         //this is forced, to set user mode instead of driver mode
-        
-        
-        
         LoginTableViewController *loginViewController = (LoginTableViewController *)
         //[mainStoryboard instantiateViewControllerWithIdentifier:@"AlfredLoginViewID"];
         [mainStoryboard instantiateViewControllerWithIdentifier:@"LoginId"];
@@ -134,23 +124,17 @@
         SideMenuTableViewController *menu = (SideMenuTableViewController*)[mainStoryboard instantiateViewControllerWithIdentifier:@"MenuViewController"];
         
         if([[PFUser currentUser][@"UserMode"] boolValue]){
+            RiderViewController *riderViewController = (RiderViewController*)[mainStoryboard instantiateViewControllerWithIdentifier:@"MainPageId"];
+            UINavigationController *controller = [[UINavigationController alloc]initWithRootViewController:riderViewController];
+                revealViewController = [revealViewController initWithRearViewController:menu frontViewController:controller];
+            self.window.rootViewController = revealViewController;
+            
+        }else{
         
-        
-        
-        RiderViewController *riderViewController = (RiderViewController*)[mainStoryboard instantiateViewControllerWithIdentifier:@"MainPageId"];
-        UINavigationController *controller = [[UINavigationController alloc]initWithRootViewController:riderViewController];
-            revealViewController = [revealViewController initWithRearViewController:menu frontViewController:controller];
-        self.window.rootViewController = revealViewController;
-        
-    }else{
-        
-        
-        DriverViewController *driverViewController = (DriverViewController*)[mainStoryboard instantiateViewControllerWithIdentifier:@"DriverMainID"];
-        UINavigationController *controller = [[UINavigationController alloc]initWithRootViewController:driverViewController];
-                    revealViewController = [revealViewController initWithRearViewController:menu frontViewController:controller];
-        self.window.rootViewController = revealViewController;
-        
-        
+            DriverViewController *driverViewController = (DriverViewController*)[mainStoryboard instantiateViewControllerWithIdentifier:@"DriverMainID"];
+            UINavigationController *controller = [[UINavigationController alloc]initWithRootViewController:driverViewController];
+                        revealViewController = [revealViewController initWithRearViewController:menu frontViewController:controller];
+            self.window.rootViewController = revealViewController;
     }
 }
 
@@ -194,8 +178,6 @@ return YES;
     //forward device token to app push provider,
     //the backend in this case
     
-    
-    
 }
 
 - (void)application:(UIApplication*)application didFailToRegisterForRemoteNotificationsWithError:(NSError*)error
@@ -203,7 +185,7 @@ return YES;
     
     
     NSLog(@"Failed to register for remote notifications");
-    NSLog(error.localizedDescription);
+    NSLog(@"%@", error.localizedDescription);
     //what happends here
     
     
@@ -229,8 +211,6 @@ return YES;
 {
     return YES;
 }
-
-
 
 -(void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo{
     
@@ -293,10 +273,10 @@ return YES;
             assert(rideId!=nil);
             NSArray* rideRequestArray = @[rideId];
             
-            [[NSNotificationCenter defaultCenter]
-             postNotificationName:@"didRequestForRideAcceptedForDriver" object:rideRequestArray];
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForRideAcceptedForDriver" object:rideRequestArray];
             
         }
+        
         if ([keyAlert isEqualToString:@"RIDE_ACCEPTED_BY_ANOTHER_DRIVER"]) {
             NSString* rideId =mainAlert[@"rideId"];
             NSArray* rideRequestArray = [[NSArray alloc] initWithObjects:rideId, nil];
@@ -322,10 +302,8 @@ return YES;
             }
             rideRequestArray = [[NSArray alloc] initWithObjects:rideCost,rideId,whichID, nil];
             
-            
             [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForRideEnd" object:rideRequestArray];
         }
-        
         
         if ([keyAlert isEqualToString:@"RIDE_CANCELLED_BY_DRIVER"]) {
             

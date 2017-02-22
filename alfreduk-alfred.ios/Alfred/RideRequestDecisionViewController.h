@@ -17,7 +17,7 @@
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *bottomLayoutConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *rightLayoutConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *leftLayoutConstraint;
-@property(strong,nonatomic)NSString* decision;
+@property(strong,nonatomic) NSString* decision;
 @property (weak, nonatomic) IBOutlet UITextView *decisionTextView;
 - (IBAction)closeTheView:(id)sender;
 

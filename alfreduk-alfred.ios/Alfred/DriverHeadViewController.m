@@ -55,8 +55,6 @@
     [self.dropoffAddressLabel setText:_rideRequest[@"dropoffAddress"]];
     _userPhone = user[@"Phone"];
     
-    
-    
 }
 /*
 #pragma mark - Navigation

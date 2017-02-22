@@ -50,9 +50,6 @@
         
         bool userMode = [currentUser[@"UserMode"] boolValue];
         if(userMode){
-            
-            
-            
             [self loadRider];
         }else{
             

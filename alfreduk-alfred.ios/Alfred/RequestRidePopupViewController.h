@@ -27,7 +27,6 @@
 @property(nonatomic,strong)NSString* requestRideId;
 @property PFObject * rideRequest;
 @property(nonatomic,strong)NSDictionary* rideRequestDict;
-@property(strong,nonatomic)NSString *driverCity;
 @property (nonatomic)int seats;
 @property(strong,nonatomic)NSString* userPic;
 

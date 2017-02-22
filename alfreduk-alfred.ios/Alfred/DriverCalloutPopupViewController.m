@@ -194,7 +194,6 @@
     // Dispose of any resources that can be recreated.
 }
 
-
 - (IBAction)joinAlfred:(id)sender {
     
     NSLog(@"Selected driver");

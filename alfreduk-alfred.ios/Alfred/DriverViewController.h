@@ -100,8 +100,6 @@
 
 @property(strong,nonatomic)MKRoute *routeDetails;
 
-@property (strong,nonatomic)NSString* userCity;
-
 @property(strong,nonatomic)UIBarButtonItem *cancelButton;
 
 @property (weak, nonatomic) IBOutlet MKMapView *mapView;
@@ -109,6 +107,7 @@
 @property(nonatomic)MKCoordinateRegion region;
 
 @property (weak, nonatomic) IBOutlet UILabel *currentLocationLabel;
+
 - (IBAction)centerOnUsersLocation:(id)sender;
 
 @property(strong,nonatomic)NSString *currentAddress;

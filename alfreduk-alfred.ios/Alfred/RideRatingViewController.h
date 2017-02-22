@@ -15,6 +15,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *rideCostLabel;
 
 - (IBAction)rateAction:(id)sender;
+- (IBAction)backAction:(id)sender;
 
 @property(strong,nonatomic)PFObject *rideRequest;
 

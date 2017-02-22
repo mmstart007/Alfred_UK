@@ -31,10 +31,8 @@
     if([[PFUser currentUser][@"UserMode"] boolValue]){
     
         //show driver info
-       
-                ratedUser =  self.rideRequest[@"driver"];
+        ratedUser =  self.rideRequest[@"driver"];
         
-    
     }else{
         //show user info
         ratedUser = self.rideRequest[@"requestedBy"];
@@ -113,12 +111,11 @@
 }
 - (IBAction)rateAction:(id)sender {
     
-   
-    
     [self rateTheRide];
-    
+}
 
-    
+- (IBAction)backAction:(id)sender {
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
@@ -158,8 +155,6 @@
                 break;
         }
         
-        
-        
     }else{
         //it is driver
         switch (indexPath.row) {
@@ -185,15 +180,11 @@
 
     }
     
-    
     return cell;
     
-    
-
-
 }
 
--(double)computeRating{
+-(double)computeRating {
     double rating1 = self.rate1View.value;
     double rating2 = self.rate2View.value;
     double rating3 = self.rate3View.value;
@@ -201,8 +192,8 @@
     return (rating1 + rating2 + rating3)/3;
 
 }
+
 -(void)rateTheRide{
-    
 
     bool isUser = [[PFUser currentUser][@"UserMode"] boolValue];
     PFObject *user;
@@ -211,29 +202,22 @@
     if(isUser) {
         
         //rate the driver
-        
-        
         user= self.rideRequest[@"driver"];
         ratingData = user[@"driverRating"];
-       
         
     }else{
         user = self.rideRequest[@"requestedBy"];
 
         ratingData = user[@"userRating"];
     }
-    
 
-     assert(ratingData!= nil);
+    assert(ratingData!= nil);
 
     [HUD showUIBlockingIndicator];
     [ratingData fetchIfNeededInBackgroundWithBlock:^(PFObject * _Nullable object, NSError * _Nullable error) {
         
-        
-       
         double currentRating = [ ratingData[@"rating"] doubleValue];
         int rideCount = [ratingData[@"rideCount"] intValue];
-        
         
         double rating = [self computeRating];
         
@@ -243,41 +227,32 @@
         ratingData[@"rideCount"] = [NSNumber numberWithInt:rideCount];
         ratingData[@"rating"] = [NSNumber numberWithDouble:currentRating];
         
-        
         [ratingData saveInBackgroundWithBlock:^(BOOL succeeded, NSError * _Nullable error) {
             
-
             if(error){
                 [HUD hideUIBlockingIndicator];
                 NSLog(@"%@", error.localizedDescription);
             }else{
                 
-                self.rideRequest[@"rated"] = @YES;
-                [self.rideRequest saveInBackgroundWithBlock:^(BOOL succeeded, NSError * _Nullable error) {
-                    [HUD hideUIBlockingIndicator];
-                    if(succeeded){
+//                self.rideRequest[@"rated"] = @YES;
+//                [self.rideRequest saveInBackgroundWithBlock:^(BOOL succeeded, NSError * _Nullable error) {
+//                    [HUD hideUIBlockingIndicator];
+//                    if(succeeded){
                         [self dismissViewControllerAnimated:YES completion:nil];
                         
-                    }else{
-                        NSLog(@"Failed to save ride rating for ride %@", self.rideRequest.objectId);
-                        NSLog(@"%@", error.localizedDescription);
-                        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Oops!" message:@"Something went wrong and we couldn't send your feedback.\nPlease try again" delegate:nil cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil];
-                        [alert show];
-                        
-                    }
-                }];
+//                    }else{
+//                        NSLog(@"Failed to save ride rating for ride %@", self.rideRequest.objectId);
+//                        NSLog(@"%@", error.localizedDescription);
+//                        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Oops!" message:@"Something went wrong and we couldn't send your feedback.\nPlease try again" delegate:nil cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil];
+//                        [alert show];
+//                        
+//                    }
+//                }];
                 
             }
-            
-            
         }]; //ratingData saved
         
     }];
-    
-    
-    
-    
-    
 }
 
 /*

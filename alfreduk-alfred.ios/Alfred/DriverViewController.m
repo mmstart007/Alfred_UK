@@ -35,7 +35,6 @@
     PFUser * user;
     
     PFObject *activeRide;
-    PFObject *driverLocation; //this is retrieved once from parse and used through the live cicle of the activity
     CLLocationCoordinate2D destinationCoord;
     CLLocationCoordinate2D driverCoord;
     
@@ -59,9 +58,10 @@
 @end
 
 @implementation DriverViewController
+
 @synthesize mapView,region;
 @synthesize currentAddress,startRideButton;
-@synthesize cancelButton,currentLocationLabel,locationManager,userCity,driverLatLoc,driverLongLoc,driverLocationTimer;
+@synthesize cancelButton,currentLocationLabel,locationManager,driverLatLoc,driverLongLoc,driverLocationTimer;
 @synthesize rideRequestArray;
 @synthesize requestRidePopupViewController,pickupAddress,dropoffAddress,pickupPlacemark,dropoffPlacemark;
 @synthesize dropOffAddress,dropOffAnnotation,dropOffCoord;
@@ -83,23 +83,17 @@
     
     [ self  centerOnUsersLocation:sender];
     
-    
 }
 
 - (IBAction)searchAddress:(id)sender {
     
     NSLog(@"Search Address");
     
-    
-    
     [self performSegueWithIdentifier:@"SearchViewPush" sender:self];
     
 }
 
-
 //called when the dropoff button was touched to set destination
-
-
 
 -(void)addChatHead:(int)rideRequestIndex{
     
@@ -108,48 +102,30 @@
     UIImageView* imgView =[[UIImageView alloc] init];
     [imgView sd_setImageWithURL:rideRequest[@"requestedBy"][@"ProfilePicUrl"] placeholderImage:[UIImage imageNamed:@"profile_pic_teja"] completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
         
-        
         CHDraggableView *draggableView = [CHDraggableView draggableViewWithImage:imgView.image];
         
         draggableView.tag = rideRequestIndex;
         
         [draggableView snapViewCenterToPoint: CGPointMake(self.view.layer.frame.size.width,100)  edge:0];
         
-        
         draggableView.delegate = _draggingCoordinator;
         [self.navigationController.view addSubview:draggableView];
         [_chatHeads addObject:draggableView];
-        
-
-        
-        
     }];
-
-    
-   }
-
+}
 
 -(void)setupChatHeads{
-   
-    
-    
     _draggingCoordinator = [[CHDraggingCoordinator alloc] initWithWindow:[[UIApplication sharedApplication] keyWindow] draggableViewBounds:self.view.bounds];
     _draggingCoordinator.delegate = self;
     _draggingCoordinator.snappingEdge = CHSnappingEdgeBoth;
-   
-  
 }
 
 - (void)draggingCoordinator:(CHDraggingCoordinator *)coordinator presentViewForDraggableView:(CHDraggableView*)view
 {
     
-    //get chat head index
+    // get chat head index
     int index =    [_chatHeads indexOfObject:view];
     PFObject *rideRequest = _rideRequests[index];
-    
-    
-    
-    
     
     NSLog(@"Detected");
     
@@ -166,7 +142,6 @@
     CGRect viewFrame = vc.view.frame;
     viewFrame.size.width = screenWidth;
     vc.view.frame =  viewFrame;
-        
 
     popup = [KLCPopup popupWithContentView:vc.view
                                   showType:KLCPopupShowTypeSlideInFromBottom
@@ -175,7 +150,6 @@
                   dismissOnBackgroundTouch:YES
                      dismissOnContentTouch:NO];
     [popup showWithLayout:layout];
-    
     
 }
 
@@ -190,9 +164,6 @@
     
     self.rideConfigured = @NO;
     
-    
-    
-    
     self.navigationItem.rightBarButtonItem =  cancelButton;
     
     NSLog(@"Search finished");
@@ -203,7 +174,6 @@
     startRideButton.hidden = NO;
     destinationCoord = placemark.location.coordinate;
     
-    
     NSDictionary * addressDictionary = placemark.addressDictionary;
     NSMutableArray *formatedAddressLines = [addressDictionary valueForKey:@"FormattedAddressLines"];
     [formatedAddressLines removeLastObject];
@@ -211,42 +181,19 @@
     
     NSString *address = [formatedAddressLines componentsJoinedByString:@", "];
     
-    
-    
     [self setDestinationOnMapWithCoordiante:destinationCoord andAddress:address];
     
-//    dropOffAnnotation = [[DropoffAnnotation alloc] initiWithTitle:@"Destination" Location:destinationCoord];
-    
-    
-    
-   
-    
-    
-    
-    
-    
-    
-    
+    // dropOffAnnotation = [[DropoffAnnotation alloc] initiWithTitle:@"Destination" Location:destinationCoord];
     // trace route from origin to destination
-    
-    
     // [self traceRouteWithStartingCoordinates:pickUpCoord end:destinationCoord];
-    
-    
-    
-    
-    
 }
-
 
 -(void)setDestinationOnMapWithCoordiante:(CLLocationCoordinate2D)destinationCoord andAddress:(NSString*)address{
 
     self.rideConfigured = @NO;
     self.destinationSetted = @YES;
     self.navigationItem.rightBarButtonItem =  cancelButton;
-    
-    
-    
+
     startRideButton.hidden = NO;
     
     [startRideButton setTitle:@"ADVERTISE YOUR JOURNEY" forState:UIControlStateNormal];
@@ -257,9 +204,6 @@
     
     self.locationSearchButton.enabled = NO;
     
-    
-
-    
     _driverStatus[@"destination"] = [PFGeoPoint geoPointWithLatitude:destinationCoord.latitude longitude:destinationCoord.longitude];
     
     if(address.length == 0 || address.length == 0){
@@ -268,14 +212,12 @@
         _driverStatus[@"destinationAddress"] = address;
     }
    
-    
     [_driverStatus saveInBackgroundWithBlock:^(BOOL succeeded, NSError * _Nullable error) {
         if(succeeded){
             NSLog(@"Saved driver destination in parse");
             
         }
     }];
-    
     
     dropOffAnnotation = [[DropoffAnnotation alloc] initiWithTitle:@"Your Destination" Location:destinationCoord];
     
@@ -286,31 +228,20 @@
     // get driver origin
     driverCoord = [[mapView userLocation] coordinate];
     
-    
     // trace route from origin to destination
     
-    
     [self traceRouteWithStartingCoordinates:driverCoord end:destinationCoord];
-    
-    
-
-    
-
 }
 
 - (IBAction)setDestinationTouchedUpInside:(id)sender {
-
     
     destinationCoord =  [mapView centerCoordinate] ;
     _destinationSetted = @YES;
     [self setDestinationOnMapWithCoordiante:     [mapView centerCoordinate] andAddress:currentAddress];
     
-    
 }
 
 -(void)traceRouteWithStartingCoordinates: (CLLocationCoordinate2D)startCoordinate end:(CLLocationCoordinate2D) endCoordinate {
-    
-    
     
     MKDirectionsRequest *directionsRequest = [[MKDirectionsRequest alloc] init];
     
@@ -330,8 +261,7 @@
         
         if (error) {
             
-            NSLog(@"Calculation directions error\nError %@", error.description);
-            [[            [UIAlertView alloc]initWithTitle:@"Error!" message:@"Route services is not available right now" delegate:nil cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show ];
+            [[[UIAlertView alloc]initWithTitle:@"Error!" message:@"Route services is not available right now" delegate:nil cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show ];
         }
         else{
             assert(response);
@@ -367,11 +297,7 @@
     
     [self configureView];
     
-
-    
     // user status configuration
-    
-    
     self.rideConfigured = @NO;
     
     _destinationSetted = @NO;
@@ -379,23 +305,15 @@
     isItRetrieval = NO;
     _lastRideRequest = nil;
     
- 
-    
     //this is for what?
     selectedUserDict = [[NSDictionary alloc] init];
     
-
     [self loadDriverStatus];
-    
-    driverLocation = nil;
-    
-    
     
     locationManager = [[CLLocationManager alloc] init];
     locationManager.delegate = self;
     
     CLAuthorizationStatus authorizationStatus= [CLLocationManager authorizationStatus];
-    
     
     if (authorizationStatus == kCLAuthorizationStatusAuthorizedAlways ||
         authorizationStatus == kCLAuthorizationStatusAuthorizedWhenInUse) {
@@ -411,11 +329,7 @@
         
     }
     
-    
     currentAddress = @"Undeterminated";
-    
-    
-    
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(appDidBecomeActive:) name:UIApplicationDidBecomeActiveNotification object:nil];
     
@@ -427,6 +341,7 @@
     [self checkForRideChanges];
     
 }
+
 -(void)checkForRideChanges{
 
     //check the ride status here
@@ -436,13 +351,10 @@
     [rideRequest fetchIfNeededInBackgroundWithBlock:^(PFObject * _Nullable object, NSError * _Nullable error) {
         if([rideRequest[@"canceledByDriver"] boolValue] ){
             
-            
             [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForRideRequestCancel" object:@[object.objectId]];
             
         }
     }];
-    
-
 
 }
 
@@ -451,15 +363,10 @@
 
     [super viewDidAppear:animated];
     
-
-    
-    
 }
 
 
 -(void )configureView{
-    
-    
     
     [super viewDidLoad];
     
@@ -475,21 +382,10 @@
     // set drawer button
     UIImage *menuImage = [[UIImage imageNamed:@"menu"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
     
-    _revealButtonItem = [[UIBarButtonItem alloc] initWithImage:menuImage
-                                                                         style:UIBarButtonItemStylePlain target:self action:@selector(revealToggle:)];
-    
-    
-    
+    _revealButtonItem = [[UIBarButtonItem alloc] initWithImage:menuImage style:UIBarButtonItemStylePlain target:self action:@selector(revealToggle:)];
     UIImage *blackArrowImage = [[UIImage imageNamed:@"arrow black"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-    
-    
-    
-    
     [ cancelRideButton addTarget:self action:@selector(cancelRide:) forControlEvents:UIControlEventTouchUpInside];
-    
     cancelButton = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(cancelDropoff:)];
-    
-    
     
     self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
     
@@ -501,25 +397,17 @@
     SWRevealViewController *revealViewController = self.revealViewController;
     self.navigationItem.leftBarButtonItem = _revealButtonItem;
     
-    
     //hidden at the begining
     self.navigationItem.rightBarButtonItem = nil;
-
-
     [self configureNavigationBar];
-    
-    
     
     driverLocationTimer=  [NSTimer scheduledTimerWithTimeInterval:4.0
                                                            target:self
                                                          selector:@selector(updateDriverLocation:)
                                                          userInfo:nil
                                                           repeats:YES];
-    
-    
     //_mapCenterTimer = [NSTimer scheduledTimerWithTimeInterval: 3.0 target: self
     //                             selector: @selector(updateLocationBarOnUserLocation) userInfo: nil repeats: YES];
-    
     
     self.locationLabel.text = @"Updating Location..";
     currentLocationLabel.text = @"Updating Location..";
@@ -529,8 +417,6 @@
     
     if ( revealViewController ){
         [self.view addGestureRecognizer:revealViewController.panGestureRecognizer];
-        
-        
         [self.navigationItem.leftBarButtonItem setTarget:self.revealViewController];
         [self.view addGestureRecognizer:self.revealViewController.panGestureRecognizer];
     }
@@ -540,7 +426,6 @@
 }
 
 -(void )load{
-
     
     if(![[PFUser currentUser][@"EnabledAsDriver"] boolValue]  || [[PFUser currentUser][@"UserMode"] boolValue]){
         [[NSNotificationCenter defaultCenter] postNotificationName:@"didBecomeDisabledAsDriver" object:nil];
@@ -557,11 +442,7 @@
     
     [super viewWillAppear:animated];
     
-    
-
 }
-
-
 
 -(void)loadDriverStatus{
     
@@ -587,13 +468,11 @@
                 //set marker on map and draw route
                 [self setDestinationOnMapWithCoordiante:oldDestinationCoord andAddress:destinationAddress];
                 
-                
                 self.rideConfigured= @YES;
                 if([_driverStatus[@"inride"] boolValue]){
                     //get the ride requests
 
                     [self getActiveRideRequests];
-                    
                 
                 }else{
                     //the driver is available but not in ride, check missing driverrequest and show them
@@ -602,10 +481,7 @@
                 
                 }
                 
-                
-                
             }
-            
             
             NSLog(@"Loaded driver status");
         }else{
@@ -614,11 +490,6 @@
             //cant continue
         }
     }];
-    
-    
-    
-    
-    
 }
 
 //get the rideRequest that are active and have this driver
@@ -627,7 +498,6 @@
     
     [HUD showUIBlockingIndicatorWithText:@"Getting passengers..."];
     PFQuery *query = [PFQuery queryWithClassName:@"RideRequest"];
-    
 
     [query whereKey:@"driver" equalTo:[PFUser currentUser]];
     [query whereKey:@"accepted" equalTo:@YES];
@@ -648,8 +518,6 @@
         }
             
     }];
-    
-
 }
 
 -(void)cancelRide:(id)sender{
@@ -661,6 +529,7 @@
     PFPush *push = [[PFPush alloc] init];
     
     _driverStatus[@"inride"] = @NO;
+    NSLog(@"===== driverStatus saveInBackground in cancelRide (inride)");
     [_driverStatus saveInBackground];
     [push setQuery:userQuery ];
     
@@ -673,11 +542,12 @@
     
     [push setData:data];
     
-    
+    NSLog(@"===== sendPushInBackgroundWithBlock in cancelRide");
     [push sendPushInBackgroundWithBlock:^(BOOL succeeded, NSError * _Nullable error) {
         if(succeeded){
             NSLog(@"Push for canceling request succeeded");
             activeRide[@"canceledByDriver"] = @YES;
+            NSLog(@"===== activeRide saveInBackgroundWithBlock in cancelRide (canceledByDriver)");
             [activeRide saveInBackgroundWithBlock:^(BOOL succeeded, NSError * _Nullable error) {
                 NSLog(@"Ride canceled by driver");
             }];
@@ -685,11 +555,9 @@
         }
     }];
     
-    
     [self.mapView removeOverlay:routeDetails.polyline];
     
     [mapView removeAnnotation:dropOffAnnotation];
-    
     
     [startRideButton removeTarget:self action:@selector(endRide:) forControlEvents:UIControlEventTouchUpInside];
     [startRideButton setHidden:YES];
@@ -703,12 +571,12 @@
     [_chatHeads removeAllObjects];
     for(PFObject *ride in _rideRequests){
         ride[@"canceledByDriver"] = @YES;
+        NSLog(@"===== ride saveEventually in cancelRide (canceledByDriver)");
         [ride saveEventually];
     }
     [_rideRequests removeAllObjects];
     
     isDriverAccepted = NO;
-    
     
 }
 
@@ -742,20 +610,14 @@
     self.navigationItem.rightBarButtonItem = nil;
     
     _driverStatus[@"available"] = @NO;
-    
-    
-    
-    
+    NSLog(@"===== driverStatus saveInBackground in cancelDropoff (available)");
     [_driverStatus saveInBackground];
     self.startRideButton.hidden = YES;
     [self.startRideButton removeTarget:self action:@selector(startRideButtonTouchUpInside:) forControlEvents:UIControlEventTouchUpInside];
     [self.startRideButton removeTarget:self action:@selector(navigateToDestination:) forControlEvents:UIControlEventTouchUpInside];
     [self.startRideButton removeTarget:self action:@selector(endRide:) forControlEvents:UIControlEventTouchUpInside];
     
-    
     //[self cancelRide:nil];
-    
-    
 }
 
 -(void)checkForMissingDriverRequests{
@@ -768,7 +630,6 @@
     [query whereKey:@"canceledByDriver" notEqualTo:@YES];
     [query includeKey:@"requestedBy"];
     
-    
     [query findObjectsInBackgroundWithBlock:^(NSArray * _Nullable objects, NSError * _Nullable error) {
         if(!error  && [objects count] > 0){
             
@@ -776,13 +637,9 @@
             
             //only interested on last one
             return;
-            
         }
     }];
 }
-
-
-
 
 -(void)watchForNotifications{
     
@@ -791,10 +648,7 @@
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForStoppingAllMappingServices:) name:@"didRequestForStoppingAllMappingServices" object:nil];
     
-    
-    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(driverDecisionTaken:) name:@"driverDecisionTaken" object:nil];
-    
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForRideRequest:) name:@"didRequestForRideRequest" object:nil];
     
@@ -816,12 +670,9 @@
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForMessageBoardStartAccepted:) name:@"didRequestForMessageBoardStartAccepted" object:nil];
     
-    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForUserSelected:) name:@"didRequestForUserSelected" object:nil];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForMessageBoardRideEnded:) name:@"didRequestForMessageBoardRideEnded" object:nil];
-    
-    
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForSearchResult:) name:@"didRequestForSearchResult" object:nil];
     
@@ -852,18 +703,14 @@
             
         }else{
             //TODO: can't become available
-
         
         }
     }];
     
-
 }
 
 
 #pragma mark - Ride Request
-
-
 
 /*
  * Called when a new ride request arrive, to handle it and take the pertinent
@@ -871,9 +718,6 @@
  */
 
 -(void)processRideRequest:(PFObject *) rideRequest{
-    
-    
-   
     rideID = rideRequest.objectId;
     
     _lastRideRequest = rideRequest;
@@ -882,9 +726,6 @@
     
     //get the request data from server
     //and prompt for accepting or rejecting it
-    
-    
-    
     
     NSString* originLatitude = rideRequest[@"pickupLat"];
     NSString* originLongitude = rideRequest[@"pickupLong"];
@@ -909,19 +750,13 @@
     
     NSString* riderName = user[@"FullName"];
     
-    
     userPhone = user[@"Phone"];
-
     
     PFObject *ratingData = user[@"userRating"];
-    
-    
-
     
     NSString* userPic =user[@"ProfilePicUrl"];
     
     {
-    
         requestRidePopupViewController = [[RequestRidePopupViewController alloc] initWithNibName:@"RequestRidePopupViewController" bundle:nil];
         
         requestRidePopupViewController.pickupAddress = rideRequest[@"pickupAddress"];
@@ -941,7 +776,6 @@
         requestRidePopupViewController.requestRideId = rideID;
         requestRidePopupViewController.isActive = isDriverAccepted;
         
-        requestRidePopupViewController.driverCity = userCity;
         requestRidePopupViewController.userPic = userPic;
     
     }
@@ -950,36 +784,28 @@
     self.userMobile.text = userPhone;
     self.ratingView.value = [ratingData[@"rating"] doubleValue];
     
-    
-    
     [requestRidePopupViewController setModalPresentationStyle:UIModalPresentationOverCurrentContext];
     self.navigationController.modalPresentationStyle = UIModalPresentationCurrentContext;
     [self presentViewController:requestRidePopupViewController animated:YES completion:nil];
-    
-    
-    
 }
 
 
 -(void)didRequestForRideRequest:(NSNotification *)notification
 {
-    
-    
     //isDriverAccepted
-    
-    
     NSString* requestId  = [notification object];
     
     if(_driverStatus == nil){
         
         PFQuery * query = [PFQuery queryWithClassName:@"DriverStatus"];
-        [query whereKey:@"user" equalTo:[[PFUser currentUser] objectId]];
+        [query whereKey:@"user" equalTo:[PFUser currentUser]];
         [query getFirstObjectInBackgroundWithBlock:^(PFObject * _Nullable object, NSError * _Nullable error) {
             if(error){
                 
                 NSLog(@"Somethig wrong happend, alert user");
                 
             }else{
+                _driverStatus = object;
                 [self didRequestForRideRequest:notification];
             
             }
@@ -990,16 +816,13 @@
         
     }
     
-    
     //the driver should be active and enabled, not sure
     
     if([_driverStatus[@"available"] boolValue]){
         
-    
-        
         PFQuery * query =  [PFQuery queryWithClassName:@"RideRequest"];
-//        [query whereKey:@"canceled" notEqualTo:@YES];
-//        [query whereKey:@"canceledByDriver" notEqualTo:@YES];
+        //[query whereKey:@"canceled" notEqualTo:@YES];
+        //[query whereKey:@"canceledByDriver" notEqualTo:@YES];
         [query includeKey:@"requestedBy"];
         [query includeKey:@"requestedBy.userRating"];
         
@@ -1008,15 +831,14 @@
             
             if(error ==  NULL ){
                 NSLog(@"Processing ride request with id");
-                NSLog(object.objectId);
+                NSLog(@"%@", object.objectId);
                 assert([object.objectId isEqualToString:requestId]);
-                //                _lastRideRequest = object;
+                //_lastRideRequest = object;
                 [self processRideRequest:object];
             }else{
                 
                 NSLog(@"Can get ride request properly");
                 [[  [UIAlertView alloc] initWithTitle:@"Error" message:error.localizedDescription delegate:nil cancelButtonTitle:@"Accept" otherButtonTitles:nil] show];
-            
             }
         }];
     
@@ -1025,13 +847,10 @@
         //for now just silently ignore it but later on
         // should send push with cancel from driver
     }
-
-    
 }
 
 
 #pragma mark - Activate Driver Mode
-
 
 -(void)didRequestForMessageBoardStartRide:(NSNotification *)notification{
     
@@ -1060,14 +879,10 @@
 
 -(void)didRequestForMessageBoardStartAccepted:(NSNotification *)notification
 {
-    
     isDriverAccepted = YES;
     // [self checkForUserStatus];
     
 }
-
-
-
 
 -(void)activateMessageDriveMode:(NSDictionary*)messageDict{
     
@@ -1085,10 +900,7 @@
         self.userRating.text =driverRating;
         NSString* userProfilePics =selectedUserDict[@"userProfilePic"];
         
-        
-        
         if (![userProfilePics isKindOfClass:[NSNull class]]) {
-            
             
             [self.userProfilePic sd_setImageWithURL:[NSURL URLWithString:userProfilePics] placeholderImage:[UIImage imageNamed:@"blank profile"]];
         }
@@ -1098,8 +910,6 @@
         self.userProfilePic.layer.cornerRadius = self.userProfilePic.frame.size.height /2;
         self.userProfilePic.layer.masksToBounds = YES;
         self.userProfilePic.layer.borderWidth = 0;
-        
-        
         
     }
     
@@ -1113,7 +923,6 @@
     
     bottomLayoutConstrint.constant = 80;
     
-    
     [userView setHidden:NO];
     
     [messageBoardUsersBGView setHidden:NO];
@@ -1121,7 +930,6 @@
     
     [cancelRideButton setTitle:@"NAVIGATE" forState:UIControlStateNormal];
     [cancelRideButton addTarget:self action:@selector(navigateToMessageBoard:) forControlEvents:UIControlEventTouchUpInside];
-    
     
 }
 
@@ -1406,8 +1214,6 @@
         [mapView removeAnnotation:annotation];
         
     }
-    
-    
 }
 
 -(void)endMessageBoard:(id)sender{
@@ -1438,17 +1244,10 @@
     
     [self presentViewController:alertController animated:YES completion:nil];
     
-    
-    
-    
 }
-
-
 
 -(void)startRideWithRideRequest:(PFObject*)rideRequest{
 
-
-    
     assert(rideRequest != nil);
     
     for(PFObject *r in _rideRequests){
@@ -1468,6 +1267,7 @@
     //the number of seats is reduced now
     _driverStatus[@"numberOfSeats"] = [NSNumber numberWithInt:([_lastRideRequest[@"seats"] intValue] )];
     
+    NSLog(@"===== driverStatus saveInBackground in startRideWithRideRequest (inride,numberOfSeats)");
     [_driverStatus saveInBackground];
     
     
@@ -1481,8 +1281,6 @@
     
     _lastRideRequest= nil;
     //
-
-    
 
 }
 
@@ -1504,6 +1302,7 @@
         rideID = nil;
         
         _driverStatus[@"inride"] = @NO;
+        NSLog(@"===== driverStatus saveInBackground in  driverDecisionTaken (inride)");
         [_driverStatus saveInBackground];
         
     }
@@ -1681,8 +1480,6 @@
     // This is a diag distance (if you wanted tighter you could do NE-NW or NE-SE)
     CLLocationDistance meters = [locSouthWest distanceFromLocation:locNorthEast];
     
-    
-    
     MKCoordinateRegion regionRoute;
     regionRoute.center.latitude = (southWest.latitude + northEast.latitude) / 2.0;
     regionRoute.center.longitude = (southWest.longitude + northEast.longitude) / 2.0;
@@ -1698,16 +1495,12 @@
     
     CLGeocoder *locator = [[CLGeocoder alloc]init];
     
-    
-    
     pickUpCoord.latitude = userPickLat;
     pickUpCoord.longitude = userPickLong;
     
     
     dropOffCoord.latitude = userLat;
     dropOffCoord.longitude = userLong;
-    
-    
     
     CLLocation *location = [[CLLocation alloc]initWithLatitude:userPickLat longitude:userPickLong];
     
@@ -1739,21 +1532,16 @@
             
         }];
     }];
-    
-    
-    
 }
 
 
 
 #pragma mark - Ride End and Rating View
 
-
 -(void)didRequestForRideEnd:(NSNotification *)notification
 {
     
     rideEndArray = [notification object];
-    
     
     NSString* rideCost = @"0.00";
     
@@ -1774,31 +1562,19 @@
     self.navigationController.modalPresentationStyle = UIModalPresentationCurrentContext;
     [self presentViewController:requestRideDecisionPopupViewController animated:YES completion:nil];
     
-    
 }
-
-
 
 -(void)didRequestForOpenRatinView:(NSNotification *)notification
 {
     [NSTimer scheduledTimerWithTimeInterval: 1.0 target: self
                                    selector: @selector(openRatingView:) userInfo: nil repeats: NO];
-    
-    
 }
 
 
 -(void)openRatingView:(id)sender{
     
-    
     [self performSegueWithIdentifier:@"rateUser" sender:nil];
-    
-    
-    
-    
-    
 }
-
 
 #pragma mark - Get Message Board Ride data
 
@@ -1807,8 +1583,6 @@
     NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
     NSString *token = [prefs stringForKey:@"token"];
     NSString *driverId = [prefs stringForKey:@"driverId"];
-    
-    
     
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Accept"];
@@ -1838,23 +1612,12 @@
                 [self activateMessageDriveMode:responseObject];
                 //[self rideRequestDecisonMade:messages];
             }
-            
-            
-            
         }
-        
-        
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         NSLog(@"Error: %@", [error localizedDescription]);
         
     }];
-    
-    
-    
 }
-
-
-
 
 #pragma mark - Driver Location Update
 
@@ -1863,63 +1626,22 @@
  */
 -(void)updateDriverLocation:(id)sender{
     
+    PFGeoPoint *location = [PFGeoPoint geoPointWithLatitude:latitude  longitude:driverLong];
     
-    if(driverLocation == nil){
-        
-        PFQuery * query = [PFQuery queryWithClassName:@"UserLocation"];
-        [query  whereKey:@"user" equalTo:[PFUser currentUser]];
-        
-        
-        
-        [query getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError * error){
-            
-            if(!error){
-                
-                
-                driverLocation = object;
-                
-                [self updateDriverLocation:nil];
-            }else{
-                NSLog(@"Can't save user location");
-                //will keep triyng until it works
-            }
-            
-        }];
-    }else{
-        
-        PFGeoPoint *location = [PFGeoPoint geoPointWithLatitude:latitude  longitude:driverLong];
-        if(userCity!= nil && userCity.length > 0){
-            
-             driverLocation[@"city"] = userCity;
-        }else{
-            NSLog(@"Failed to get user city");
-        }
-        if(location){
-            driverLocation[@"location"] =  location;
-            NSAssert(currentAddress != nil, @"Current address is nil");
-           
-            if(currentAddress.length == 0){
-                currentAddress = @"Undeterminated";
-            }
-            
-            driverLocation[@"locationAddress"] = currentAddress;
+    [PFCloud callFunctionInBackground:@"UpdateUserLocation"
+                       withParameters:@{@"location": location}
+                                block:^(NSString *success, NSError *error) {
+                                    if (!error) {
+                                        
+                                    } else {
+                                        
+                                    }
+                                }];
 
-        }
-        
-        
-        [driverLocation saveInBackground];
-        
-        
-    }
-    
-    
-    
 }
 
-
-
-
 #pragma mark - More, Center location and Call Driver Buttons
+
 
 - (IBAction)callUser:(id)sender {
     
@@ -1933,40 +1655,31 @@
     
 }
 
-
-
 - (IBAction)centerOnUsersLocation:(id)sender {
     
     [self updateLocationBarOnUserLocation];
     
-    
     [mapView setRegion:region animated:YES];
     
 }
-
 
 #pragma mark - Location Manager and Map Delegate
 
 - (void)mapView:(MKMapView *)aMapView didUpdateUserLocation:(MKUserLocation *)aUserLocation {
     
     MKCoordinateSpan span;
-//    span.latitudeDelta = 0.005;
-//    span.longitudeDelta = 0.005;
-//    CLLocationCoordinate2D location;
-//    location.latitude = aUserLocation.coordinate.latitude;
-//    location.longitude = aUserLocation.coordinate.longitude;
-//    region.span = span;
-//    region.center = location;
-//    
-//    
-//     [self updateLocationBarOnUserLocation];
-//    
-//    
-//    NSLog(@"%f %f",location.latitude,location.longitude);
+    /*span.latitudeDelta = 0.005;
+    span.longitudeDelta = 0.005;
+    CLLocationCoordinate2D location;
+    location.latitude = aUserLocation.coordinate.latitude;
+    location.longitude = aUserLocation.coordinate.longitude;
+    region.span = span;
+    region.center = location;
+    [self updateLocationBarOnUserLocation];
     
-    
+    NSLog(@"%f %f",location.latitude,location.longitude);
+    */
 }
-
 
 -(MKOverlayRenderer *)mapView:(MKMapView *)mapView rendererForOverlay:(id<MKOverlay>)overlay {
     
@@ -1977,9 +1690,6 @@
     return routeLineRenderer;
 }
 
-
-
-
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations{
     
     CLLocation *location =  [locations lastObject];
@@ -1988,28 +1698,10 @@
     latitude = currentCoordinates.latitude;
     driverLong = currentCoordinates.longitude;
     
-    
-    CLGeocoder *locator = [[CLGeocoder alloc]init];
-    
-    [locator reverseGeocodeLocation:location completionHandler:^(NSArray *placemarks, NSError *error) {
-        if(error == nil){
-            CLPlacemark *placemark = [placemarks objectAtIndex:0];
-            
-            userCity = [placemark locality];
-        }else{
-            
-            NSLog(@"Can't update user city");
-        }
-        
-    }];
-    
-    
 }
 
 
 #pragma mark - Annotation Views
-
-
 -(MKAnnotationView*)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation{
     if ([annotation isKindOfClass:[DropoffAnnotation class]]){
         DropoffAnnotation *dropoffAnnotation = (DropoffAnnotation*)annotation;
@@ -2040,18 +1732,7 @@
     
 }
 
-
-
 #pragma mark - Location Bar Update (Must be removed)
-
-
--(void)updateUserLocationOnServer:(PFObject *) location{
-    
-    location[@"location"] = [PFGeoPoint geoPointWithLatitude:myLatitude longitude:myLongitude] ;
-    
-    [location saveInBackground];
-}
-
 -(void)mapView:(MKMapView *)mapView regionWillChangeAnimated:(BOOL)animated{
 
     NSLog(@"Changing map region");
@@ -2065,11 +1746,9 @@
 
 }
 
-
 -(void)updateLocationBarOnUserLocation{
     
     //    NSLog(@"Updating my location as driver location");
-    
     
     if( _driverStatus && ![_driverStatus[@"available"] boolValue]  ){
         
@@ -2089,7 +1768,6 @@
                 self.dropOffButton.hidden = NO;
                 CLPlacemark *placemark = [placemarks objectAtIndex:0];
                 
-                
                 NSDictionary * addressDictionary = placemark.addressDictionary;
                 NSMutableArray *formatedAddressLines = [addressDictionary valueForKey:@"FormattedAddressLines"];
                 [formatedAddressLines removeLastObject];
@@ -2107,17 +1785,11 @@
                 error.localizedDescription;
             }
             
-            
-            
         }];
         
     }
     
-    
-    
 }
-
-
 
 -(void)updateLocationBarOnCenterLocation{
     
@@ -2139,13 +1811,11 @@
         [locator reverseGeocodeLocation:location completionHandler:^(NSArray *placemarks, NSError *error) {
             NSLog(@"Finished updating address bar with center map location");
             
-            
             if(!error){
                 
                 NSLog(@"Location updated sucessfully");
                 self.dropOffButton.hidden = NO;
                 CLPlacemark *placemark = [placemarks objectAtIndex:0];
-                
                 
                 NSDictionary * addressDictionary = placemark.addressDictionary;
                 NSMutableArray *formatedAddressLines = [addressDictionary valueForKey:@"FormattedAddressLines"];
@@ -2170,13 +1840,9 @@
                 
             }
             
-            
-            
         }];
         
     }
-    
-    
     
 }
 
@@ -2280,12 +1946,7 @@
     
 }
 
-
-
-
-
 #pragma mark - Ending of Ride (Not in use)
-
 
 -(void)endRide:(id)sender{
     
@@ -2301,25 +1962,19 @@
     bottomLayoutConstrint.constant = 10;
     [userView setHidden:YES];
     
-    
-    
     isDriverAccepted = NO;
     self.rideConfigured = @NO;
     self.destinationSetted = @NO;
     [calucaltateDistanceTimer invalidate];
     calucaltateDistanceTimer = nil;
     
-    
     //    activeRide[@"finished"]= @YES;
     
     for(CHDraggableView *view in _chatHeads){
         [view removeFromSuperview];
-
-        
     }
     
     [_chatHeads removeAllObjects];
-    
     
     NSMutableArray* usersArray = [[NSMutableArray alloc]init];
     
@@ -2333,11 +1988,9 @@
         // [usersArray addObject:ride[@"requestedBy"]];
         [ride saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
             NSLog(@"Notified rider of ride end");
-            
             NSLog(@"RiderID: %@", rider.objectId);
         }];
     }
-
     
     if( [_driverStatus[@"inride"] boolValue] == YES){
         
@@ -2347,20 +2000,11 @@
         
         [_driverStatus saveInBackground];
         
-        
     }
-    
-    
-    
-    
     
     [activeRide saveInBackgroundWithBlock:^(BOOL succeeded, NSError * _Nullable error) {
         NSLog(@"Ride ended");
-        
-        
-        
     }];
-    
     
     _driverStatus[@"inride"] = @NO;
     _driverStatus[@"active"] = @NO;
@@ -2371,20 +2015,11 @@
         }
     }];
     
-    
-    
-    
     [self cancelDropoff:nil];
-    
-    
     
 }
 
-
 #pragma mark - Ride Accepted or Rejected and Others(Not in use)
-
-
-
 -(void)didRequestForRideAcceptedForDriver:(NSNotification *)notification
 {
     requestRideDecisionPopupViewController = [[RideRequestDecisionViewController alloc] initWithNibName:@"RideRequestDecisionViewController" bundle:nil];
@@ -2395,10 +2030,7 @@
     self.navigationController.modalPresentationStyle = UIModalPresentationCurrentContext;
     [self presentViewController:requestRideDecisionPopupViewController animated:YES completion:nil];
     
-    
-    
 }
-
 
 -(void)didRequestForRideAcceptedByAnotherDriver:(NSNotification *)notification
 {
@@ -2491,8 +2123,6 @@
 
 -(void)didRequestForRideRequestCancel:(NSNotification *)notification
 {
-
-    
     NSArray *data = [notification object];
     
     if ([data count] == 0){
@@ -2500,12 +2130,8 @@
         return ;
         
     }
-    
-    
-    
     NSString *rideId = [data firstObject];
     NSAssert(rideId != nil, @"Request for canceling an nil ride id");
-    
     
     PFObject * _canceledRideRequest = nil;
     for(PFObject *rideRequest in _rideRequests){
@@ -2526,7 +2152,6 @@
     }
     
     PFUser *rider = _canceledRideRequest[@"requestedBy"];
-    
     
     if (isDriverAccepted) {
         
@@ -2561,8 +2186,8 @@
             index++;
             
         }
-        //remove chat head with that index
         
+        //remove chat head with that index
         CHDraggableView *view =  [_chatHeads objectAtIndex:index];
         [view removeFromSuperview];
         [_chatHeads removeObjectAtIndex:index];
@@ -2570,7 +2195,6 @@
         
         [_rideRequests removeObjectAtIndex:index];
 
-        
         if(_rideRequests.count == 0){
             
             _driverStatus[@"inride"] = @NO;
@@ -2580,13 +2204,9 @@
         
         [_driverStatus saveInBackground];
         
-        
-        
         //change to navigate to destination
         
-        
         NSAssert(_chatHeads.count == _rideRequests.count,@"Ride request count must be equal to the number of chatheads");
-        
         
     }else{
         
@@ -2603,7 +2223,6 @@
     return newImage;
 }
 
-
 #pragma mark - Deallocation
 -(void)viewDidDisappear:(BOOL)animated{
     [self.locationManager stopUpdatingLocation];
@@ -2613,7 +2232,6 @@
     [super viewDidDisappear:YES];
     
 }
-
 
 - (void)dealloc
 {
@@ -2629,8 +2247,6 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"didRequestForMessageBoardStartAccepted" object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"didRequestForUserSelected" object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"didRequestForMessageBoardRideEnded" object:nil];
-    
-    
 }
 
 -(void)didRequestForStoppingAllMappingServices:(id)sender{
@@ -2640,17 +2256,12 @@
     driverLocationTimer = nil;
     [_mapCenterTimer invalidate];
     _mapCenterTimer = nil;
-    
-    
 }
-
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
-
-
 
 - (IBAction)startRideButtonTouchUpInside:(id)sender {
     
@@ -2674,23 +2285,14 @@
     
     //    self.navigationItem.rightBarButtonItem=nil;
     
-    
     //    driverStatus[@"inride"] = @YES;, not in ride, it is active but has no passenger
-    
     //    [driverStatus saveInBackgroundWithBlock:^(BOOL succeeded, NSError * _Nullable error) {
     //        if(succeeded){
     //            NSLog(@"Saved driver in ride successfully on parse");
     //        }
     //    }];
     
-    //
-    
-    
- 
-    
-    
     // [self traceRouteWithStartingCoordinates:pickUpCoord end:dropOffCoord];
-    
     
     //make the driver active and advertise ride
     _driverStatus[@"active"] = @YES;

@@ -162,9 +162,6 @@
 
 - (IBAction)saveRideData:(id)sender {
     
-    
-    
-    
     self.driverStatus[@"numberOfSeats"] = [NSNumber numberWithInt:seats];
     self.driverStatus[@"pricePerSeat"]= [NSNumber numberWithDouble:pricePerSeat];
     self.driverStatus[@"ladiesOnly"] = (self.ladiesOnly.isOn)?@YES:@NO;

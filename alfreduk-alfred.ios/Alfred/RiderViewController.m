@@ -41,7 +41,6 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
     
     BOOL settingPickupLocation, settingDropoffLocation;
     double _myLatitude, _myLongitude;
-    PFObject *_location;
     PFUser *_selectedDriver;
     PFObject *_rideRequest;
     PFObject *_selectedDriverLocation;
@@ -55,10 +54,7 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
     
     //this variable holds the state when the rider got the acceptation push form the driver and he process the request
     
-    
     BOOL _processingRequest;
-    
-    
 }
 @property NSNumber* onRide;
 @end
@@ -130,10 +126,6 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
 
 
 - (void)viewDidLoad {
-    
-    
-    
-    
     [super viewDidLoad];
     _annotationInteract = NO;
     
@@ -281,8 +273,13 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
     
     [NSTimer scheduledTimerWithTimeInterval: 1.0 target: self
                                    selector: @selector(checkForUserStatus) userInfo: nil repeats: NO];
-    _location = nil;
-    [self getUserLocationObject];
+
+    [NSTimer scheduledTimerWithTimeInterval: 20.0
+                                     target:self
+                                   selector:@selector(updateUserLocationOnServer:)
+                                   userInfo:nil
+                                    repeats:YES];
+
     if([[PFUser currentUser][@"UserMode"] boolValue] == NO){
         
         UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
@@ -308,41 +305,6 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
     
 }
 
--(void)getUserLocationObject{
-    
-    PFQuery * query = [PFQuery queryWithClassName:@"UserLocation"];
-    [query whereKey:@"user" equalTo:[PFUser currentUser]];
-    
-    [query getFirstObjectInBackgroundWithTarget:self selector:@selector(startUpdatingUserLocation:error:)];
-    
-    
-    
-    
-}
--(void)startUpdatingUserLocation:(PFObject * )object error:(NSError*) error{
-    
-    if(object){
-        
-        //set class variable
-        _location = object;
-        [NSTimer scheduledTimerWithTimeInterval: 20.0
-                                         target:self
-                                       selector:@selector(updateUserLocationOnServer:)
-                                       userInfo:nil
-                                        repeats:YES];
-    }else{
-        //can't update user location on server, so we wont know where user is
-        
-    }
-    
-}
-
-
-
-
-
-
-
 -(void)viewWillAppear:(BOOL)animated{
     
     [super viewWillAppear:animated];
@@ -356,17 +318,13 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
                                                               userInfo:nil
                                                                repeats:NO];
     }
-    
-    
     [super viewDidAppear: animated];
     //check if the user has any peending rating ride
-    
     
     [HUD showUIBlockingIndicatorWithText:@"Loading.."];
     
     PFQuery *query1 = [PFQuery  queryWithClassName:@"RideRequest"];
     [query1 whereKey:@"rated" notEqualTo:@YES];
-    
     [query1 whereKey:@"requestedBy" equalTo:[PFUser currentUser]];
     [query1 whereKey:@"finished" equalTo:@YES];
     [query1 whereKey:@"canceled" notEqualTo:@YES];
@@ -375,40 +333,21 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
     [query1 includeKey:@"driver"];
     [query1 includeKey:@"driver.driverRating"];
     [query1 includeKey:@"requestedBy"];
-    
-    
-    
-    
-    
-    
-    
-    
     [query1 getFirstObjectInBackgroundWithBlock:^(PFObject * _Nullable object, NSError * _Nullable error) {
         [HUD hideUIBlockingIndicator];
         if(error==nil && object){
             _rideRequest = object;
-            [self openRatingView:nil];
+            //[self openRatingView:nil];
             
         }
-        
-        
     }];
     
-    
-    
-    
-    
-    
-    
 }
+
 -(void)viewDidAppear:(BOOL)animated{
-    
-    
-    
+
     
 }
-
-
 
 -(void)viewDidDisappear:(BOOL)animated{
     [super viewDidDisappear:animated];
@@ -417,18 +356,13 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
     
     [driverLocationTimer invalidate];
     driverLocationTimer = nil;
-    
-    
 }
-
-
 
 #pragma mark - Activate Ride Mode
 
 -(void)activateUserInRideMode{
     
     self.onRide = @YES;
-    
     
     [pickUpImage setHidden:YES];
     [pickupOrDropoffButton setHidden:YES];
@@ -701,8 +635,6 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
         //hide it to load the new data
         [driverView setHidden:YES];
         
-        
-        
         [requestRideButton setTitle:@"CANCEL REQUEST" forState:UIControlStateNormal];
         inRequest = NO;
         
@@ -717,9 +649,7 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
         [requestRideDecisionPopupViewController setModalPresentationStyle:UIModalPresentationOverCurrentContext];
         self.navigationController.modalPresentationStyle = UIModalPresentationCurrentContext;
         
-        
         [self presentViewController:requestRideDecisionPopupViewController animated:YES completion:^(){
-            
             
             [cancelRideRequestTimer invalidate];
             cancelRideRequestTimer = nil;
@@ -786,10 +716,7 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
             
         }];
     }
-    
 }
-
-
 
 #pragma mark - Ride End and Rating View
 
@@ -810,25 +737,13 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
     _pickupCoordinatesSetted = NO;
     self.driverView.hidden = YES;
     
-    
-    
     // [self cancelPickup:self];
     
     [requestRideButton setTitle:@"LOOK FOR AN ALFRED" forState:UIControlStateNormal];
     
-    
-    
-    
-    
-    _rideRequest[@"finished"] = @YES;
-    [_rideRequest saveInBackgroundWithBlock:^(BOOL succeeded, NSError * _Nullable error) {
-        self.onRide = @NO;
-    }];
+    self.onRide = @NO;
     
     rideEndArray = [notification object];
-    
-    
-    
     
     requestRideDecisionPopupViewController = [[RideRequestDecisionViewController alloc] initWithNibName:@"RideRequestDecisionViewController" bundle:nil];
     
@@ -841,7 +756,6 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
     [requestRideDecisionPopupViewController setModalPresentationStyle:UIModalPresentationOverCurrentContext];
     self.navigationController.modalPresentationStyle = UIModalPresentationCurrentContext;
     [self presentViewController:requestRideDecisionPopupViewController animated:YES completion:nil];
-    
     
 }
 
@@ -858,10 +772,6 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
 -(void)openRatingView:(id)sender{
     
     [self performSegueWithIdentifier:@"rateDriver" sender:nil];
-    
-    
-    
-    
     
 }
 
@@ -1463,16 +1373,11 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
     
     ifTimerShootsCancel = NO;
     
-    
     if (!inRequest) {
-        
         
         balance = [[PFUser currentUser][@"Balance"] doubleValue];
         
-        
         _ridePrice  =  [(NSNumber*)(_selectedDriver[@"driverStatus"][@"pricePerSeat"]) doubleValue] * [_seatsRequested doubleValue] * 100;
-        
-        
         
         // isDriverSelected = true;
         if(![[PFUser currentUser][@"PhoneVerified"] boolValue]){
@@ -1491,7 +1396,6 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
         
         if (!isDriverSelected) {
             
-            
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Looking for an Alfred?"
                                                             message:@"Please choose one of the following options to proceed"
                                                            delegate:self
@@ -1501,11 +1405,7 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
             [alert show];
             
         }else{
-            
-            
-            
-            
-            
+
             if (balance < _ridePrice) {
                 
                 UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Low Balance"
@@ -1525,27 +1425,19 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
                 [cancelRideRequestTimer invalidate];
                 cancelRideRequestTimer = nil;
                 
-                
                 cancelRideRequestTimer = [NSTimer scheduledTimerWithTimeInterval:RIDE_REQUEST_EXPIRATION_TIME target: self selector: @selector(cancelRideRequestFromTimer:) userInfo: nil repeats: NO ];
                 requestLabel.hidden = NO;
                 requestImageView.hidden = NO;
                 
-                
-                
-                
                 [requestRideButton setTitle:@"CANCEL REQUEST" forState:UIControlStateNormal];
                 inRequest = YES;
-                
                 
                 self.navigationItem.rightBarButtonItem.enabled = NO;
                 //send ride request to the drivers
                 
-                
                 _rideRequest = [PFObject objectWithClassName:@"RideRequest"];
                 
-                
                 NSAssert(_selectedDriver!= nil, @"The driver selected is invalid");
-                
                 
                 _rideRequest[@"accepted"] = @NO;
                 
@@ -1561,7 +1453,6 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
                 _rideRequest[@"finished"] = @NO;
                 _rideRequest[@"requested"] = @YES;
                 
-                
                 //the address can be null if it was not calculated properly
                 if(pickupAddress == NULL || [pickupAddress length] == 0){
                     pickupAddress = @"Unknown address";
@@ -1569,7 +1460,6 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
                 if(dropOffAddress == NULL || [dropOffAddress length] == 0){
                     dropOffAddress = @"Unknown address";
                 }
-                
                 
                 _rideRequest[@"pickupAddress"] = pickupAddress;
                 _rideRequest[@"dropoffAddress"] = dropOffAddress;
@@ -1588,17 +1478,9 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
                         
                         //                        [PFAnalytics trackEvent:@"error" dimensions:dimensions];
                     }
-                    
-                    
                 }];
-                
-                
-                
-                
-                
                 // [self openTheDriverView];
             }
-            
         }
     }
     
@@ -1639,14 +1521,11 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
 {
     
     isDriverSelected = true;
-    
-    
-    
+
     //this array contains the following data
     // DriverID
     // RequestRideID
     // MessageboardID
-    
     
     driverSelectedArray = [notification object];
     NSString *selectedDriverID = driverSelectedArray[0];
@@ -1655,21 +1534,21 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
     _seatsRequested = (NSNumber*)driverSelectedArray[1];
     assert([_seatsRequested intValue] > 0 );
     
-    
     [HUD showUIBlockingIndicator];
-    
-    
     PFQuery * query = [PFQuery queryWithClassName:@"_User"];
     [query includeKey:@"driverStatus"];
     [query includeKey:@"driverRating"];
     [query getObjectInBackgroundWithId:driverSelectedArray[0] block:^(PFObject * _Nullable object, NSError * _Nullable error) {
+
+        [HUD hideUIBlockingIndicator];
         if(!error){
             
             _selectedDriver = (PFUser*)object;
             isDriverSelected = YES;
-            //
-            //            NSString *title =[NSString stringWithFormat:@"SEND REQUEST TO %@", [selectedDriver[@"FirstName"] uppercaseString]];
-            //            [self.requestRideButton setTitle:title forState:UIControlStateNormal ];
+            
+//            NSString *title =[NSString stringWithFormat:@"SEND REQUEST TO %@", [selectedDriver[@"FirstName"] uppercaseString]];
+//            [self.requestRideButton setTitle:title forState:UIControlStateNormal ];
+            
             //now that the driver is selected we send the request stright away
             [self requestRide:nil];
             
@@ -1677,12 +1556,7 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
             isDriverSelected = false;
             
         }
-        [HUD hideUIBlockingIndicator];
     }];
-    
-    
-    
-    
 }
 
 -(void)didRequestForInactiveDriverChosenForRide:(NSNotification *)notification
@@ -1881,7 +1755,6 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
     isDriverSelected = NO;
     self.onRide = @NO;
     
-    
     requestLabel.hidden = YES;
     requestImageView.hidden = YES;
     [requestRideButton setTitle:@"LOOK FOR AN ALFRED" forState:UIControlStateNormal];
@@ -1896,30 +1769,20 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
                                           otherButtonTitles:nil];
     alert.tag=3;
     
-    
     [alert show];
     
-    
-    
     _rideRequest[@"canceled"] = @YES;
-    
+    _rideRequest[@"accepted"] = @NO;
     [_rideRequest saveInBackgroundWithBlock:^(BOOL succeeded, NSError * _Nullable error) {
         self.onRide = @NO;
     }];
     
-    
-    
     isRideAccepted = NO;
-    
-    
     
 }
 
-
 #pragma mark - Ride Rejected By Driver
 -(void)didRequestForMessageBoardRideRejected:(NSNotification *)notification{
-    
-    
     
     [cancelRideRequestTimer invalidate];
     cancelRideRequestTimer = nil;
@@ -2145,44 +2008,23 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
                 
                 if (driver != compareDriver) {
                     
-                    
-                    
-                    
-                    
                     [self openTheDriverView:nil];
                     
-                    
                 }
-                
-                
-                
             }
             else{
-                
-                
-                
                 
                 [self openTheDriverView:nil];
                 
             }
-            
-            
         }
-        
         
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         NSLog(@"Error: %@", [error localizedDescription]);
         
     }];
     
-    
-    
 }
-
-
-
-
-
 
 -(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
     
@@ -2303,10 +2145,10 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
     
     NSLog(@"User requested cancel ride");
     
-    
     isRideAccepted= NO;
     
-    [self notifyRideCancelToDriver];
+    //[self notifyRideCancelToDriver];
+    
     //do ui changes here
     inRequest = false;
     [self.mapView removeAnnotations:[mapView annotations]];
@@ -2325,13 +2167,21 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
         [[PFUser currentUser] saveInBackground];
         _ridePrice = 0.0;
         _rideRequest[@"ridePrice"] = [NSNumber numberWithDouble:_ridePrice];
+        _rideRequest[@"canceled"] = @YES;
+        [_rideRequest saveInBackgroundWithBlock:^(BOOL succeeded, NSError * _Nullable error) {
+            self.onRide = @NO;
+        }];
+        
+        isRideAccepted = NO;
+
     }else{
         
         
         //TODO: open feedback screen
         
     }
-    //    [PFAnalytics trackEvent:@"RideCanceledByUser" dimensions:@{@"User":[PFUser currentUser].objectId}];
+    
+    //[PFAnalytics trackEvent:@"RideCanceledByUser" dimensions:@{@"User":[PFUser currentUser].objectId}];
     
 }
 
@@ -2666,44 +2516,28 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
 
 -(void)updateUserLocationOnServer:(NSTimer *)timer{
     
-    if(_location){
-        
-        [PFGeoPoint geoPointForCurrentLocationInBackground:^(PFGeoPoint *geoPoint, NSError *error) {
-            if (!error) {
-                
-                _location
-                [@"location"] = geoPoint;
-                
-                
-                [_location saveInBackgroundWithBlock:^(BOOL succeed, NSError * error){
-                    
-                    if(error){
-                        
-                        NSLog(error.userInfo[@"error"]);
-                        
-                    }
-                    
-                }];
-                
-                
-                
-            }
-        }];
-        
-    }else{
-        NSLog(@"Can't update user location yet, not retrieved from server");
-    }
-    
-    
-    
-    
+    [PFGeoPoint geoPointForCurrentLocationInBackground:^(PFGeoPoint *geoPoint, NSError *error) {
+        if (!error) {
+            
+            [PFCloud callFunctionInBackground:@"UpdateUserLocation"
+                               withParameters:@{@"location": geoPoint}
+                                        block:^(NSString *success, NSError *error) {
+                                            if (!error) {
+                                                
+                                            } else {
+                                                
+                                            }
+                                        }];
+        } else {
+            
+        }
+    }];
 }
 
 
 
 //update the location address according to the center coordinate on map
 -(void)updateLocationBarOnUserLocation{
-    
     
     CLGeocoder *locator = [[CLGeocoder alloc]init];
     
@@ -2931,11 +2765,6 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
     [self performSegueWithIdentifier:@"SearchViewPush" sender:self];
 }
 
-
-
-
-
-
 #pragma mark - Ride Cancelled by Driver (Not in use)
 
 
@@ -2950,9 +2779,7 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
     [requestRideButton setTitle:@"LOOK FOR AN ALFRED" forState:UIControlStateNormal];
     inRequest = NO;
     
-    
     requestRideDecisionPopupViewController = [[RideRequestDecisionViewController alloc] initWithNibName:@"RideRequestDecisionViewController" bundle:nil];
-    
     
     requestRideDecisionPopupViewController.decision = @"Your ride was cancelled by driver.\nPlease request again.";
     requestRideDecisionPopupViewController.isAccepted = NO;
@@ -3065,11 +2892,9 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
 {
     
     [[NSNotificationCenter defaultCenter] removeObserver: self];
-    
-    
-    
-    
+    [[NSNotificationCenter defaultCenter] removeObserver: self name:@"didRequestForRideEnd" object:nil];
 }
+
 -(void)didRequestForStoppingAllMappingServices:(id)sender{
     [self.locationManager stopUpdatingLocation];
     

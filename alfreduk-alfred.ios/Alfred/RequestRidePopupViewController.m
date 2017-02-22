@@ -34,7 +34,6 @@ userId,
 isActive,
 requestRideId,
 rideRequestDict,
-driverCity,
 profileImageView,
 userPic;
 
@@ -182,7 +181,9 @@ userPic;
                 NSLog(@"Driver status update to inride");
             }
         }];
+        
     }else{
+        
         NSLog(@"Ride declined by driver");
         
         self.rideRequest[@"canceledByDriver"] = @YES;
@@ -195,8 +196,6 @@ userPic;
 
 -(void)activeRideRequestResponse:(BOOL)accepted{
     
-    
-    
     PFUser *requestedBy = self.rideRequest[@"requestedBy"];
     
     assert(requestedBy);
@@ -204,7 +203,6 @@ userPic;
     //now we have user requested and all other data
     
     //TODO trace route to destination
-    
     
     PFQuery * riderQuery = [PFInstallation query];
     [riderQuery whereKey:@"user" containedIn:@[requestedBy]];
@@ -225,8 +223,7 @@ userPic;
         if(error){
             
             NSLog(@"Failed to send push");
-            NSLog(error.localizedDescription);
-            
+            NSLog(@"%@", error.localizedDescription);
             
         }else{
             
@@ -235,11 +232,9 @@ userPic;
     }];
 }
 
-
-
 -(void)inactiveRideRequestResponse:(BOOL)accepted{
     
-    PFUser *requestedBy = self.rideRequest[@"requestedBy"];
+    //PFUser *requestedBy = self.rideRequest[@"requestedBy"];
     
     if(accepted == YES){
         
@@ -248,37 +243,27 @@ userPic;
         [self.rideRequest saveInBackgroundWithBlock:^(BOOL succeeded, NSError * _Nullable error) {
             [HUD hideUIBlockingIndicator];
             if(error == NULL){
-                
                 [[NSNotificationCenter defaultCenter] postNotificationName:@"driverDecisionTaken" object:[NSNumber numberWithBool:YES]];
+
             }else{
                 NSLog(@"Can't sent push back to the user");
-                assert(0);
+                //assert(0);
             }
-            
-            
-            
-            
         }];
     }else{
         
-        //ride request declined
+        // Ride request declined
         self.rideRequest[@"rejected"] = @YES;
         [self.rideRequest saveInBackgroundWithBlock:^(BOOL succeeded, NSError * _Nullable error) {
-           
+            
             if(error == NULL){
-                
                 [[NSNotificationCenter defaultCenter] postNotificationName:@"driverDecisionTaken" object:[NSNumber numberWithBool:NO]];
             }else{
                 
             }
         }];
     }
-    
 }
-
-
-
-
 
 
 -(void)addMessageBoardRequest{
@@ -322,7 +307,7 @@ userPic;
         manager.responseSerializer = [AFJSONResponseSerializer serializer];
         
         
-        NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:driverID,@"id",pickLatLoc,@"originLatitude",pickLongLoc,@"originLongitude",pickupAddress,@"originAddress",dropoffAddress,@"dropAddress",dropLatLoc,@"dropLatitude",dropLongLoc,@"dropLongitude",@"Start from an Inactive Ride",@"message",dateString,@"rideTime",driverCity,@"city",@"Starting from Inactive Ride",@"title",nil];
+        NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:driverID,@"id",pickLatLoc,@"originLatitude",pickLongLoc,@"originLongitude",pickupAddress,@"originAddress",dropoffAddress,@"dropAddress",dropLatLoc,@"dropLatitude",dropLongLoc,@"dropLongitude",@"Start from an Inactive Ride",@"message",dateString,@"rideTime",@"Starting from Inactive Ride",@"title",nil];
         [params setValue:[NSNumber numberWithInt:4] forKey:@"seats"];
         [params setObject:[NSNumber numberWithBool:false] forKey:@"femaleOnly"];
         [params setValue:[NSNumber numberWithInt:5] forKey:@"pricePerMile"];

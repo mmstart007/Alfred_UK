@@ -1,11 +1,11 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11542" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11762" systemVersion="16C67" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
     <device id="retina4_0" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11524"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -32,14 +32,14 @@
                     <rect key="frame" x="30" y="80" width="260" height="408"/>
                     <subviews>
                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="profile_pic_teja" translatesAutoresizingMaskIntoConstraints="NO" id="7jo-ZQ-FOP">
-                            <rect key="frame" x="8.5" y="29" width="70" height="70"/>
+                            <rect key="frame" x="8" y="29" width="70" height="70"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="70" id="AJh-lv-Quk"/>
                                 <constraint firstAttribute="height" constant="70" id="YdU-Hd-sPG"/>
                             </constraints>
                         </imageView>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="2016200377" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JnZ-ab-bJB">
-                            <rect key="frame" x="105.5" y="52" width="143" height="21"/>
+                            <rect key="frame" x="105" y="52" width="143" height="21"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="21" id="6vV-6h-5Sd"/>
                                 <constraint firstAttribute="width" constant="143" id="ggS-g7-BKK"/>
@@ -119,7 +119,7 @@
                             </constraints>
                         </view>
                         <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="phone" translatesAutoresizingMaskIntoConstraints="NO" id="yrp-O8-hMt">
-                            <rect key="frame" x="86.5" y="53" width="11" height="19"/>
+                            <rect key="frame" x="86" y="53" width="11" height="19"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="11" id="fZp-JU-o3C"/>
                                 <constraint firstAttribute="height" constant="19" id="k5e-v1-QqS"/>
@@ -183,7 +183,7 @@
                             <nil key="highlightedColor"/>
                         </label>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Busani Veer Arjun" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Mlf-kp-brT">
-                            <rect key="frame" x="86.5" y="29" width="143" height="21"/>
+                            <rect key="frame" x="86" y="29" width="143" height="21"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="143" id="Ba3-JC-ilJ"/>
                                 <constraint firstAttribute="height" constant="21" id="QBQ-Je-1ov"/>

@@ -24,8 +24,6 @@
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForRideRequestCancel:) name:@"didRequestForRideRequestCancel" object:nil];
 
-  
-
     decisionTextView.text = decision;
     decisionTextView.textAlignment = NSTextAlignmentCenter;
     

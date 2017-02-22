@@ -1,11 +1,11 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11542" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11762" systemVersion="16C67" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11524"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -24,9 +24,9 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Jhon Doe" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="68S-u0-6uE" userLabel="name">
-                    <rect key="frame" x="8" y="20" width="340" height="21"/>
+                    <rect key="frame" x="8" y="12" width="340" height="30"/>
                     <constraints>
-                        <constraint firstAttribute="height" constant="21" id="x9Y-9t-56i"/>
+                        <constraint firstAttribute="height" constant="30" id="x9Y-9t-56i"/>
                     </constraints>
                     <fontDescription key="fontDescription" type="boldSystem" pointSize="23"/>
                     <nil key="highlightedColor"/>
@@ -71,7 +71,7 @@
                     <nil key="highlightedColor"/>
                 </label>
                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="alfred bg" translatesAutoresizingMaskIntoConstraints="NO" id="Wpt-I1-iGe">
-                    <rect key="frame" x="9" y="54" width="339" height="1"/>
+                    <rect key="frame" x="9" y="55" width="339" height="1"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="1" id="EGL-bO-Zes"/>
                     </constraints>
@@ -111,7 +111,7 @@
                     </connections>
                 </button>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="R8l-1O-grr" userLabel="call">
-                    <rect key="frame" x="9" y="63" width="334" height="30"/>
+                    <rect key="frame" x="9" y="64" width="334" height="29"/>
                     <connections>
                         <action selector="call:" destination="-1" eventType="touchUpInside" id="9T6-pP-y6m"/>
                     </connections>
@@ -126,7 +126,7 @@
                 <constraint firstAttribute="trailing" secondItem="R8l-1O-grr" secondAttribute="trailing" constant="13" id="9Y9-o3-e8a"/>
                 <constraint firstItem="R8l-1O-grr" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" constant="9" id="Bze-SC-E1E"/>
                 <constraint firstItem="68S-u0-6uE" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" constant="8" id="C85-bo-cVN"/>
-                <constraint firstItem="JzP-rA-tDe" firstAttribute="top" secondItem="68S-u0-6uE" secondAttribute="bottom" constant="26" id="DQw-go-Ecu"/>
+                <constraint firstItem="JzP-rA-tDe" firstAttribute="top" secondItem="68S-u0-6uE" secondAttribute="bottom" constant="25" id="DQw-go-Ecu"/>
                 <constraint firstItem="fq3-4W-m8T" firstAttribute="top" secondItem="ZsH-mq-yA1" secondAttribute="bottom" constant="8" id="E00-j2-OeS"/>
                 <constraint firstItem="10X-Lo-55f" firstAttribute="leading" secondItem="JzP-rA-tDe" secondAttribute="trailing" constant="12" id="E9O-Z1-o3n"/>
                 <constraint firstItem="64v-ea-9ff" firstAttribute="leading" secondItem="OHp-r4-qx8" secondAttribute="trailing" constant="8" id="E9q-Ce-0gK"/>
@@ -141,7 +141,7 @@
                 <constraint firstItem="OHp-r4-qx8" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" constant="8" id="Wcw-Ve-YoB"/>
                 <constraint firstItem="nHa-L1-U1o" firstAttribute="top" secondItem="OHp-r4-qx8" secondAttribute="bottom" constant="8" id="XcH-qr-mPI"/>
                 <constraint firstAttribute="trailing" secondItem="bTC-6H-Th7" secondAttribute="trailing" constant="42" id="Xos-KT-vRs"/>
-                <constraint firstItem="68S-u0-6uE" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="20" id="ZIO-eM-3KF"/>
+                <constraint firstItem="68S-u0-6uE" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="12" id="ZIO-eM-3KF"/>
                 <constraint firstItem="OHp-r4-qx8" firstAttribute="top" secondItem="R8l-1O-grr" secondAttribute="bottom" constant="7" id="aDg-vg-Hdp"/>
                 <constraint firstAttribute="trailing" secondItem="Wpt-I1-iGe" secondAttribute="trailing" constant="8" id="bWy-k2-sYp"/>
                 <constraint firstItem="nHS-Xu-vyU" firstAttribute="leading" secondItem="nHa-L1-U1o" secondAttribute="trailing" constant="8" id="c1T-hd-TZX"/>

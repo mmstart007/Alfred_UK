@@ -676,49 +676,49 @@ Parse.Cloud.afterSave("RideRequest", function(request) {
     
     request.object.get("requestedBy").fetch({
     
-    success: function(user) {
+    	success: function(user) {
                                             
-    request.object.get("driver").fetch({
+    		request.object.get("driver").fetch({
     
-    success: function(driver) {
+    			success: function(driver) {
     
-    userName = user.get("FirstName");
-    driverName = driver.get("FirstName");
-                                       
-    console.log("RideRequest afterSave from " + userName + " to " + driverName);
-                      
-    if (!request.object.existed()) {
-        //the request is new, send push to the driver
-        var pushQuery = new Parse.Query(Parse.Installation);
-        pushQuery.equalTo("user", request.object.get('driver'));
+    				userName = user.get("FirstName");
+				    driverName = driver.get("FirstName");
+				                                       
+				    console.log("RideRequest afterSave from " + userName + " to " + driverName);
+				                      
+				    if (!request.object.existed()) {
+				        //the request is new, send push to the driver
+				        var pushQuery = new Parse.Query(Parse.Installation);
+				        pushQuery.equalTo("user", request.object.get('driver'));
+				 
+				        Parse.Push.send({
+				            where: pushQuery,
+				            data: {
+				                alert: "Hello " + driverName + ", Do you want to take this ride?",
+				                sound: "default",
+				                badge: "Increment",
+				                key: "RIDE_REQUEST",
+				                "rid": request.object.id,
+				                "seats": request.object.get("seats")
+				            }
+				        }, {
+				            useMasterKey: true,
+				            success: function() {
+				                response.success();
+				            },
+				            error: function(error) {
+				                response.error(error);
+				            }
+				        });
  
-        Parse.Push.send({
-            where: pushQuery,
-            data: {
-                alert: "Hello " + driverName + ", do you want to take this ride?",
-                sound: "default",
-                badge: "Increment",
-                key: "RIDE_REQUEST",
-                "rid": request.object.id,
-                "seats": request.object.get("seats")
-            }
-        }, {
-            useMasterKey: true,
-            success: function() {
-                response.success();
-            },
-            error: function(error) {
-                response.error(error);
-            }
-        });
- 
-    }
+    				}
                                        
-    } // success: function(driver)
+    			} // success: function(driver)
                                        
-    }); // request.object.get("driver").fetch
+    		}); // request.object.get("driver").fetch
     
-    } // success: function(user)
+    	} // success: function(user)
 
     }); // request.object.get("requestedBy").fetch
  

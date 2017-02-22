@@ -113,6 +113,21 @@
     [PFUser logInWithUsernameInBackground:email    password:pass
                                     block:^(PFUser *user, NSError *error) {
                                         if (user) {
+                                            PFQuery *query = [PFQuery queryWithClassName:@"UserLocation"];
+                                            [query whereKey:@"user" equalTo:user];
+                                            [query countObjectsInBackgroundWithBlock:^(int number, NSError * _Nullable error) {
+                                                if (number > 0) {
+                                                    
+                                                } else {
+                                                    PFObject *location = [PFObject objectWithClassName:@"UserLocation"];
+                                                    location[@"location"] = [PFGeoPoint geoPointWithLatitude:0 longitude:0];
+                                                    location[@"user"] = user;
+                                                    
+                                                    [location saveInBackground];
+                                                }
+                                            }];
+//                                            [user saveInBackground];
+
                                             // Do stuff after successful login.
                                             NSLog(@"Logged in sucessfully.");
                                             PFInstallation *installation = [PFInstallation currentInstallation];
@@ -159,7 +174,6 @@
 
 #pragma  mark - social logins
 -(IBAction)loginWithFacebook:(id)sender{
-
     
     NSLog(@"Log with facebook");
    
