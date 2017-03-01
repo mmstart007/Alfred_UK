@@ -11,6 +11,7 @@
 @implementation MyWalletRedeemBottomTableViewCell
 @synthesize redeemButton;
 - (void)awakeFromNib {
+    [super awakeFromNib];
     [[redeemButton layer] setBorderWidth:1.0f];
     [[redeemButton layer] setBorderColor:[UIColor blackColor].CGColor];
     

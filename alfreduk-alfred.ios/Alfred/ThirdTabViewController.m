@@ -90,7 +90,7 @@
 }
 -(UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     
-    long row = indexPath.row;
+    //long row = indexPath.row;
     PFObject *message = messageData[indexPath.row];
     
     
@@ -105,7 +105,7 @@
         
         
         
-        BOOL driver= [message[@"driverMessage"] boolValue];
+        //BOOL driver= [message[@"driverMessage"] boolValue];
         int seats = [message[@"seats"] intValue];
         
         //    int driver = [messageDict[@"driver"] intValue];
@@ -189,8 +189,8 @@
         
         PFObject *message = messageData[indexPath.row];
         
-        BOOL driver= [message[@"driverMessage"] boolValue];
-        int seats = [message[@"seats"] integerValue];
+        //BOOL driver= [message[@"driverMessage"] boolValue];
+        int seats = (int)[message[@"seats"] integerValue];
         
         //    int driver = [messageDict[@"driver"] intValue];
         NSString* dropAddress = message[@"dropoffAddress"];

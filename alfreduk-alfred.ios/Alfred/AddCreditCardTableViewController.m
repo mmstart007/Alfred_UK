@@ -202,7 +202,7 @@
     [self.errorLabel setText:@""];
     NSLog(@"Adding card");
     //check field details
-    NSLog(self.cvvTextField.text);
+    NSLog(@"%@", self.cvvTextField.text);
     
     [self.cardTextField resignFirstResponder];
     [self.expiryTextField resignFirstResponder];
@@ -237,7 +237,7 @@
     
     
     card.number = self.cardTextField.text ;
-    NSLog([NSString stringWithFormat:@"Card Number: %@",self.cardTextField.text ]);
+    NSLog(@"%@", [NSString stringWithFormat:@"Card Number: %@",self.cardTextField.text ]);
     
     NSString *expiry = self.expiryTextField.text;
     NSScanner *scanner = [NSScanner scannerWithString:expiry];
@@ -246,13 +246,13 @@
     NSInteger year ;
     [scanner scanString:@"/" intoString:nil];
     [scanner scanInteger:&year];
-    NSLog([NSString stringWithFormat:@"Expiry: %2ld/%2ld",(long)month,(long)year]);
+    NSLog(@"%@", [NSString stringWithFormat:@"Expiry: %2ld/%2ld",(long)month,(long)year]);
     
     card.expMonth = month;
     card.expYear = year;
     card.cvc = self.cvvTextField.text;
     
-    NSLog([NSString stringWithFormat:@"CVV: %@",self.cvvTextField.text]);
+    NSLog(@"%@", [NSString stringWithFormat:@"CVV: %@",self.cvvTextField.text]);
     
     
     //genera un token con el nuevo card y lo guarda
@@ -292,7 +292,7 @@
                         [[TWMessageBarManager sharedInstance] showMessageWithTitle:@"Ooops! "
                                                                        description:@"Can't add the card to your wallet"
                                                                               type:TWMessageBarMessageTypeError];
-                        NSLog(error.localizedDescription);
+                        NSLog(@"%@", error.localizedDescription);
                     }
                     
                 }];
@@ -346,9 +346,9 @@
 {
     
     
-    NSString * email= [PFUser currentUser][@"Email"];
-    NSString * fullName =[PFUser currentUser][@"FullName"];
-    NSString * objectId = [PFUser currentUser].objectId;
+    //NSString * email= [PFUser currentUser][@"Email"];
+    //NSString * fullName =[PFUser currentUser][@"FullName"];
+    //NSString * objectId = [PFUser currentUser].objectId;
     
     
     [PFCloud callFunctionInBackground:@"createCustomer"

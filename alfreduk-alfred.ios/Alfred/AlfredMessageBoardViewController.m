@@ -63,7 +63,7 @@
     CGRect  frame = self.view.bounds;
     CGFloat width = 60;
     CGFloat height = 60;
-    CGFloat padding = 20;
+    //CGFloat padding = 20;
     
     self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@""
                                                                             style:UIBarButtonItemStylePlain

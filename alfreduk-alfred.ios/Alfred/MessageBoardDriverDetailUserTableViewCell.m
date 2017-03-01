@@ -11,6 +11,7 @@
 @implementation MessageBoardDriverDetailUserTableViewCell
 
 - (void)awakeFromNib {
+    [super awakeFromNib];
     // Initialization code
 }
 

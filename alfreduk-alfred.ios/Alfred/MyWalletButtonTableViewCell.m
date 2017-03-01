@@ -11,6 +11,7 @@
 @implementation MyWalletButtonTableViewCell
 @synthesize myWalletButton;
 - (void)awakeFromNib {
+    [super awakeFromNib];
     [[myWalletButton layer] setBorderWidth:1.0f];
     [[myWalletButton layer] setBorderColor:[UIColor blackColor].CGColor];
     

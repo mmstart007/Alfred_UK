@@ -47,7 +47,7 @@
 }
 
 -(void)updateView{
-    UIView *view = self.view;
+    //UIView *view = self.view;
     PFUser *user = _rideRequest[@"requestedBy"];
     [self.riderNameLabel setText:user[@"FullName"] ];
     [self.riderNumberLabel setText:user[@"Phone"]];

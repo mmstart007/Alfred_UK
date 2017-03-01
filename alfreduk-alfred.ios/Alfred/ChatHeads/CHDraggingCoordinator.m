@@ -125,7 +125,7 @@ typedef enum {
 
 - (void)draggableViewTouched:(CHDraggableView *)view
 {
-    _state == CHInteractionStateNormal;
+    _state = CHInteractionStateNormal;
     
       //  _state = CHInteractionStateConversation;
        // [self _animateViewToConversationArea:view];

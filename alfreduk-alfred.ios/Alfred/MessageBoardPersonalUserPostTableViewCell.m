@@ -11,6 +11,7 @@
 @implementation MessageBoardPersonalUserPostTableViewCell
 
 - (void)awakeFromNib {
+    [super awakeFromNib];
     // Initialization code
 }
 

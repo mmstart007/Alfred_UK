@@ -30,7 +30,6 @@
     pickupAddress = @"Pickup Location";
     dropoffAddress = @"Dropoff Location";
 
-    
     id desiredColor = [UIColor whiteColor];
     
     self.tableView.backgroundColor = desiredColor;
@@ -50,8 +49,6 @@
                                                                          style:UIBarButtonItemStylePlain target:self action:@selector(revealToggle:)];
     
     UIBarButtonItem* rightButton = [[UIBarButtonItem alloc] initWithTitle:@"BACK" style:UIBarButtonItemStylePlain target:self action:@selector(backView:)];
-    
-    
     
     SWRevealViewController *revealViewController = self.revealViewController;
 
@@ -88,7 +85,7 @@
 
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
 
-    int index  = buttonIndex;
+    //int index  = buttonIndex;
     [self.navigationController popViewControllerAnimated:YES];
     
 

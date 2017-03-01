@@ -257,7 +257,7 @@
         [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
             if(error){
                 NSLog(@"Failed to register user");
-                NSLog([error localizedDescription]);
+                NSLog(@"%@", [error localizedDescription]);
             }else if(succeeded){
                 NSLog(@"User registered sucessfully");                      
             }

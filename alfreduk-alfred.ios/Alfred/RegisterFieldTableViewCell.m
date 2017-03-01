@@ -12,6 +12,7 @@
 @implementation RegisterFieldTableViewCell
 @synthesize registerTextField;
 - (void)awakeFromNib {
+    [super awakeFromNib];
     // Initialization code
     
     CALayer *bottomBorder = [CALayer layer];

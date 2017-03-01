@@ -11,6 +11,7 @@
 @implementation MyWalletBalanceTableViewCell
 
 - (void)awakeFromNib {
+    [super awakeFromNib];
     // Initialization code
 }
 

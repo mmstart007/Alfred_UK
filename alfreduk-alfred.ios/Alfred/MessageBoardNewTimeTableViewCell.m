@@ -11,10 +11,11 @@
 @implementation MessageBoardNewTimeTableViewCell
 @synthesize datePicker,dateString;
 - (void)awakeFromNib {
+    [super awakeFromNib];
     // Initialization code
     
-        datePicker.datePickerMode = UIDatePickerModeDateAndTime;
-        [datePicker addTarget:self action:@selector(datePickerValueChanged:) forControlEvents:UIControlEventValueChanged]; // method to respond to changes in the picker value
+    datePicker.datePickerMode = UIDatePickerModeDateAndTime;
+    [datePicker addTarget:self action:@selector(datePickerValueChanged:) forControlEvents:UIControlEventValueChanged]; // method to respond to changes in the picker value
     
     NSDate *selectedDate = datePicker.date;
     

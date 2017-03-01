@@ -67,11 +67,6 @@
 
 }
 
-
-
-
-
-
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
@@ -113,21 +108,9 @@
     [PFUser logInWithUsernameInBackground:email    password:pass
                                     block:^(PFUser *user, NSError *error) {
                                         if (user) {
-                                            PFQuery *query = [PFQuery queryWithClassName:@"UserLocation"];
-                                            [query whereKey:@"user" equalTo:user];
-                                            [query countObjectsInBackgroundWithBlock:^(int number, NSError * _Nullable error) {
-                                                if (number > 0) {
-                                                    
-                                                } else {
-                                                    PFObject *location = [PFObject objectWithClassName:@"UserLocation"];
-                                                    location[@"location"] = [PFGeoPoint geoPointWithLatitude:0 longitude:0];
-                                                    location[@"user"] = user;
-                                                    
-                                                    [location saveInBackground];
-                                                }
-                                            }];
-//                                            [user saveInBackground];
-
+                                            user[@"location"] = [PFGeoPoint geoPointWithLatitude:0 longitude:0];
+                                            user[@"locationAddress"] = @"Undetermined";
+                                            [user saveInBackground];
                                             // Do stuff after successful login.
                                             NSLog(@"Logged in sucessfully.");
                                             PFInstallation *installation = [PFInstallation currentInstallation];
@@ -191,19 +174,15 @@
 //            user[@"Rating"] = @0.0;
             user[@"Balance"] = @0.0;
             
-            
-            PFObject *location = [PFObject objectWithClassName:@"UserLocation"];
-            location[@"location"] = [PFGeoPoint geoPointWithLatitude:0 longitude:0];
-            location[@"user"] = user;
-            
-            [location saveInBackground];
+            user[@"location"] = [PFGeoPoint geoPointWithLatitude:0 longitude:0];
+            user[@"locationAddress"] = @"Undetermined";
             
             [user saveInBackground];
             [self _loadData];
             
             
             PFInstallation *inst = [PFInstallation currentInstallation];
-            PFUser* current = [PFUser currentUser];
+            //PFUser* current = [PFUser currentUser];
             inst[@"user"] = [PFUser currentUser];
             [inst saveInBackground];
           
@@ -215,6 +194,9 @@
             
         } else {
             NSLog(@"User logged in through Facebook!");
+            
+            user[@"location"] = [PFGeoPoint geoPointWithLatitude:0 longitude:0];
+            user[@"locationAddress"] = @"Undetermined";
             
             [user saveInBackground];
             // [self _loadData];

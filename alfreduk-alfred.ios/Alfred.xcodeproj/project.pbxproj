@@ -4459,7 +4459,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.alfredridesharing.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "8fd8b4b6-20fe-4c8e-8746-37bfdd0ef904";
+				PROVISIONING_PROFILE = "5e2c3893-355d-4413-b8b4-ab1d01f6a1b1";
 				PROVISIONING_PROFILE_SPECIFIER = "Piao Alfred Dev";
 				SWIFT_OBJC_BRIDGING_HEADER = "Alfred/Alfred-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -4496,7 +4496,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.alfredridesharing.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "8fd8b4b6-20fe-4c8e-8746-37bfdd0ef904";
+				PROVISIONING_PROFILE = "5e2c3893-355d-4413-b8b4-ab1d01f6a1b1";
 				PROVISIONING_PROFILE_SPECIFIER = "Piao Alfred Dev";
 				SWIFT_OBJC_BRIDGING_HEADER = "Alfred/Alfred-Bridging-Header.h";
 				SWIFT_VERSION = 3.0;

@@ -11,6 +11,7 @@
 @implementation MessageBoardDriverJoinSeatsTableViewCell
 
 - (void)awakeFromNib {
+    [super awakeFromNib];
     CGFloat widFloat = 0;
     
     if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone ){
@@ -30,7 +31,6 @@
         } else {
         }
     }
-    
     
     UIView *bottomLineView = [[UIView alloc] initWithFrame:CGRectMake(0.0f, self.seatsTextField.bounds.size.height-2, self.seatsTextField.bounds.size.width, 0.8f)];
     bottomLineView.backgroundColor = [UIColor grayColor];

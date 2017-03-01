@@ -37,7 +37,6 @@
     UIButton * issueButton;
     UIButton * aboutButton;
     UIButton *feedbackButton;
-    PFObject *_driverStatus;
     PFUser *_currentUser;
     
 }
@@ -52,7 +51,6 @@
     [super viewDidLoad];
     
     _currentUser = [PFUser currentUser];
-    _driverStatus = [PFUser currentUser][@"driverStatus"];
     
     storyboardType = @"Main";
     
@@ -477,86 +475,42 @@
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     
-    int section  = indexPath.section;
-    int row = indexPath.row;
+    //int section  = indexPath.section;
+    //int row = indexPath.row;
     
 }
 
 -(void)driverSwitch:(id)sender{
-    
-    
-    
+
     [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"firstLogin"];
-    
-    
-    
+
     if (self.driverSwitch.on) {
         
-        [PFUser currentUser][@"UserMode"] = @NO;
+        _currentUser[@"UserMode"] = @NO;
+        
         NSNotificationCenter *notificationCenter =[NSNotificationCenter defaultCenter];
         
         [notificationCenter postNotificationName:@"didRequestForStoppingAllMappingServices" object:nil];
-        
-        
-        
+
         [HUD showUIBlockingIndicatorWithText:@"Turning on..."];
-        [[PFUser currentUser] saveInBackgroundWithBlock:^(BOOL suceed, NSError *error){
+        [_currentUser saveInBackgroundWithBlock:^(BOOL suceed, NSError *error){
             
-            
-            if(_driverStatus == nil){
-                //not driver status yet, just create it
+            [HUD hideUIBlockingIndicator];
+            if (suceed) {
+                [self homeButton:nil];
+            } else {
                 
-                PFObject *driverStatus = [PFObject objectWithClassName:@"DriverStatus"];
-                driverStatus[@"available"] = @NO; //not available until fix location, and save settings
-                driverStatus[@"active"] = @NO;
-                driverStatus[@"inride"] = @NO;
-                driverStatus[@"numberOfSeats"] = @4;
-                driverStatus[@"ladiesOnly"] = @NO;
-                driverStatus[@"pricePerSeat"] = [NSNumber numberWithDouble:2.0];
-                driverStatus[@"user"] = [PFUser currentUser];
-                
-                
-                
-                [driverStatus saveInBackgroundWithBlock:^(BOOL succeeded, NSError * _Nullable error) {
-                    if(succeeded){
-                        
-                        
-                        _currentUser[@"driverStatus"] = driverStatus;
-                        [_currentUser saveInBackgroundWithBlock:^(BOOL succeeded, NSError * _Nullable error) {
-                            assert(succeeded);
-                        }];
-                        
-                        [HUD hideUIBlockingIndicator];
-                        [self homeButton:sender];
-                    }
-                }];
-                
-                
-                
-            }else{
-                
-                
-                [_driverStatus fetchIfNeededInBackgroundWithBlock:^(PFObject * _Nullable object, NSError * _Nullable error) {
-                    if(!error){
-                        
-                        //now show correct map
-                        [self homeButton:nil];
-                        [HUD hideUIBlockingIndicator];
-                        
-                        
-                    }else{
-                        
-                        assert(0);
-                        
-                    }
-                }];
-                
+                self.driverSwitch.on = NO;
+                _currentUser[@"UserMode"] = @YES;
+                [self.revealViewController revealToggleAnimated:YES];
+                MDSnackbar *snackbar = [[MDSnackbar alloc] initWithText: @"Failed to turn on driver mode" actionTitle:@""];
+                snackbar.multiline = YES;
+                [snackbar show];
             }
         }]; //end of save user in background
         
-    }else  {
-        
-        
+    } else {
+
         _currentUser[@"UserMode"] = @YES;
         
         [HUD showUIBlockingIndicatorWithText:@"Turning off..."];
@@ -566,12 +520,12 @@
             if(suceed){
                 [self homeButton:nil];
 
-            }else{
+            } else {
                 
                 self.driverSwitch.on = YES;
                 _currentUser[@"UserMode"] = @NO;
                 [self.revealViewController revealToggleAnimated:YES];
-                MDSnackbar *snackbar = [[MDSnackbar alloc] initWithText: @"Failed to turn off driver mode" actionTitle:nil];
+                MDSnackbar *snackbar = [[MDSnackbar alloc] initWithText: @"Failed to turn off driver mode" actionTitle:@""];
                 snackbar.multiline = YES;
                 [snackbar show];
             }
@@ -581,10 +535,8 @@
     }
     
     [self.tableView reloadData];
-    
-    
-    
 }
+
 //MAPS button pressed
 -(void)homeButton:(id)sender{
     
@@ -615,9 +567,7 @@
             [revealController revealToggleAnimated:YES];
             
         }
-        
-        
-        
+
     }
     else{
         //driver mode
@@ -647,13 +597,7 @@
         
     }
     
-    
 }
-
-
-
-
-
 
 -(void)messageButton:(id)sender{
     SWRevealViewController *revealController = [self revealViewController];

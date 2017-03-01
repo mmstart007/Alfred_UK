@@ -16,7 +16,8 @@
 @property (weak, nonatomic) IBOutlet UISwitch *ladiesOnly;
 
 
-@property PFObject * driverStatus;
+@property PFGeoPoint *destination;
+@property NSString *destinationAddress;
 
 
 @end

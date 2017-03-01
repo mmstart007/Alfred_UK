@@ -107,7 +107,7 @@
 }
 
 - (void) setNumberOfBounces:(NSUInteger)newNumberOfBounces {
-	[super setValue:[NSNumber numberWithUnsignedInt:newNumberOfBounces] forKey:@"numBounces"];
+	[super setValue:[NSNumber numberWithUnsignedInt: (int)newNumberOfBounces] forKey:@"numBounces"];
 	[self createValueArray];
 }
 
@@ -334,7 +334,7 @@ static CGPathRef createPathFromXYValues(NSArray *xValues, NSArray *yValues) {
 	if (startValue == endValue) {
 		alpha = log2f(0.1f)/steps;
 	} else {
-		alpha = log2f(0.1f/fabsf(endValue - startValue))/steps;
+		alpha = log2f(0.1f/fabs(endValue - startValue))/steps;
 	}
 	if (alpha > 0) {
 		alpha = -1.0f*alpha;
@@ -364,7 +364,7 @@ static CGPathRef createPathFromXYValues(NSArray *xValues, NSArray *yValues) {
 		coefficient =  (startValue - endValue);
 
 		if (!self.shouldOvershoot) {
-			oscillationComponent =  fabsf(oscillationComponent);
+			oscillationComponent =  fabs(oscillationComponent);
 		}
 		
 		value = coefficient * pow(2.71, alpha*t) * oscillationComponent + endValue;

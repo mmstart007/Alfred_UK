@@ -50,8 +50,8 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 
    
-    _rideJoinCount =(_rideJoinRequest!= nil)? _rideJoinRequest.count :0;
-    _rideTakeCount = (_rideTakeRequest!= nil)? _rideTakeRequest.count:0;
+    _rideJoinCount =(_rideJoinRequest!= nil)? (int)_rideJoinRequest.count :0;
+    _rideTakeCount = (_rideTakeRequest!= nil)? (int)_rideTakeRequest.count:0;
     return _rideJoinCount + _rideTakeCount;
     //     return (_userBoardMessages!= nil)? _userBoardMessages.count : 0;
     
@@ -62,7 +62,7 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 
-        int row = indexPath.row;
+        int row = (int)indexPath.row;
         if(row < _rideJoinCount){
     
     
@@ -78,7 +78,7 @@
         
         
         UILabel *nameLabel = [cell viewWithTag:4];
-        UILabel *ratingLabel = [cell viewWithTag:5];
+        //UILabel *ratingLabel = [cell viewWithTag:5];
         UILabel *seatsLabel = [cell viewWithTag:7];
         PFObject *rideJoinRequest = [_rideJoinRequest objectAtIndex:indexPath.row];
         
@@ -151,7 +151,7 @@
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
 
     NSLog(@"Tapped request");
-    int row = indexPath.row;
+    int row = (int)indexPath.row;
     if(row < _rideJoinCount){
         //the user wants to join a ride request
         
@@ -161,18 +161,12 @@
     }else{
         row = row - _rideJoinCount;
         //the driver wants to join a ride request
-        PFObject *request = _rideTakeRequest;
-        double price = [request[@"pricePerSeat"] doubleValue];
+        //PFObject *request = _rideTakeRequest;
+        //double price = [request[@"pricePerSeat"] doubleValue];
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"" message:@"Hello, I am available to do this travel in the selected date, would you like me to be your driver in this journey?" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Accept",@"Deny", nil];
         [alert show];
         
-        
-        
-        
-        
     }
-    
-    
 
 }
 

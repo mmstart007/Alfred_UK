@@ -11,6 +11,7 @@
 @implementation LoginFieldTableViewCell
 @synthesize loginTextField;
 - (void)awakeFromNib {
+    [super awakeFromNib];
     CALayer *bottomBorder = [CALayer layer];
 
     if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone ){

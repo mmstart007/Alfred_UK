@@ -41,7 +41,7 @@
     AddBalanceView * view =(AddBalanceView*) [nib objectAtIndex:0];
     CGRect screenRect = [[UIScreen mainScreen] bounds];
     CGFloat screenWidth = screenRect.size.width;
-    CGFloat screenHeight = screenRect.size.height;
+    //CGFloat screenHeight = screenRect.size.height;
     CGRect viewFrame = view.frame;
     viewFrame.size.width = screenWidth;
     view.frame =  viewFrame;
@@ -228,8 +228,8 @@
 
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
 
-    int section  = indexPath.section;
-    int row = indexPath.row;
+    //int section  = indexPath.section;
+    int row = (int)indexPath.row;
     
     if(indexPath.section == 0){
         

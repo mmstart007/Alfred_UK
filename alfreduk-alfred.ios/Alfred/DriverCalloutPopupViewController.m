@@ -14,11 +14,10 @@
 
 @interface DriverCalloutPopupViewController (){
 
-    
-    
-    CLLocationCoordinate2D  pickupCoordinate;
-    CLLocationCoordinate2D dropoffCoordinate;
+    CLLocationCoordinate2D  pickupCoord;
+    CLLocationCoordinate2D dropoffCoord;
     MKRoute *routeDetails;
+    
 }
 
 @end
@@ -27,10 +26,8 @@
 
 
 @synthesize driverRating,driverProfilePic,driverMobile,driverName,messageBoardId;
-
 @synthesize profileNameLabel;
 @synthesize seatsSelectView;
-
 @synthesize availbleSeats;
 @synthesize pricePerSeatLabel;
 @synthesize cellPhoneLabel;
@@ -44,85 +41,56 @@
     
     [super viewDidLoad];
     
-    
-    PFObject *user = driverLocation[@"user"];
-    
-    PFObject *driverStatus =user[@"driverStatus"];
-    
-    PFObject *driverRating = user[@"driverRating"];
-    
-    self.seatsSelectView.maximumValue = [driverStatus[@"numberOfSeats"] doubleValue];;
-
-    self.ladiesOnlyLabel.hidden = ![driverStatus[@"ladiesOnly"] boolValue ];
-    
-    self.ratingView.enabled = NO;
-
-    
+    PFObject *user = driverLocation[@"driver"];
+    PFObject *driRating = user[@"driverRating"];
+    self.seatsSelectView.maximumValue = [driverLocation[@"availableSeats"] doubleValue];;
     self.seatsSelectView.minimumValue = 1;
-    
-    [self.destinationAddressLabel setText: driverStatus[@"destinationAddress"]];
+    self.ladiesOnlyLabel.hidden = ![driverLocation[@"ladiesOnly"] boolValue];
+    [self.destinationAddressLabel setText: driverLocation[@"destinationAddress"]];
+    [self.profileNameLabel setText: user[@"FullName"]];
+    self.cellPhoneLabel.text = [NSString stringWithFormat:@"Cell: %@",user[@"Phone"]];
+    self.pricePerSeatLabel.text = [NSString stringWithFormat:@"%3.1lf" , [driverLocation[@"pricePerSeat"]doubleValue] / 100];
 
-    [self.profileNameLabel setText: user[@"FullName"] ]
-    ;
-    self.cellPhoneLabel.text = [NSString stringWithFormat:@"Cell: %@",user[@"PhoneNumber"]];
-    
-    self.pricePerSeatLabel.text = [NSString stringWithFormat:@"%3.1lf" , [driverStatus[@"pricePerSeat"]doubleValue]];
-
-
-
-    [self.ratingView setValue: [driverRating[@"rating"] doubleValue] ];
+    self.ratingView.userInteractionEnabled = NO;
+    [self.ratingView setValue: [driRating[@"rating"] doubleValue]];
     
     if (![profilePic isKindOfClass:[NSNull class]]) {
-        
-        
         [profilePic sd_setImageWithURL:[NSURL URLWithString:user[@"ProfilePicUrl"]] placeholderImage:[UIImage imageNamed:@"blank profile"]];
     }
 
-    
-    profilePic.layer.cornerRadius = profilePic.frame.size.height /2;
+    profilePic.layer.cornerRadius = profilePic.frame.size.height / 2;
     profilePic.layer.masksToBounds = YES;
     profilePic.layer.borderWidth = 0;
     
-    pickupCoordinate.latitude = [driverLocation[@"location"] latitude];
-    
-    pickupCoordinate.longitude = [driverLocation[@"location"] longitude];
-    dropoffCoordinate.latitude = [driverStatus[@"destination"] latitude];
-    dropoffCoordinate.longitude = [driverStatus[@"destination"] longitude];
-    self.mapView.delegate=self;
+    pickupCoord.latitude = [user[@"location"] latitude];
+    pickupCoord.longitude = [user[@"location"] longitude];
+    dropoffCoord.latitude = [driverLocation[@"destination"] latitude];
+    dropoffCoord.longitude = [driverLocation[@"destination"] longitude];
+    self.mapView.delegate = self;
     [self.mapView setRotateEnabled:NO];
-    
 
     [self.mapView setShowsUserLocation:YES];
-     CLLocationCoordinate2D coord = mapView.userLocation.location.coordinate;
-     MKCoordinateRegion initialRegion = MKCoordinateRegionMakeWithDistance(coord, 1000.0, 1000.0);
-     [mapView setRegion:initialRegion animated:YES];
+    CLLocationCoordinate2D coord = mapView.userLocation.location.coordinate;
+    MKCoordinateRegion initialRegion = MKCoordinateRegionMakeWithDistance(coord, 1000.0, 1000.0);
+    [mapView setRegion:initialRegion animated:YES];
     
-
-    [self loadMapWithPickup:pickupCoordinate dropOff:dropoffCoordinate];
-
-    
-
+    [self loadMapWithPickup:pickupCoord dropOff:dropoffCoord];
 }
+
 -(void)loadMapWithPickup:( CLLocationCoordinate2D)pickupCoordinate dropOff:(CLLocationCoordinate2D)dropoffCoordinate{
-    
-  
-    
     
     PickupAnnotation *pickupAnnotation  = [[PickupAnnotation alloc] initiWithTitle:@"" Location:pickupCoordinate];
     
     DropoffAnnotation *dropoffAnnotation = [[DropoffAnnotation alloc] initiWithTitle:@"" Location:dropoffCoordinate];
     
-    [  self.mapView addAnnotation:pickupAnnotation];
+    [self.mapView addAnnotation:pickupAnnotation];
     [self.mapView addAnnotation:dropoffAnnotation];
-    
     
     [self traceRouteWithStartingCoordinates:pickupCoordinate end:dropoffCoordinate];
 
 }
 
 -(void)traceRouteWithStartingCoordinates: (CLLocationCoordinate2D)startCoordinate end:(CLLocationCoordinate2D) endCoordinate {
-    
-    
     
     MKDirectionsRequest *directionsRequest = [[MKDirectionsRequest alloc] init];
     
@@ -134,8 +102,6 @@
     directionsRequest.transportType = MKDirectionsTransportTypeAutomobile;
     
     MKDirections *directions = [[MKDirections alloc] initWithRequest:directionsRequest];
-    
-  
     
     [directions calculateDirectionsWithCompletionHandler:^(MKDirectionsResponse *response, NSError *error) {
         NSLog(@"Calculating directions completed");
@@ -154,30 +120,26 @@
             [self showRouteOnMap];
             
         }
- }];
-    
+    }];
 }
 
 
 -(void)showRouteOnMap{
     
+    CLLocationCoordinate2D southWest =  pickupCoord  ;
+    CLLocationCoordinate2D northEast = dropoffCoord;
     
-    CLLocationCoordinate2D southWest =  pickupCoordinate  ;
-    CLLocationCoordinate2D northEast = dropoffCoordinate;
+    southWest.latitude = MIN(southWest.latitude, pickupCoord.latitude);
+    southWest.longitude = MIN(southWest.longitude, pickupCoord.longitude);
     
-    southWest.latitude = MIN(southWest.latitude, pickupCoordinate.latitude);
-    southWest.longitude = MIN(southWest.longitude, pickupCoordinate.longitude);
-    
-    northEast.latitude = MAX(northEast.latitude, dropoffCoordinate.latitude);
-    northEast.longitude = MAX(northEast.longitude, dropoffCoordinate.longitude);
+    northEast.latitude = MAX(northEast.latitude, dropoffCoord.latitude);
+    northEast.longitude = MAX(northEast.longitude, dropoffCoord.longitude);
     
     CLLocation *locSouthWest = [[CLLocation alloc] initWithLatitude:southWest.latitude longitude:southWest.longitude];
     CLLocation *locNorthEast = [[CLLocation alloc] initWithLatitude:northEast.latitude longitude:northEast.longitude];
     
     // This is a diag distance (if you wanted tighter you could do NE-NW or NE-SE)
     CLLocationDistance meters = [locSouthWest distanceFromLocation:locNorthEast];
-    
-    
     
     MKCoordinateRegion regionRoute;
     regionRoute.center.latitude = (southWest.latitude + northEast.latitude) / 2.0;
@@ -198,11 +160,19 @@
     
     NSLog(@"Selected driver");
     NSAssert(self.seatsSelectView.value > 0, @"Seats can't be zero");
+    PFUser *selectedDriver = driverLocation[@"driver"];
+    PFGeoPoint *pickupLocation = [PFGeoPoint geoPointWithLatitude:pickupCoord.latitude longitude:pickupCoord.longitude];
+    PFGeoPoint *dropoffLocation = [PFGeoPoint geoPointWithLatitude:dropoffCoord.latitude longitude:dropoffCoord.longitude];
+    NSNumber *seats = [NSNumber numberWithDouble: self.seatsSelectView.value];
+    NSNumber *perSeatPrice = [NSNumber numberWithDouble: [driverLocation[@"pricePerSeat"] doubleValue]];
+    NSNumber *price = [NSNumber numberWithDouble: ([seats doubleValue] * [perSeatPrice doubleValue])];
     
-    NSArray* driverArr = @[ [driverLocation[@"user"] objectId], 
-                            [NSNumber numberWithDouble: self.seatsSelectView.value] // number of seats requested for ride
-                            ];
-    
+    NSArray* driverArr = @[selectedDriver,
+                           pickupLocation,
+                           dropoffLocation,
+                           seats,
+                           price
+                           ];
     
     [self dismissViewControllerAnimated:YES completion:^(){
     
@@ -234,9 +204,8 @@
 */
 
 - (IBAction)selectAlfred:(id)sender {
+    
     [self joinAlfred:sender];
-    
-    
     
 }
 

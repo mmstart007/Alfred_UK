@@ -40,7 +40,7 @@
     CGRect  frame = self.view.bounds;
     CGFloat width = 50;
     CGFloat height = 50;
-    CGFloat padding = 20;
+    //CGFloat padding = 20;
     
     MDButton *floatingButton = [[MDButton alloc] initWithFrame:CGRectMake(frame.size.width - 20 - width, frame.size.height - 100 - height, height, height) type:MDButtonTypeFloatingAction rippleColor:[UIColor clearColor]];
     

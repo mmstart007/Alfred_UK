@@ -69,7 +69,7 @@
     if(remoteNotification!= nil){
         //opening the app from a notification
         
-        NSString  *key = [remoteNotification objectForKey:@"key"];
+        //NSString  *key = [remoteNotification objectForKey:@"key"];
         
     }
     
@@ -231,7 +231,7 @@ return YES;
         NSLog(@"======================");
     }
     
-    int badgeNumber =[[UIApplication sharedApplication] applicationIconBadgeNumber];
+    //int badgeNumber =[[UIApplication sharedApplication] applicationIconBadgeNumber];
     
     // [[UINavigationBar appearance] setTintColor: [UIColor whiteColor]];
     

@@ -195,7 +195,7 @@
         //user data
         PFUser * user= selectedMessage[@"author"];
         assert(user != nil);
-        NSString* mobile = user[@"Phone"];
+        //NSString* mobile = user[@"Phone"];
         
 
         PFObject *driverRating = user[@"driverRating"];

@@ -94,7 +94,6 @@
     
     [self.delegate searchViewController:self didFinishedSearchWithPlacemark:placemark];
     
-    
     [self dismissViewControllerAnimated:YES completion:nil];
 
 }

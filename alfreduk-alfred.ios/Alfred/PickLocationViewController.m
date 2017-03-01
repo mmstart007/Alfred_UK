@@ -156,7 +156,7 @@
             
         }else{
            
-            NSLog([NSString stringWithFormat:@"setLocation error: %@", error ]);
+            NSLog(@"%@", [NSString stringWithFormat:@"setLocation error: %@", error ]);
             UIAlertView * locationErrorAlertView = [[UIAlertView alloc] initWithTitle:@"Location Error" message:@"Failed to set location" delegate:nil cancelButtonTitle:@"Try later" otherButtonTitles: nil, nil];
             [locationErrorAlertView show];
             

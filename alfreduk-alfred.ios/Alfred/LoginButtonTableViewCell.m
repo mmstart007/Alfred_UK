@@ -11,6 +11,7 @@
 @implementation LoginButtonTableViewCell
 
 - (void)awakeFromNib {
+    [super awakeFromNib];
     // Initialization code
     /*
     [[self.registerButton layer] setBorderWidth:1.0f];
@@ -19,8 +20,7 @@
     
     [[self.forgotPasswordButton layer] setBorderWidth:1.0f];
     [[self.forgotPasswordButton layer] setBorderColor:[UIColor blackColor].CGColor];
-    
-*/
+    */
     
 }
 

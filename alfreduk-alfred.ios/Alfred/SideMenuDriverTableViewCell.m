@@ -11,6 +11,7 @@
 @implementation SideMenuDriverTableViewCell
 
 - (void)awakeFromNib {
+    [super awakeFromNib];
     // Initialization code
 }
 

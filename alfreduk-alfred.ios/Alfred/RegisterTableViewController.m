@@ -466,20 +466,13 @@
             user[@"Rating"] = @0.0;
             user[@"Balance"] = @0.0;
             user[@"Email"] = emailLabel.text;
+            user[@"location"] = [PFGeoPoint geoPointWithLatitude:0 longitude:0];
+            user[@"locationAddress"] = @"Undetermined";
             
             
             [user signUpInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                 if (!error) {   // Hooray! Let them use the app now.
                     //generate wallet
-                    
-                    PFObject *location = [PFObject objectWithClassName:@"UserLocation"];
-                    location[@"location"] = [PFGeoPoint geoPointWithLatitude:0 longitude:0];
-                    location[@"user"] = [PFUser currentUser];
-                    [location saveInBackgroundWithBlock:^(BOOL succeed, NSError *error){
-                        
-                        NSLog(@"Location object added");
-                        
-                    }];
                     
                     PFObject *userRating  = [PFObject objectWithClassName:@"UserRating"];
                     userRating[@"rating"]= @0.0;
@@ -525,7 +518,7 @@
                         [[[UIAlertView alloc] initWithTitle:@"Registration failed" message:@"Check your network connection and try again." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
                     
                     }
-                    NSString *errorString = [error userInfo][@"error"];   // Show the errorString somewhere and let the user try again.
+                    //NSString *errorString = [error userInfo][@"error"];   // Show the errorString somewhere and let the user try again.
                     
                 }
                 [HUD hideUIBlockingIndicator];

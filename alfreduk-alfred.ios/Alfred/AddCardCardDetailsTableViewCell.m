@@ -11,6 +11,7 @@
 @implementation AddCardCardDetailsTableViewCell
 
 - (void)awakeFromNib {
+    [super awakeFromNib];
     // Initialization code
     self.cardNumberTextField.delegate = self;
     

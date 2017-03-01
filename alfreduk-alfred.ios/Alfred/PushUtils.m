@@ -29,7 +29,7 @@
     [push sendPushInBackgroundWithBlock:^(BOOL succeeded, NSError * _Nullable error) {
         if(error){
             NSLog(@"Failed to send push");
-            NSLog(error.localizedDescription);
+            NSLog(@"%@", error.localizedDescription);
             
         }else{
             NSLog(@"Push succeeded");

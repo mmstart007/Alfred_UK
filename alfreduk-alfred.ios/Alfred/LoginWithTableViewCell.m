@@ -11,6 +11,7 @@
 @implementation LoginWithTableViewCell
 
 - (void)awakeFromNib {
+    [super awakeFromNib];
     // Initialization code
 }
 

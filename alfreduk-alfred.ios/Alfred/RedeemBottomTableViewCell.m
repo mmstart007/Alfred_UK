@@ -12,6 +12,7 @@
 @implementation RedeemBottomTableViewCell
 @synthesize redeemButton;
 - (void)awakeFromNib {
+    [super awakeFromNib];
     // Initialization code
     [[redeemButton layer] setBorderWidth:1.0f];
     [[redeemButton layer] setBorderColor:[UIColor blackColor].CGColor];

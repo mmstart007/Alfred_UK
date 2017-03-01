@@ -296,7 +296,7 @@
 
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    static NSString *simpleTableIdentifier = @"ProfilePicTableViewCell";
+    //static NSString *simpleTableIdentifier = @"ProfilePicTableViewCell";
     UITableViewCell *cell;
   
     

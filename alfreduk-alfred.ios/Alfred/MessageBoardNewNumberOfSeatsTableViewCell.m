@@ -11,6 +11,7 @@
 @implementation MessageBoardNewNumberOfSeatsTableViewCell
 
 - (void)awakeFromNib {
+    [super awakeFromNib];
     CGFloat widFloat = 0;
     
     if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone ){

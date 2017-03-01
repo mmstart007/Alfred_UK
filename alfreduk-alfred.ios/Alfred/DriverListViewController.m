@@ -40,13 +40,7 @@
         self.tableView.hidden = NO;
     }
   
-    
-   // self.navigationItem.hidesBackButton = YES;
-//    self.navigationItem.rightBarButtonItem = [ [UIBarButtonItem alloc] initWithTitle:@"CANCEL" style:UIBarButtonItemStyleBordered target:self action:@selector(back)];
-//    
-    
     self.navigationController.navigationBar.translucent = NO;
-   
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForActiveDriverChosenForRide:) name:@"didRequestForActiveDriverChosenForRide" object:nil];
     
@@ -61,46 +55,38 @@
 
     //hide navigation bar at the top
     
- //   [self.navigationController.navigationBar setBackgroundImage:[UIImage new]
- //                                                 forBarMetrics:UIBarMetricsDefault];
-   // self.navigationController.navigationBar.shadowImage = [UIImage new];
-   // self.navigationController.navigationBar.translucent = YES;
-  //  self.navigationController.view.backgroundColor = [UIColor clearColor];
+//    [self.navigationController.navigationBar setBackgroundImage:[UIImage new]
+//                                                  forBarMetrics:UIBarMetricsDefault];
+//    self.navigationController.navigationBar.shadowImage = [UIImage new];
+//    self.navigationController.navigationBar.translucent = YES;
+//    self.navigationController.view.backgroundColor = [UIColor clearColor];
 //    self.navigationController.navigationBar.backgroundColor = [UIColor clearColor];
 
   
 }
 -(void)viewDidAppear:(BOOL)animated{
     
-    
-   
-
 }
-
-
 
 -(void)viewWillDisappear:(BOOL)animated{
     
-    }
+}
 
--(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
+-(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 
     return self.driverList.count;
 }
 
-
--(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+-(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 
     return 98;
 }
 
--(UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
+-(UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 
     static NSString * identifier = @"AlfredListTableViewCell";
     PFObject *driverLocation = driverList[indexPath.row];
-   
-    
-    
+
     AlfredListTableViewCell *cell = (AlfredListTableViewCell*)[tableView dequeueReusableCellWithIdentifier:identifier];
     if(cell == NULL){
         
@@ -109,25 +95,26 @@
        
     }
     cell.driverLocation = driverLocation;
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
     [cell updateData];
     
     return cell;
 
 }
--(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
-    [self showDriverCallout: indexPath.row];
+
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    [self showDriverCallout: (int)indexPath.row];
 
 }
 
--(void)showDriverCallout:(int)driverIndex{
+-(void)showDriverCallout:(int)driverIndex {
     selectedIndex = driverIndex;
-    
     
     [self performSegueWithIdentifier:@"DriverDetailsSegue" sender:self];
     
 }
 
--(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
+-(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
 
     if([[segue identifier] isEqualToString:@"DriverDetailsSegue"]){
         DriverCalloutPopupViewController *vc = (DriverCalloutPopupViewController*) segue.destinationViewController;
@@ -135,21 +122,10 @@
         
     }
 }
--(void)didRequestForActiveDriverChosenForRide:(NSNotification *)notification
-{
-    
-    
-    
-    //this array contains the following data
-    // DriverID
-    // RequestRideID
-    // MessageboardID
+-(void)didRequestForActiveDriverChosenForRide:(NSNotification *)notification {
     
     [self.navigationController popViewControllerAnimated:YES];
-    
-    
 }
-
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

@@ -90,7 +90,7 @@
 - (IBAction)requestAlfred:(id)sender {
     
     
-    NSNumber *driver = [NSNumber numberWithInt:driverID];
+    NSNumber *driver = [NSNumber numberWithInt: (int)driverID];
     NSLog(@"Driver ID: %@",driver);
 
     [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForInactiveDriverChosenForRide" object:@[driverID]];

@@ -11,6 +11,7 @@
 @implementation MessageBoardNewTitlesTableViewCell
 
 - (void)awakeFromNib {
+    [super awakeFromNib];
     // Initialization code
     CGFloat widFloat = 0;
     

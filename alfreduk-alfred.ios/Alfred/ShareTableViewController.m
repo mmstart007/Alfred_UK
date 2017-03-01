@@ -117,8 +117,7 @@
     
     
     NSString *userID = [[PFUser currentUser] objectId];
-    int length = [userID length];
-
+    int length = (int)[userID length];
 
     _promoCode = [userID stringByReplacingCharactersInRange:NSMakeRange(6, length - 6) withString:@""];
     _promoCode = [ _promoCode uppercaseString];

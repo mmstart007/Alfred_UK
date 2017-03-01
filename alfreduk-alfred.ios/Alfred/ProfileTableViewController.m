@@ -55,23 +55,14 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
  
-    NSUserDefaults* settings = [NSUserDefaults standardUserDefaults];
-   
- 
-    
-   
-    
-    
-    self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:nil action:nil];
-    
+    //NSUserDefaults* settings = [NSUserDefaults standardUserDefaults];
 
-    
+    self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:nil action:nil];
+
     [self.mailLabel setText: [PFUser currentUser ][@"email"]];
     [ self.phoneNumberLabel setText: [PFUser currentUser ][@"Phone"] ];
     [self.nameLabel setText:[PFUser currentUser] [@"FullName"]];
     
-    
-
 //    assert(email);
 //    assert(mobile);
 //    assert(name);
@@ -86,8 +77,6 @@
         query = [PFQuery queryWithClassName:@"DriverRating"];
     }
     [query whereKey:@"user" equalTo:[PFUser currentUser]];
-
-    
     
     [query getFirstObjectInBackgroundWithBlock:^(PFObject * _Nullable object, NSError * _Nullable error) {
         if(!error){
@@ -99,22 +88,15 @@
             NSLog(@"Failed to get user rating");
         }
     }];
-    
-    
-  
-
 
     self.tableView.delegate = self;
-
     
     UIImage *drawerImage = [[UIImage imageNamed:@"menu"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
     
     UIBarButtonItem *revealButtonItem = [[UIBarButtonItem alloc] initWithImage:drawerImage
                                                                          style:UIBarButtonItemStylePlain target:self action:@selector(revealToggle:)];
     
-    NSString *profilePicURL = [PFUser currentUser][@"ProfilePicUrl"];
-    
-    
+    //NSString *profilePicURL = [PFUser currentUser][@"ProfilePicUrl"];
     
     //load the image from the server
     [ self.profilePicImageView sd_setImageWithURL:[NSURL URLWithString:[PFUser currentUser][@"ProfilePicUrl"]] placeholderImage:[UIImage imageNamed:@"blank profile"] completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
@@ -162,7 +144,7 @@
     [ ridesQuery findObjectsInBackgroundWithBlock:^(NSArray * _Nullable objects, NSError * _Nullable error) {
         if(error == nil){
             NSLog(@"Found ride count properly");
-            _rideCount = objects.count;
+            _rideCount = (int)objects.count;
             if(_rideCount > 0){
                 //compute ride price
                 _ridePriceInCents = 0;

@@ -11,6 +11,7 @@
 @implementation SideProfileTableViewCell
 
 - (void)awakeFromNib {
+    [super awakeFromNib];
     // Initialization code
 }
 

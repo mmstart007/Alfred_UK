@@ -174,7 +174,7 @@
         PFUser *user = selectedMessage[@"author"];
         
         
-        NSString *mobile = user[@"Phone"];
+        //NSString *mobile = user[@"Phone"];
         
         double rating = [user[@"Rating"] doubleValue];
         ;

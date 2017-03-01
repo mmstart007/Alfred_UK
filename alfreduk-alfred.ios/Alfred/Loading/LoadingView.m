@@ -18,7 +18,6 @@
 
     BOOL _isRider;
     
-    PFObject *_driverStatus;
 }
 
 @end
@@ -26,11 +25,13 @@
 
 
 @implementation LoadingView
+
 -(void)viewDidLoad{
 
     [super viewDidLoad];
 
 }
+
 -(void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
     
@@ -41,6 +42,7 @@
         [self performSegueWithIdentifier:@"Login" sender:self];
     }
 }
+
 -(void)loadLoggedUser{
 
     PFUser * currentUser =  [PFUser currentUser];
@@ -51,80 +53,37 @@
         bool userMode = [currentUser[@"UserMode"] boolValue];
         if(userMode){
             [self loadRider];
-        }else{
-            
-            _driverStatus = currentUser[@"driverStatus"];
-            
-            [_driverStatus fetchIfNeededInBackgroundWithBlock:^(PFObject * _Nullable object, NSError * _Nullable error) {
-                _driverStatus = object;
-                
-                [self loadDriver];
-            }];
+        } else {
             
         }
-        
-        
     }];
-    
-    
-
-
 }
 
 -(void)loadRider{
     
     _isRider = YES;
-    
 
-    
-
-    
     UIStoryboard *storybaord = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     
-   RiderViewController *riderViewController = [storybaord instantiateViewControllerWithIdentifier:@"MainPageId"];
-    
-
-    
-   
+    RiderViewController *riderViewController = [storybaord instantiateViewControllerWithIdentifier:@"MainPageId"];
     
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:riderViewController];
     SideMenuTableViewController *menuViewController = [storybaord instantiateViewControllerWithIdentifier:@"MenuViewController"];
     
     SWRevealViewController *viewController = [[SWRevealViewController alloc] initWithRearViewController:menuViewController
-                                              
-                                              
                                                frontViewController:navigationController];
     
     [self presentViewController:viewController animated:YES completion:nil];
-    
-
-    
-
 }
 
 
 -(void)loadDriver{
-    
-    
     _isRider = NO;
-    
-    
     UIStoryboard *storybaord = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-    
     DriverViewController *driverViewController = [storybaord instantiateViewControllerWithIdentifier:@"DriverMainID"];
-    
-    
-    
-    driverViewController.driverStatus = _driverStatus;
-
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:driverViewController];
-    
-    
     SideMenuTableViewController *menuViewController = [storybaord instantiateViewControllerWithIdentifier:@"MenuViewController"];
-    
     SWRevealViewController *viewController = [[SWRevealViewController alloc] initWithRearViewController:menuViewController
-                                              
-                                              
                                                                                     frontViewController:navigationController];
     
     [self presentViewController:viewController animated:YES completion:nil];

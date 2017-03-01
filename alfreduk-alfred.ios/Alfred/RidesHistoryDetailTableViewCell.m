@@ -11,6 +11,7 @@
 @implementation RidesHistoryDetailTableViewCell
 
 - (void)awakeFromNib {
+    [super awakeFromNib];
     // Initialization code
 }
 

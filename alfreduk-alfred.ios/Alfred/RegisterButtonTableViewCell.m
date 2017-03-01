@@ -14,7 +14,7 @@
    // [[submitButton layer] setBorderWidth:1.0f];
    // [[submitButton layer] setBorderColor:[UIColor blackColor].CGColor];
     
-    
+    [super awakeFromNib];
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
