@@ -82,6 +82,7 @@
     
     
 }
+
 -(void)didRequestForRideRequestCancel:(NSNotification *)notification
 {
     //NSArray* requestArray = [notification object];
@@ -107,12 +108,10 @@
     [self dismissViewControllerAnimated:YES completion:nil];
 
     NSArray* boolDecision = [[NSArray alloc] initWithObjects:[NSNumber numberWithBool:isAccepted], nil];
-    
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForRideDecisionCloseView" object:boolDecision];
     if (openRatingView) {
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForOpenRatinView" object:nil];
-
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForOpenRatingView" object:nil];
+    } else {
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForRideDecisionCloseView" object:boolDecision];
     }
-
 }
 @end

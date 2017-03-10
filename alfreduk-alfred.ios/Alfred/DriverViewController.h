@@ -27,23 +27,27 @@
     BOOL isItRetrieval;
 
 }
-@property (weak, nonatomic) IBOutlet UIButton *startRideButton;
-@property (weak, nonatomic) IBOutlet MKMapView *mapView;
-@property (weak, nonatomic) IBOutlet UIButton *locationSearchButton;
-@property (weak, nonatomic) IBOutlet UILabel *locationLabel;
+
 @property (weak, nonatomic) IBOutlet HCSStarRatingView *ratingView;
+
 @property (weak, nonatomic) IBOutlet UIButton *dropOffButton;
-@property (weak, nonatomic) IBOutlet UIImageView *dropOffPinImage;
+@property (weak, nonatomic) IBOutlet UIButton *startRideButton;
 @property (weak, nonatomic) IBOutlet UIButton *cancelRideButton;
 @property (weak, nonatomic) IBOutlet UIButton *callButton;
-@property (weak, nonatomic) IBOutlet UIView *userView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *bottomLayoutConstrint;
-@property (weak, nonatomic) IBOutlet UIImageView *userProfilePic;
+@property (weak, nonatomic) IBOutlet UIButton *locationSearchButton;
+@property (weak, nonatomic) IBOutlet UIButton *endMessageBoardButton;
+
+@property (weak, nonatomic) IBOutlet UILabel *locationLabel;
 @property (weak, nonatomic) IBOutlet UILabel *userName;
 @property (weak, nonatomic) IBOutlet UILabel *userMobile;
-@property (weak, nonatomic) IBOutlet UIButton *endMessageBoardButton;
+
+@property (weak, nonatomic) IBOutlet UIImageView *dropOffPinImage;
+@property (weak, nonatomic) IBOutlet UIImageView *userProfilePic;
+@property (weak, nonatomic) IBOutlet UIView *userView;
 @property (weak, nonatomic) IBOutlet UIView *messageBoardUsersBGView;
-@property (weak, nonatomic) IBOutlet UILabel *userRating;
+
+@property (weak, nonatomic) IBOutlet MKMapView *mapView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *bottomLayoutConstrint;
 
 - (IBAction)startRideButtonTouchUpInside:(id)sender;
 - (IBAction)callUser:(id)sender;
@@ -54,14 +58,15 @@
 @property(strong,nonatomic) NSTimer *driverLocationTimer;
 
 @property(strong,nonatomic) DropoffAnnotation *dropOffAnnotation;
-@property(strong,nonatomic) NSString *dropOffAddress;
+@property(strong,nonatomic) RequestRidePopupViewController *requestRidePopupViewController;
+@property(strong,nonatomic) RideRequestDecisionViewController *requestRideDecisionPopupViewController;
 
-@property(strong,nonatomic) NSString* userPhone;
+@property(strong,nonatomic) NSString *dropOffAddress;
+@property(strong,nonatomic) NSString *userPhone;
+@property(strong,nonatomic) NSString *rideID;
 
 @property(strong,nonatomic) UIBarButtonItem *cancelButton;
-
 @property(strong,nonatomic) CLLocationManager *locationManager;
-
 @property(strong,nonatomic) MKRoute *routeDetails;
 
 @property(nonatomic) MKCoordinateRegion region;

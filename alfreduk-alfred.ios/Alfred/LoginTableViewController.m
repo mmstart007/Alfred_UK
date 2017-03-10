@@ -52,9 +52,9 @@
     
     self.progressIndicator.hidden = YES;
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForRegistration:) name:@"didRequestForRegistration" object:nil];
+    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForRegistration:) name:@"didRequestForRegistration" object:nil];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForPassword:) name:@"didRequestForPassword" object:nil];
+    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForPassword:) name:@"didRequestForPassword" object:nil];
     self.mailField.delegate = self;
     self.passwordField.delegate =self;
 
@@ -118,7 +118,6 @@
                                             
                                             [installation saveInBackground];
                                             
-                                            
                                             [self performSegueWithIdentifier:@"MainPagePush" sender:self];
                                             self.progressIndicator.hidden = YES;
                                             
@@ -166,12 +165,11 @@
             NSLog(@"Uh oh. The user cancelled the Facebook login.");
         } else if (user.isNew) {
             
-            
             NSLog(@"User signed up and logged in through Facebook!");
             
             user[@"UserMode"] = @YES;
             user[@"EnabledAsDriver"] = @NO;
-//            user[@"Rating"] = @0.0;
+            user[@"Rating"] = @0.0;
             user[@"Balance"] = @0.0;
             
             user[@"location"] = [PFGeoPoint geoPointWithLatitude:0 longitude:0];
@@ -179,18 +177,32 @@
             
             [user saveInBackground];
             [self _loadData];
-            
-            
+
+            PFObject *userRating  = [PFObject objectWithClassName:@"UserRating"];
+            userRating[@"rating"]= @0.0;
+            userRating[@"rideCount"] = @0;
+            userRating[@"user"]= user;
+            [userRating saveInBackgroundWithBlock:^(BOOL succeeded, NSError * _Nullable error) {
+                if(succeeded){
+                    user[@"userRating"] = userRating;
+                    [user saveEventually];
+                }
+            }];
+            PFObject *driverRating  = [PFObject objectWithClassName:@"DriverRating"];
+            driverRating[@"rating"]= @0.0;
+            driverRating[@"rideCount"] = @0;
+            driverRating[@"user"]= user;
+            [driverRating saveInBackgroundWithBlock:^(BOOL succeeded, NSError * _Nullable error) {
+                if(succeeded){
+                    user[@"driverRating"] = driverRating;
+                    [user saveEventually];
+                }
+            }];
+
             PFInstallation *inst = [PFInstallation currentInstallation];
             //PFUser* current = [PFUser currentUser];
             inst[@"user"] = [PFUser currentUser];
             [inst saveInBackground];
-          
-
-           
-            
-      
-            
             
         } else {
             NSLog(@"User logged in through Facebook!");
@@ -218,12 +230,9 @@
                     // There was a problem, check error.description
                 }
             }];
-            
-            
         }
         [HUD hideUIBlockingIndicator];
     }];
-    
 }
 
 
@@ -291,46 +300,25 @@
                 userProfile[@"Gender"] = genderString;  
             }
             
-            
-            
             NSString *email = userData[@"email"];
             if(email){
                 userProfile[@"email"] = email;
-                userProfile[@"Email"] = email;
-                
             }
-           
-           
-        
-            
-           userProfile[@"ProfilePicUrl"] =  [NSString stringWithFormat:@"https://graph.facebook.com/%@/picture?type=large&return_ssl_resources=1", facebookID];
-            
-
+            userProfile[@"ProfilePicUrl"] =  [NSString stringWithFormat:@"https://graph.facebook.com/%@/picture?type=large&return_ssl_resources=1", facebookID];
             [userProfile saveInBackgroundWithBlock:^(BOOL succeeded, NSError * _Nullable error) {
-                
-                            [self performSegueWithIdentifier:@"MainPagePush" sender:self];
-                
+                [self performSegueWithIdentifier:@"MainPagePush" sender:self];
             }];
-            
-            //[ self performSegueWithIdentifier:@"MissingFieldsModal" sender:self];
-            
         } else if ([[[[error userInfo] objectForKey:@"error"] objectForKey:@"type"]
                     isEqualToString: @"OAuthException"]) { // Since the request failed, we can check if it was due to an invalid session
             NSLog(@"The facebook session was invalidated");
-         
         } else {
             NSLog(@"Some other error: %@", error);
         }
     }];
 }
 
-
-
--(BOOL) NSStringIsValidEmail:(NSString *)checkString
-{
+-(BOOL) NSStringIsValidEmail:(NSString *)checkString {
     BOOL stricterFilter = NO; // Discussion http://blog.logichigh.com/2010/09/02/validating-an-e-mail-address/
-    
-    
     NSString *stricterFilterString = @"^[A-Z0-9a-z\\._%+-]+@([A-Za-z0-9-]+\\.)+[A-Za-z]{2,4}$";
     NSString *laxString = @"^.+@([A-Za-z0-9-]+\\.)+[A-Za-z]{2}[A-Za-z]*$";
     NSString *emailRegex = stricterFilter ? stricterFilterString : laxString;
@@ -338,16 +326,10 @@
     return [emailTest evaluateWithObject:checkString];
 }
 
-
-
-
-
-
 - (IBAction)register:(id)sender {
     
     // Show in popup
     KLCPopupLayout layout = KLCPopupLayoutMake(KLCPopupHorizontalLayoutCenter,KLCPopupVerticalLayoutCenter);
-    
     NSArray *nib = [[NSBundle mainBundle] loadNibNamed:@"RegistrationPopup" owner:self options:nil];
     RegisterPopupView * view =(RegisterPopupView*) [nib objectAtIndex:0];
     view.delegate = self;
@@ -361,14 +343,11 @@
                   dismissOnBackgroundTouch:NO
                      dismissOnContentTouch:NO];
     [popup showWithLayout:layout];
-    
-
-    
 }
+
 -(void)registrationSucessfullWithId:(NSString *)id{
 
     [popup dismissPresentingPopup];
-    
     [self performSegueWithIdentifier:@"MainPagePush" sender:self];
 }
 

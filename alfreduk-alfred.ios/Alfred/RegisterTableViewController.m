@@ -332,82 +332,59 @@
         validations = @"First Name must have at least 2 characters";
         [self.tableView reloadData];
         return NO;
-    }
-    
-    else if (![self checkAlphas:firstNameLabel.text]){
+    } else if (![self checkAlphas:firstNameLabel.text]){
         validations = @"First name contains illegal characters";
         [self.tableView reloadData];
 
         return NO;
-    }
-    
-    else if (lastNameLabel.text.length<2) {
+    } else if (lastNameLabel.text.length<2) {
         validations = @"Last Name must have atleast 2 characters";
         [self.tableView reloadData];
 
         return NO;
 
-    }
-    
-    
-    else if (![self checkAlphas:lastNameLabel.text]){
+    } else if (![self checkAlphas:lastNameLabel.text]){
         validations = @"Last name contains illegal characters";
         [self.tableView reloadData];
         
         return NO;
-    }
-    
-    
-    else if (phoneLabel.text.length<10||phoneLabel.text.length>15) {
+    } else if (phoneLabel.text.length<10||phoneLabel.text.length>15) {
         validations = @"Phone number must be between 10 and 15 numbers";
         [self.tableView reloadData];
 
         return NO;
 
-    }
-    else if (![self checkNumbers:phoneLabel.text]){
+    } else if (![self checkNumbers:phoneLabel.text]){
         validations = @"Phone number contains illegal characters";
         [self.tableView reloadData];
         
         return NO;
-    }
-    
-    else if (![self checkEmail:emailLabel.text]){
+    } else if (![self checkEmail:emailLabel.text]){
         validations = @"Please enter a valid email id";
         [self.tableView reloadData];
         
         return NO;
-    }
-    
-    else if (passwordLabel.text.length<5||retypePasswordLabel.text.length<5) {
+    } else if (passwordLabel.text.length<5||retypePasswordLabel.text.length<5) {
         validations = @"Password must have minimum 5 characters";
         [self.tableView reloadData];
 
         return NO;
-
-    }
-    else{
+    } else{
         validations = @"";
         [self.tableView reloadData];
-
-    return YES;
+        return YES;
     }
 }
 
 -(BOOL) isMailAvailable:(NSString*)email{
 
     PFQuery *query = [PFQuery queryWithClassName:@"User"];
-    [query whereKey:@"Email" equalTo:email];
-    
-
+    [query whereKey:@"email" equalTo:email];
     NSArray *objects = [query findObjects];
     return objects.count == 0;
 }
 
-
-
 -(void)subCheck{
-    
     
     if (firstNameLabel.text.length==0 ||
         lastNameLabel.text.length ==0 ||
@@ -415,37 +392,16 @@
         emailLabel.text.length==0     ||
         passwordLabel.text.length==0  ||
         retypePasswordLabel.text.length==0) {
-    
-        
-        
         NSString *messages = @"All the fields are required for registration.";
-        
-        
         validations = messages;
         [self.tableView reloadData];
-        
-    }
-    
-    
-    else if (![passwordLabel.text isEqualToString:retypePasswordLabel.text]){
-   
-        
-        
+    } else if (![passwordLabel.text isEqualToString:retypePasswordLabel.text]){
         NSString *messages = @"Password do not match.";
-        
-        
         validations = messages;
         [self.tableView reloadData];
-        
-
-    }
-    
-    else {
-        
-        
+    } else {
         
         if ([self checkBasicValidations]) {
-          
             [HUD showUIBlockingIndicatorWithText:@"Registering ..."];
             PFUser *user = [PFUser user];
             user.username = emailLabel.text;
@@ -455,9 +411,6 @@
             user[@"FullName"] =   [NSString stringWithFormat:@"%@ %@",
                                              [firstNameLabel.text capitalizedString],
                                              [lastNameLabel.text capitalizedString]];
-
-            
-            
             // other fields can be set just like with PFObject
             user[@"Phone"] = phoneLabel.text;
             user[@"PromoCode"] = @1234;
@@ -465,15 +418,14 @@
             user[@"EnabledAsDriver"] = @NO;
             user[@"Rating"] = @0.0;
             user[@"Balance"] = @0.0;
-            user[@"Email"] = emailLabel.text;
+            user[@"email"] = emailLabel.text;
             user[@"location"] = [PFGeoPoint geoPointWithLatitude:0 longitude:0];
             user[@"locationAddress"] = @"Undetermined";
             
-            
             [user signUpInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                [HUD hideUIBlockingIndicator];
                 if (!error) {   // Hooray! Let them use the app now.
                     //generate wallet
-                    
                     PFObject *userRating  = [PFObject objectWithClassName:@"UserRating"];
                     userRating[@"rating"]= @0.0;
                     userRating[@"rideCount"] = @0;
@@ -494,73 +446,41 @@
                             [user saveEventually];
                         }
                     }];
-                    
-                    
-                    
-                    
                     PFInstallation *installation = [PFInstallation currentInstallation];
                     installation[@"user"] = [PFUser currentUser];
-                    
                     [installation saveInBackground];
-                    
-                    
-                    //[self generateWallet];
                     [self performSegueWithIdentifier:@"ResendPassPush" sender:self];
-                    
                 } else {
-                    
                     if([error code] == kPFErrorUsernameTaken){
                         [[[UIAlertView alloc] initWithTitle:@"Registration failed" message:@"Email is already in use, try another mail or log in" delegate:nil cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil]show ];
                     
-                    }
-                    else if([error code] == kPFErrorConnectionFailed){
-                        
+                    } else if([error code] == kPFErrorConnectionFailed){
                         [[[UIAlertView alloc] initWithTitle:@"Registration failed" message:@"Check your network connection and try again." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
-                    
                     }
-                    //NSString *errorString = [error userInfo][@"error"];   // Show the errorString somewhere and let the user try again.
-                    
                 }
-                [HUD hideUIBlockingIndicator];
             }];
-            
-           
-            
-            
-            //generate promo code fron stripe
-            
-           
-            
-            //first check is user exist
         }
-}
+    }
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-    if ([[segue identifier] isEqualToString:@"ResendPassPush"])
-    {
-        
-        
+    if ([[segue identifier] isEqualToString:@"ResendPassPush"]) {
         ResendEmailViewController *detailViewController = [segue destinationViewController];
         detailViewController.firstName = [PFUser currentUser][@"FullName"];
         //this is email
-        detailViewController.userid =[PFUser currentUser][@"Email"];
-
+        detailViewController.userid =[PFUser currentUser][@"email"];
     }
 }
 
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     if ([indexPath section]==0) {
         if (indexPath.row==0) {
             return 10;
-        }
-        else
-        return 97;
-        
+        } else
+            return 97;
     }
     if ([indexPath section]==1) {
         return 98;
@@ -568,19 +488,15 @@
     if ([indexPath section]==2) {
        
         return 95;
-    }
-    else if ([indexPath section]==3){
+    } else if ([indexPath section]==3){
         if (indexPath.row==0) {
             return 90;
-        }
-        else if (indexPath.row==1){
+        } else if (indexPath.row==1){
             return 95;
-        }
-        else
+        } else
             return 90;
     }
     return 95;
-    
 }
 
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
@@ -589,9 +505,8 @@
             [txt resignFirstResponder];
         }
     }
-    
-    
 }
+
 -(BOOL)textFieldShouldEndEditing:(UITextField *)textField{
     [textField resignFirstResponder];
     return YES;

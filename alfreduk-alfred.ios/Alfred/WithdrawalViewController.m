@@ -46,24 +46,16 @@
     
     floatingButton.backgroundColor =  [UIColor colorWithRed:56.0f/255 green:169.0f/255 blue:180.0f/255 alpha:1.0];
     [floatingButton setImage:[UIImage imageNamed:@"withdrawal"] forState:UIControlStateNormal];
-    
-    
     [floatingButton addTarget:self action:@selector(requestWithdrawal:) forControlEvents:UIControlEventTouchUpInside];
       [self.view addSubview:floatingButton];
         _pendingWithdrawalAmmount = 0;
     [self getWithdrawalsList];
-    
-
-    
 }
 
 -(void)getWithdrawalsList{
 
-
     PFQuery * query = [PFQuery queryWithClassName:@"WithdrawalRequest"];
     [query whereKey:@"user" equalTo:[PFUser currentUser]];
-    
-    
     [query findObjectsInBackgroundWithBlock:^(NSArray * _Nullable objects, NSError * _Nullable error) {
         if(error == nil){
             _withdrawalsList = objects;
@@ -76,8 +68,6 @@
             }
         }
     }];
-    
-
 }
 
 
@@ -89,9 +79,7 @@
     UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:identifier];
     
     PFObject * request = _withdrawalsList[indexPath.row];
-    
     NSNumber * amount = request[@"amount"];
-    
     double amountInGBP =[ amount doubleValue] /100;
     UILabel *amountLabel = [cell viewWithTag:1];
     UILabel *dateLabel =[cell viewWithTag:2];
@@ -114,7 +102,6 @@
             
 }
 
-
 - (IBAction)requestWithdrawal:(id)sender {
     
     NSLog(@"Withdrawal request");
@@ -134,28 +121,25 @@
     _popup = [KLCPopup popupWithContentView:view];
     [_popup show];
 }
+
 -(void)withdrawalView:(UIView *)view didRequestWitdrawalWithAmount:(NSNumber *)amount{
 
     [_popup dismiss:YES];
-
     PFObject *withdrawallRequest = [PFObject objectWithClassName:@"WithdrawalRequest"];
     withdrawallRequest[@"user"] = [PFUser currentUser];
     double amountInCents = [amount doubleValue] * 100;
-    
     double balanceInCents = [[PFUser currentUser][@"Balance"] doubleValue];
-    
     double amountThatCanWithdraw = balanceInCents - _pendingWithdrawalAmmount;
     double requestedWithdrawalAmount = [amount doubleValue] * 100;
     
     if(requestedWithdrawalAmount > amountThatCanWithdraw){
        [[ [UIAlertView alloc] initWithTitle:@"Oops!" message:@"The amount that you requested exceed your current balance plus pending withdrawals" delegate:nil cancelButtonTitle:@"Accept" otherButtonTitles:nil  , nil] show ];
     
-    }else{
+    } else {
     
         withdrawallRequest[@"amount"] = [NSNumber numberWithDouble:amountInCents];
         withdrawallRequest[@"date"] = [NSDate dateWithTimeIntervalSinceNow:0];
         withdrawallRequest[@"status"] = @"Pending";
-        
         
         [HUD showUIBlockingIndicatorWithText:@"Requesting"];
         [withdrawallRequest saveInBackgroundWithBlock:^(BOOL succeeded, NSError * _Nullable error) {

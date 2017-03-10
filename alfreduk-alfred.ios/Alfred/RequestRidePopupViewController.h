@@ -23,7 +23,6 @@
 @property(strong,nonatomic)NSString* userId;
 @property(strong,nonatomic)NSString* requestId;
 @property(strong,nonatomic)NSString* riderName;
-@property(nonatomic)BOOL isActive;
 @property(nonatomic,strong)NSString* requestRideId;
 @property PFObject * rideRequest;
 @property(nonatomic,strong)NSDictionary* rideRequestDict;

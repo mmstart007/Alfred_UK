@@ -32,6 +32,7 @@
     BOOL isChooseOnMap;
     BOOL isDriverSelected;
     BOOL isActiveDriverChosen;
+    BOOL ifTimerShootsCancel;
     NSString *tempRequestID;
 }
 @property (weak, nonatomic) IBOutlet UIView *driverView;
@@ -50,6 +51,7 @@
 @property (weak, nonatomic) IBOutlet UIImageView *dropofffIcon;
 @property (weak, nonatomic) IBOutlet UIImageView *requestImageView;
 @property (weak, nonatomic) IBOutlet UILabel *requestLabel;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *dropOffBottomContraint;
 
 - (IBAction)callDriver:(id)sender;
 - (IBAction)requestRide:(id)sender;
@@ -57,7 +59,7 @@
 - (IBAction)pickupAction:(id)sender;
 
 @property(strong,nonatomic) NSString* rideID;
-@property(strong,nonatomic) NSString* driverPhone;
+@property(strong,nonatomic) NSString* driverID;
 
 @property BOOL isRideAccepted;
 @property NSNumber *balance;
@@ -94,11 +96,12 @@
 
 @property(strong,nonatomic) NSTimer *queryDriverTimer;
 @property(strong,nonatomic) NSTimer *updateLocationTimer;
-//@property(strong,nonatomic) NSTimer *cancelRideRequestTimer;
+@property(strong,nonatomic) NSTimer *cancelRideRequestTimer;
 
 @property(strong,nonatomic) NSMutableArray *arrayOfDriverAnnotations;
 @property(strong,nonatomic) NSArray* driversArray;
 @property(strong,nonatomic) NSArray *selectedDriverArray;
 
+@property(strong,nonatomic)RideRequestDecisionViewController *requestRideDecisionPopupViewController;
 
 @end

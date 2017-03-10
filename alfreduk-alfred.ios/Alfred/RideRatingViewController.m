@@ -23,27 +23,22 @@
 @synthesize rideRequest;
 
 - (void)viewDidLoad {
-    
-
 
     [super viewDidLoad];
 
     if([[PFUser currentUser][@"UserMode"] boolValue]){
     
         //show driver info
-        ratedUser =  self.rideRequest[@"driver"];
+        ratedUser = rideRequest[@"driver"];
         
-    }else{
+    } else {
         //show user info
-        ratedUser = self.rideRequest[@"requestedBy"];
+        ratedUser = rideRequest[@"passenger"];
 
     };
     assert(ratedUser!= nil);
-    double price = [self.rideRequest[@"ridePrice"] doubleValue] /100;
-    
-    
+    double price = [self.rideRequest[@"price"] doubleValue] /100;
     self.priceLabel.text = [NSString stringWithFormat:@"%5.2lf £",price];
-    
     
     CGRect frame = self.contentView.layer.frame;
     frame.size.width = self.view.bounds.size.width ;
@@ -57,12 +52,9 @@
         
         self.nameLabel.text  = [NSString stringWithFormat:@"%@ %@",firstName, lastName];
         
-        
         //set profile pic
         
         self.rideCostLabel.text = [NSString stringWithFormat:@"Ride cost: %4.2lf £",[self.rideRequest[@"ridePrice"] doubleValue]/100];
-        
-        
         NSString *profilePicUrl = ratedUser[@"ProfilePicUrl"];
         
         self.profilePicImageView.layer.cornerRadius = self.profilePicImageView.frame.size.width *0.5;
@@ -70,48 +62,70 @@
         self.profilePicImageView.layer.borderWidth = 2.0f;
         self.profilePicImageView.layer.borderColor = [UIColor whiteColor].CGColor;
         
-        
         if (![profilePicUrl isKindOfClass:[NSNull class]]) {
             
             [self.profilePicImageView sd_setImageWithURL:[NSURL URLWithString:profilePicUrl] placeholderImage:[UIImage imageNamed:@"blank profile"]];
         }
-        // [self.profilePicImageView sd_setImageWithURL:[NSURL URLWithString:profilePicUrl] placeholderImage:[UIImage imageNamed:@"blanck profile"]];
-        
-        
-        
-        
         self.rate1View.maximumValue = self.rate2View.maximumValue = self.rate3View.maximumValue = 5;
         self.rate1View.minimumValue = self.rate2View.minimumValue = self.rate3View.minimumValue = 1;
         self.rate1View.value = self.rate2View.value = self.rate3View.value = 1;
-        
-        
-     
-        
         self.ratingTableView.dataSource = self;
-       
-
-        //[HUD showConfirmationWithText:@"completed" delay:3];
     }];
-    
-   
 }
 
 - (void)didChangeValue:(HCSStarRatingView *)sender {
-    
-    
     rating = sender.value;
-    
-    
-    
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
+
 - (IBAction)rateAction:(id)sender {
     
-    [self rateTheRide];
+    bool isUser = [[PFUser currentUser][@"UserMode"] boolValue];
+    PFObject *user;
+    PFObject* ratingData;
+    assert(rideRequest!= nil);
+    if(isUser) {
+        
+        //rate the driver
+        user= rideRequest[@"driver"];
+        ratingData = user[@"driverRating"];
+        
+    }else{
+        user = rideRequest[@"passenger"];
+        ratingData = user[@"userRating"];
+    }
+    
+    assert(ratingData!= nil);
+    
+    [HUD showUIBlockingIndicatorWithText:@"Rating ..."];
+    [ratingData fetchIfNeededInBackgroundWithBlock:^(PFObject * _Nullable object, NSError * _Nullable error) {
+        
+        double currentRating = [ratingData[@"rating"] doubleValue];
+        int rideCount = [ratingData[@"rideCount"] intValue];
+        
+        double computeRate = [self computeRating];
+        
+        currentRating = currentRating * rideCount + computeRate;
+        rideCount++;
+        currentRating = currentRating / rideCount;
+        ratingData[@"rideCount"] = [NSNumber numberWithInt:rideCount];
+        ratingData[@"rating"] = [NSNumber numberWithDouble:currentRating];
+        
+        [ratingData saveInBackgroundWithBlock:^(BOOL succeeded, NSError * _Nullable error) {
+            if(error){
+                NSLog(@"Rating save failed =========================== \n %@", error.localizedDescription);
+            }else{
+                
+                [[NSNotificationCenter defaultCenter] postNotificationName:@"didEndedRating" object:nil];
+                [self dismissViewControllerAnimated:YES completion:nil];
+                
+            }
+        }]; //ratingData saved
+    }];
 }
 
 - (IBAction)backAction:(id)sender {
@@ -121,7 +135,6 @@
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
     return 3;
 }
-
 
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
 
@@ -177,7 +190,6 @@
             default:
                 break;
         }
-
     }
     
     return cell;
@@ -193,67 +205,6 @@
 
 }
 
--(void)rateTheRide{
-
-    bool isUser = [[PFUser currentUser][@"UserMode"] boolValue];
-    PFObject *user;
-    PFObject* ratingData;
-    assert(self.rideRequest!= nil);
-    if(isUser) {
-        
-        //rate the driver
-        user= self.rideRequest[@"driver"];
-        ratingData = user[@"driverRating"];
-        
-    }else{
-        user = self.rideRequest[@"requestedBy"];
-
-        ratingData = user[@"userRating"];
-    }
-
-    assert(ratingData!= nil);
-
-    [HUD showUIBlockingIndicator];
-    [ratingData fetchIfNeededInBackgroundWithBlock:^(PFObject * _Nullable object, NSError * _Nullable error) {
-        
-        double currentRating = [ ratingData[@"rating"] doubleValue];
-        int rideCount = [ratingData[@"rideCount"] intValue];
-        
-        double rating = [self computeRating];
-        
-        currentRating = currentRating * rideCount + rating;
-        rideCount++;
-        currentRating = currentRating/rideCount;
-        ratingData[@"rideCount"] = [NSNumber numberWithInt:rideCount];
-        ratingData[@"rating"] = [NSNumber numberWithDouble:currentRating];
-        
-        [ratingData saveInBackgroundWithBlock:^(BOOL succeeded, NSError * _Nullable error) {
-            
-            if(error){
-                [HUD hideUIBlockingIndicator];
-                NSLog(@"%@", error.localizedDescription);
-            }else{
-                
-//                self.rideRequest[@"rated"] = @YES;
-//                [self.rideRequest saveInBackgroundWithBlock:^(BOOL succeeded, NSError * _Nullable error) {
-//                    [HUD hideUIBlockingIndicator];
-//                    if(succeeded){
-                        [self dismissViewControllerAnimated:YES completion:nil];
-                        
-//                    }else{
-//                        NSLog(@"Failed to save ride rating for ride %@", self.rideRequest.objectId);
-//                        NSLog(@"%@", error.localizedDescription);
-//                        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Oops!" message:@"Something went wrong and we couldn't send your feedback.\nPlease try again" delegate:nil cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil];
-//                        [alert show];
-//                        
-//                    }
-//                }];
-                
-            }
-        }]; //ratingData saved
-        
-    }];
-}
 
 /*
 #pragma mark - Navigation

@@ -112,7 +112,7 @@ static UIView* lastViewWithHUD = nil;
 	if (str!=nil) {
         hud.labelText = str;
     } else {
-        hud.labelText = @"Loading...";
+        hud.labelText = @"";
     }
     
     return hud;

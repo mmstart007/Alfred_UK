@@ -38,7 +38,7 @@
    NSUserDefaults * prefs = [NSUserDefaults standardUserDefaults];
     [prefs setBool:self.userMode forKey:@"UserMode"];
     [prefs setValue:[self getFullName] forKey:@"Name"];
-    [prefs setValue:self.email forKey:@"Email"];
+    [prefs setValue:self.email forKey:@"email"];
     [prefs setValue:self.phone forKey:@"Phone"];
     [prefs setValue:self.rating forKey:@"Rating"];
     [prefs setValue:@1234 forKey:@"PromoCode"];

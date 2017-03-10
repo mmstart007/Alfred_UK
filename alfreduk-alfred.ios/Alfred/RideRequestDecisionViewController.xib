@@ -34,7 +34,7 @@
                             </constraints>
                         </imageView>
                         <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" editable="NO" text="You have been accepted as the driver" textAlignment="center" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JSz-IU-kU2">
-                            <rect key="frame" x="19.5" y="124.5" width="217" height="88"/>
+                            <rect key="frame" x="19" y="125" width="217" height="88"/>
                             <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                             <constraints>
                                 <constraint firstAttribute="width" secondItem="JSz-IU-kU2" secondAttribute="height" multiplier="172:70" id="sRk-4q-tO7"/>

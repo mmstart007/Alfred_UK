@@ -11,22 +11,16 @@
 #import "PickupAnnotation.h"
 #import "DriverViewController.h"
 #import "WalletViewController.h"
-
 #import "MessageBoardStartRideViewController.h"
 #import <SDWebImage/UIImageView+WebCache.h>
 #import "DriverListViewController.h"
 #import <Parse/Parse.h>
 #import "PushUtils.h"
-
-
 #import "DriverHeadViewController.h"
-
 #import "CHDraggingCoordinator.h"
 #import "CHDraggableView.h"
 #import "CHDraggableView+Avatar.h"
-
 #import <SDWebImage/UIImageView+WebCache.h>
-
 #import <TWMessageBarManager/TWMessageBarManager.h>
 
 
@@ -36,24 +30,26 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
 
 @interface RiderViewController ()<SWRevealViewControllerDelegate>{
     
-    BOOL _pickupCoordinatesSetted;
-    BOOL _dropoffCoordinatesSetted;
-    
+    //this variable holds the state when the rider got the acceptation push form the driver and he process the request
+    BOOL _processingRequest;
+    BOOL _pickupCoordinatesSetted, _dropoffCoordinatesSetted;
     BOOL settingPickupLocation, settingDropoffLocation;
+    BOOL _canRefund;
+    bool _annotationInteract;
+    
     double _myLatitude, _myLongitude;
     
-    PFObject *_selectedDriverLocation;
     PFUser *_selectedDriver;
+    PFObject *_selectedDriverLocation;
+    PFObject *_lastRideInfo;
 
     NSNumber *_seatsRequested;
-    CHDraggingCoordinator *_draggingCoordinator;
-    bool _annotationInteract;
     UIBarButtonItem *_revealButtonItem;
     
-    //this variable holds the state when the rider got the acceptation push form the driver and he process the request
-    
-    BOOL _processingRequest;
+    CHDraggingCoordinator *_draggingCoordinator;
 }
+
+@property (nonatomic) NSNumber* onRide;
 
 @end
 
@@ -61,18 +57,22 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
 
 @synthesize mapView,locationManager,region, pickUpImage,bryantPark, bryantParkAnn;
 @synthesize pickupOrDropoffButton,pickUpLabel,pickupAnnotation,pickupCoord,pickupAddress,pickupPlacemark;
-@synthesize dropOffLabel,dropOffAnnotation,dropOffCoord,dropOffAddress,dropoffPlacemark;
+@synthesize dropOffLabel,dropOffAnnotation,dropOffCoord,dropOffAddress,dropoffPlacemark,dropofffIcon;
 @synthesize dropoffSearchButton;
 @synthesize routeDetails,pickupCity,routeDistance;
 @synthesize cancelButton;
 @synthesize pickupSearchButton,availabilityBar;
 @synthesize pickupSearchAddress,pickupSearchCoord,dropOffSearchAddress,dropOffSearchCoord,requestRideButton;
-@synthesize queryDriverTimer, updateLocationTimer;
+@synthesize queryDriverTimer, updateLocationTimer, cancelRideRequestTimer;
 @synthesize requestImageView,requestLabel,isRideAccepted;
-@synthesize driverView,rideID,driverPhone;
+@synthesize driverView;
 @synthesize retrievedDict;
 @synthesize driversArray, arrayOfDriverAnnotations, selectedDriverArray;
 @synthesize balance;
+@synthesize requestRideDecisionPopupViewController;
+@synthesize rideID, driverID;
+@synthesize dropOffBottomContraint;
+
 
 
 //this is not hidding anymore, just changing visual appareance
@@ -85,18 +85,25 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
 - (void)viewDidLoad {
     [super viewDidLoad];
     _annotationInteract = NO;
-    
     _pickupCoordinatesSetted = NO;
     _dropoffCoordinatesSetted = NO;
     _processingRequest = NO;
-    
-    settingPickupLocation = YES;
-    settingDropoffLocation = YES;
-    
-    isChooseOnMap = false;
+    isChooseOnMap = NO;
     isItRetrieval = NO;
     isActiveDriverChosen = NO;
-    isDriverSelected = false;
+    isDriverSelected = NO;
+    mapChangedFromUserInteraction = NO;
+    routeFixed = NO;
+    inRequest  = NO;
+    ifDrop = NO;
+    settingPickupLocation = YES;
+    settingDropoffLocation = YES;
+    //check is location is within country
+    withinCountry = NO;
+    isItDropSearch = NO;
+    isItSearchResult = NO;
+    
+    _lastRideInfo = nil;
     
     //configure driver view and make it hidden
     self.driverView.layer.cornerRadius = 0.5;
@@ -108,44 +115,25 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
     //register for notifications
     [self watchForNotifications];
     
-    requestImageView.hidden = YES;
     requestLabel.hidden = YES;
-    
     requestRideButton.hidden=YES;
-    inRequest  = NO;
-    ifDrop = NO;
-    mapChangedFromUserInteraction = NO;
-    routeFixed = NO;
-    
-    //check is location is within country
-    withinCountry = NO;
+    requestImageView.hidden = YES;
+    [availabilityBar setHidden:YES];
     
     arrayOfDriverAnnotations = [[NSMutableArray alloc]init];
 
-    [availabilityBar setHidden:YES];
-    
-    isItDropSearch = NO;
-    isItSearchResult = NO;
-    
     UIImage *drawerImage = [[UIImage imageNamed:@"menu"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-    
     _revealButtonItem = [[UIBarButtonItem alloc] initWithImage:drawerImage
                                                          style:UIBarButtonItemStylePlain target:self action:@selector(revealToggle:)];
     cancelButton = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(cancelPickup:)];
 
     SWRevealViewController *revealViewController = self.revealViewController;
     self.navigationItem.leftBarButtonItem = _revealButtonItem;
-    
-    self.navigationItem.rightBarButtonItem = cancelButton;
-    self.navigationItem.rightBarButtonItem.title = @"";
-    self.navigationItem.rightBarButtonItem.enabled = NO;
 
-    [self hideNavigationController];
-
-    if ( revealViewController ){
-        
+    if (revealViewController) {
+        [self.view addGestureRecognizer:revealViewController.panGestureRecognizer];
         [self.navigationItem.leftBarButtonItem setTarget:self.revealViewController];
-        
+        [self.view addGestureRecognizer:self.revealViewController.panGestureRecognizer];
     }
     
     //search pickup address
@@ -182,12 +170,18 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
                                    userInfo: nil
                                     repeats: NO];
     
-//    queryDriverTimer = [NSTimer scheduledTimerWithTimeInterval: 10.0
-//                                                        target: self
-//                                                      selector: @selector(queryDriverPathways:)
-//                                                      userInfo: nil
-//                                                       repeats: YES];
-    
+    queryDriverTimer = [NSTimer scheduledTimerWithTimeInterval: 10.0
+                                                        target: self
+                                                      selector: @selector(queryDriverPathways:)
+                                                      userInfo: nil
+                                                       repeats: YES];
+
+    updateLocationTimer = [NSTimer scheduledTimerWithTimeInterval: 20.0
+                                                           target: self
+                                                         selector: @selector(updateUserLocation)
+                                                         userInfo: nil
+                                                          repeats: YES];
+
 
     if([[PFUser currentUser][@"UserMode"] boolValue] == NO){
         
@@ -203,18 +197,23 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
     
     [super viewWillAppear:animated];
     [self hideNavigationController];
-
-    queryDriverTimer = [NSTimer scheduledTimerWithTimeInterval: 10.0
-                                                        target: self
-                                                      selector: @selector(queryDriverPathways:)
-                                                      userInfo: nil
-                                                       repeats: YES];
     
-    updateLocationTimer = [NSTimer scheduledTimerWithTimeInterval: 20.0
+    self.onRide = @NO;
+    
+    if (!queryDriverTimer) {
+        queryDriverTimer = [NSTimer scheduledTimerWithTimeInterval: 10.0
+                                                            target: self
+                                                          selector: @selector(queryDriverPathways:)
+                                                          userInfo: nil
+                                                           repeats: YES];
+    }
+    if (!updateLocationTimer) {
+        updateLocationTimer = [NSTimer scheduledTimerWithTimeInterval: 20.0
                                                            target: self
                                                          selector: @selector(updateUserLocation)
                                                          userInfo: nil
                                                           repeats: YES];
+    }
 }
 
 -(void)viewDidDisappear:(BOOL)animated{
@@ -234,25 +233,20 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
 - (void)watchForNotifications {
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForStoppingAllMappingServices:) name:@"didRequestForStoppingAllMappingServices" object:nil];
-    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForActiveDriverChosenForRide:) name:@"didRequestForActiveDriverChosenForRide" object:nil];
-
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForSearchResult:) name:@"didRequestForSearchResult" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForRideAcceptedForDriver:) name:@"didRequestForRideAcceptedForDriver" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForRideCancelByDriver:) name:@"didRequestForRideCancelByDriver" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForRideEnd:) name:@"didRequestForRideEnd" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForOpenRatingView:) name:@"didRequestForOpenRatingView" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didEndedRating:) name:@"didEndedRating" object:nil];
 
     /*// sent when the ride is accepted by the requested driver
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForRideAcceptedForDriver:) name:@"didRequestForRideAcceptedForDriver" object:nil];
     
      [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForInactiveDriverChosenForRide:) name:@"didRequestForInactiveDriverChosenForRide" object:nil];
      
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForRideDecisionCloseView:) name:@"didRequestForRideDecisionCloseView" object:nil];
     // sent by the driver when the ride is ended
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForRideEnd:) name:@"didRequestForRideEnd" object:nil];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForRideCancelByDriver:) name:@"didRequestForRideCancelByDriver" object:nil];
-    
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForOpenRatingView:) name:@"didRequestForOpenRatinView" object:nil];
-    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForMessageBoardRideStarted:) name:@"didRequestForMessageBoardRideStarted" object:nil];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForMessageBoardRidePickedUp:) name:@"didRequestForMessageBoardRidePickedUp" object:nil];
@@ -274,104 +268,10 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
  */
 -(void)didRequestForActiveDriverChosenForRide:(NSNotification *)notification
 {
-    
     isDriverSelected = YES;
-    
     selectedDriverArray = [notification object];
     
     [self requestRide:self];
-}
-
-//-(void)didRequestForInactiveDriverChosenForRide:(NSNotification *)notification
-//{
-//    isActiveDriverChosen = NO;
-//    isDriverSelected = true;
-//    //    driverSelectedID = [notification object];
-//    driverSelectedArray = [notification object];
-//    
-//    //get here number of seats
-//    _seatsRequested = (NSNumber*)driverSelectedArray[1];
-//    assert([_seatsRequested intValue] > 0 );
-//    _rideRequest[@"seats"] = _seatsRequested;
-//    
-//    [_rideRequest saveInBackground];
-//    [HUD showUIBlockingIndicatorWithText:@"Getting Alfred data.."];
-//    PFQuery * query = [PFQuery queryWithClassName:@"_User"];
-//    [query getObjectInBackgroundWithId:driverSelectedArray[0] block:^(PFObject * _Nullable object, NSError * _Nullable error) {
-//        if(!error){
-//            
-//            _selectedDriver = (PFUser*)object;
-//            
-//            
-//        }else{
-//            isDriverSelected = false;
-//            
-//        }
-//        [HUD hideUIBlockingIndicator];
-//    }];
-//    
-//}
-//
-//#pragma mark - Cancel Ride Mode
-//
-//-(void)cancelRideRequest:(id)sender{
-//    
-//    [cancelRideRequestTimer invalidate];
-//    
-//    cancelRideRequestTimer = nil;
-//    
-//    isDriverSelected = NO;
-//    self.onRide = @NO;
-//    
-//    requestLabel.hidden = YES;
-//    requestImageView.hidden = YES;
-//    [requestRideButton setTitle:@"LOOK FOR AN ALFRED" forState:UIControlStateNormal];
-//    inRequest = NO;
-//    self.navigationItem.rightBarButtonItem.enabled = YES;
-//    ifTimerShootsCancel = NO;
-//    
-//    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Request Cancelled"
-//                                                    message:@"Sorry please try again."
-//                                                   delegate:self
-//                                          cancelButtonTitle:@"Accept"
-//                                          otherButtonTitles:nil];
-//    alert.tag=3;
-//    
-//    [alert show];
-//    
-//    _rideRequest[@"canceled"] = @YES;
-//    _rideRequest[@"accepted"] = @NO;
-//    [_rideRequest saveInBackgroundWithBlock:^(BOOL succeeded, NSError * _Nullable error) {
-//        self.onRide = @NO;
-//    }];
-//    
-//    isRideAccepted = NO;
-//    
-//}
-
-#pragma mark - Remove Ride Mode
-
-- (void)allowSetPickup {
-    
-    _pickupCoordinatesSetted = NO;
-    
-    [mapView removeAnnotation:pickupAnnotation];
-    
-    
-    //hide drop off settings
-    [dropoffSearchButton setHidden:YES];
-    [dropOffLabel setHidden:YES];
-    [self.dropofffIcon setHidden:YES];
-    
-    
-    [pickUpImage setImage:[UIImage imageNamed:@"pickup"]];
-    pickUpImage.hidden = NO;
-    ifDrop = NO;
-    [pickupOrDropoffButton setTitle:@"Set Pickup Point" forState:UIControlStateNormal];
-    pickupOrDropoffButton.enabled = YES;
-    self.navigationItem.rightBarButtonItem.title = @"";
-    self.navigationItem.rightBarButtonItem.enabled = NO;
-    pickupSearchButton.enabled = YES;
 }
 
 #pragma mark - Drawing of the route, Clearing and the overlay render
@@ -380,7 +280,7 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
     
     //called when pick up and drop off points where set properly
     //draw route on map
-    [HUD showUIBlockingIndicatorWithText:@"Routing.."];
+    [HUD showUIBlockingIndicatorWithText:@"Routing ..."];
     MKDirectionsRequest *directionsRequest = [[MKDirectionsRequest alloc] init];
     
     MKPlacemark *dropPlacemark = [[MKPlacemark alloc] initWithCoordinate:dropOffCoord addressDictionary:nil];
@@ -446,11 +346,8 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
     MKPolylineRenderer  * routeLineRenderer = [[MKPolylineRenderer alloc] initWithPolyline:routeDetails.polyline];
     routeLineRenderer.strokeColor = [UIColor redColor];
     routeLineRenderer.lineWidth = 5;
-    
-    
+
     return routeLineRenderer;
-    
-    
 }
 
 
@@ -493,19 +390,6 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
     dropoffSearchButton.enabled = NO;
 }
 
--(void)disableNavigation{
-    
-    self.navigationItem.leftBarButtonItem = nil;
-    
-    
-}
-
--(void)enableNavigation{
-    
-    self.navigationItem.leftBarButtonItem = _revealButtonItem;
-    
-}
-
 -(void)addPickupAnnotation{
 
     if(pickupAnnotation){
@@ -545,32 +429,27 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
             if (!isItSearchResult) {
                 pickupCoord = [mapView centerCoordinate];
                 
-            }
-            else{
+            } else {
                 pickupCoord = pickupSearchCoord;
             }
             if (!pickupAnnotation) {
                 if (!isItSearchResult) {
                     pickupAnnotation = [[PickupAnnotation alloc] initiWithTitle:pickupAddress Location:pickupCoord];
                     
-                }
-                else{
+                } else {
                     pickupAnnotation = [[PickupAnnotation alloc] initiWithTitle:pickupSearchAddress Location:pickupSearchCoord];
                     
                 }
                 
-            }
-            else{
+            } else {
                 if (!isItSearchResult) {
                     pickupAnnotation.coordinate = pickupCoord;
                     pickupAnnotation.title = pickupAddress;
-                }
-                else{
+                } else {
                     pickupAnnotation.coordinate = pickupSearchCoord;
                     pickupAnnotation.title = pickupSearchAddress;
                     
                 }
-                
             }
             
             if (isItSearchResult) {
@@ -588,23 +467,17 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
             [pickupOrDropoffButton setTitle:@"Set drop-off location" forState:UIControlStateNormal];
             pickupSearchButton.enabled = NO;
             
-            self.navigationItem.rightBarButtonItem.title = @"Cancel";
-            self.navigationItem.rightBarButtonItem.enabled = YES;
+            self.navigationItem.rightBarButtonItem = cancelButton;
             
-        }
-        
-        else{
+        } else  {
             
             if (!isItSearchResult) {
                 dropOffCoord = [mapView centerCoordinate];
                 
-            }
-            else{
+            } else {
                 dropOffCoord = dropOffSearchCoord;
-                
-                
+
             }
-            
             if (!dropOffAnnotation) {
                 
                 if(isItSearchResult){
@@ -614,15 +487,12 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
                 
                 dropOffAnnotation = [[DropoffAnnotation alloc] initiWithTitle:dropOffAddress Location:dropOffCoord];
                 
-            }
-            else{
+            } else {
                 if (!isItSearchResult) {
                     dropOffAnnotation.coordinate = dropOffCoord;
                     dropOffAnnotation.title = dropOffAddress;
                     
-                }
-                
-                else{
+                } else {
                     dropOffAnnotation.coordinate = dropOffSearchCoord;
                     dropOffAnnotation.title = dropOffSearchAddress;
                 }
@@ -642,14 +512,11 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
             [self routeRequested];
             
             [UIView animateWithDuration:2.0 animations:^{
-                requestRideButton.hidden=NO;
+                requestRideButton.hidden = NO;
                 
             }];
-            
-            
         }
-    }
-    else{
+    } else {
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@""
                                                         message:@"Alfred is not yet available in this area"
                                                        delegate:self
@@ -657,21 +524,17 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
                                               otherButtonTitles:nil];
         [alert show];
     }
-    
-    
 }
 
+#pragma mark - Ride Mode
 #pragma mark - Requesting of Rides
 //request or cancel ride button pressed
 //the button changes deppending on context
 - (IBAction)requestRide:(id)sender {
     
-    //ifTimerShootsCancel = NO;
-    
     if (!inRequest) {
 
         balance = [NSNumber numberWithDouble:[[PFUser currentUser][@"Balance"] doubleValue]];
-        
         if(![[PFUser currentUser][@"PhoneVerified"] boolValue]){
             
             [[TWMessageBarManager sharedInstance] showMessageWithTitle:@"Ooops! "
@@ -717,26 +580,39 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
                  *  driver selected and balance is okey
                  */
                 
+                [cancelRideRequestTimer invalidate];
+                cancelRideRequestTimer = nil;
+                
+                cancelRideRequestTimer = [NSTimer scheduledTimerWithTimeInterval: RIDE_REQUEST_EXPIRATION_TIME
+                                                                          target: self
+                                                                        selector: @selector(cancelRideRequestFromTimer:)
+                                                                        userInfo: nil
+                                                                         repeats: NO ];
                 requestLabel.hidden = NO;
                 requestImageView.hidden = NO;
                 
                 [requestRideButton setTitle:@"CANCEL REQUEST" forState:UIControlStateNormal];
                 inRequest = YES;
                 
-                self.navigationItem.rightBarButtonItem.enabled = NO;
+                self.navigationItem.rightBarButtonItem = nil;
                 
                 /*
                  *  send ride request to the drivers
                  */
                 
-                [PFCloud callFunctionInBackground:@"CreateRide"
-                                   withParameters:@{@"driver": selectedDriver,
+                [PFCloud callFunctionInBackground:@"RequestRide"
+                                   withParameters:@{@"driver": [selectedDriver objectId],
                                                     @"pickupLocation": pickupLocation,
                                                     @"dropoffLocation": dropoffLocation,
+                                                    @"pickupAddress": pickupAddress,
+                                                    @"dropoffAddress": dropOffAddress,
                                                     @"seats": seats,
                                                     @"price": price}
-                                            block:^(NSString *success, NSError *error) {
+                                            block:^(PFObject *object, NSError *error) {
                                                 if (!error) {
+                                                    _lastRideInfo = object;
+                                                    rideID = _lastRideInfo.objectId;
+                                                    _processingRequest = NO;
                                                     NSLog(@"Ride request sent sucesfully ================ ");
                                                 } else {
                                                     NSLog(@"Failed to send ride request ================");
@@ -746,20 +622,412 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
             }
         }
     } else {
-        NSLog(@"Canceling ride request");
-        
+        NSLog(@"Canceled ride request");
         requestLabel.hidden = YES;
         requestImageView.hidden = YES;
-        
         [requestRideButton setTitle:@"LOOK FOR AN ALFRED" forState:UIControlStateNormal];
         inRequest = NO;
         isDriverSelected = NO;
+        self.navigationItem.rightBarButtonItem = cancelButton;
         
-        self.navigationItem.rightBarButtonItem.enabled = YES;
-        
-        //[self cancelRideRequest:self];
+        [self cancelRideRequest:@"REQUEST_CANCELED"];
     }
 }
+
+#pragma mark - Ride Accepted by Driver
+
+/*
+ * Called when the ride request sent to the driver is accepted by him
+ */
+
+-(void)didRequestForRideAcceptedForDriver:(NSNotification *)notification
+{
+    if(!_processingRequest){
+        _processingRequest = YES;
+        inRequest = NO;
+        
+        //hide it to load the new data
+        [driverView setHidden:YES];
+        [requestRideButton setTitle:@"CANCEL REQUEST" forState:UIControlStateNormal];
+        
+        requestRideDecisionPopupViewController = [[RideRequestDecisionViewController alloc] initWithNibName:@"RideRequestDecisionViewController" bundle:nil];
+        NSString *decision = [NSString stringWithFormat:@"Your ride was accepted by Driver"];
+        requestRideDecisionPopupViewController.decision = decision;
+        requestRideDecisionPopupViewController.isAccepted = YES;
+        [requestRideDecisionPopupViewController setModalPresentationStyle:UIModalPresentationOverCurrentContext];
+        self.navigationController.modalPresentationStyle = UIModalPresentationCurrentContext;
+        [self presentViewController:requestRideDecisionPopupViewController animated:YES completion:^() {
+            
+            [cancelRideRequestTimer invalidate];
+            cancelRideRequestTimer = nil;
+            
+            if (!isRideAccepted) {
+                
+                isRideAccepted = YES;
+                
+                NSArray*  rideRequestArray = [notification object];
+                
+                // this is the notification object when a new ride request
+                // is accepted by the driver
+                // the notification contains the objectId of the request
+                // and the push is sent from CloudCode
+                // so the first object is the ride id
+                assert(rideRequestArray.count > 0);
+                
+                driverID = [rideRequestArray firstObject];
+                
+                //the ride id should be equal to the ride request made by the user
+                // so lets assert that
+                
+                NSLog(@"Driver id: %@", driverID);
+                
+                //retrieve driver data
+                //maybe this query is not needed as i alrady know the driver and ride request
+                //should optimize it later
+                
+                [PFCloud callFunctionInBackground:@"GetUser"
+                                   withParameters:@{@"userId": driverID}
+                                            block:^(PFUser *user, NSError *error) {
+
+                                                if (!error) {
+                                                    self.onRide  = @YES;
+                                                    _selectedDriver = user;
+                                                    [self openTheDriverView:user];
+                                                } else {
+                                                    NSLog(@"Get Ride request Failed !!!!");
+                                                    [[[UIAlertView alloc] initWithTitle:@"Error" message:error.localizedDescription delegate:nil cancelButtonTitle:@"Accept" otherButtonTitles:nil] show];
+                                                }
+                                            }];
+            }
+            
+        }];
+    }
+}
+
+-(void)openTheDriverView:(PFUser *)driver{
+
+    self.driverName.text = driver[@"FullName"];
+    self.driverMobile.text = driver[@"Phone"];
+    //PFObject *ratingData = driver[@"driverRating"];
+    NSString *driverProfilePic = driver[@"ProfilePicUrl"];
+    
+    if (![driverProfilePic isKindOfClass:[NSNull class]]) {
+        [self.driverProfilePic sd_setImageWithURL:[NSURL URLWithString:driverProfilePic] placeholderImage:[UIImage imageNamed:@"blank profile"]];
+    }
+    
+    self.driverProfilePic.layer.cornerRadius = self.driverProfilePic.frame.size.height / 2;
+    self.driverProfilePic.layer.masksToBounds = YES;
+    self.driverProfilePic.layer.borderWidth = 0;
+    
+    if (isRideAccepted) {
+        
+        requestLabel.hidden = YES;
+        requestImageView.hidden = YES;
+        //move the dropoff to the botom
+        dropOffLabel.hidden = NO;
+        dropoffSearchButton.hidden = NO;
+        dropoffSearchButton.enabled = NO;
+        
+        //hide the request button at the bottom
+        //requestRideButton.hidden=YES;
+        [driverView setHidden:NO];
+        
+        if (isItRetrieval) {
+            
+            [self retrieveTheAnnotationsAndRoute:retrievedDict];
+            
+        }
+    }
+}
+
+-(void)retrieveTheAnnotationsAndRoute:(NSDictionary*)messageDict{
+    
+    NSString* originLatitude;
+    NSString* originLongitude;
+    NSString* destinationLatitude;
+    NSString* destinationLongitude;
+    
+    
+    NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
+    NSString *token = [prefs stringForKey:@"token"];
+    
+    NSArray* driverMessageRequests = messageDict[@"driverMessageRequests"];
+    
+    for (id userDict in driverMessageRequests) {
+        NSString *userIdToCheck = userDict[@"userId"];
+        
+        if ([token isEqualToString:userIdToCheck]) {
+            
+            originLatitude =userDict[@"originLatitude"];
+            originLongitude =userDict[@"originLongitude"];
+            destinationLatitude =userDict[@"destinationLatitude"];
+            destinationLongitude =userDict[@"destinationLongitude"];
+        }
+    }
+    
+    CLGeocoder *locator = [[CLGeocoder alloc]init];
+    
+    double myLatitude =[originLatitude doubleValue];
+    double myLongitude = [originLongitude doubleValue];
+    
+    double userLat =[destinationLatitude doubleValue];
+    double userLong = [destinationLongitude doubleValue];
+    
+    pickupCoord.latitude =myLatitude;
+    pickupCoord.longitude =myLongitude;
+    
+    dropOffCoord.latitude = userLat;
+    dropOffCoord.longitude =   userLong;
+    
+    CLLocation *location = [[CLLocation alloc]initWithLatitude:myLatitude longitude:myLongitude];
+    [locator reverseGeocodeLocation:location completionHandler:^(NSArray *placemarks, NSError *error) {
+        if(error){
+            
+            NSLog(@"Failed to get location");
+            NSLog(@"%@", [error description]);
+        }
+        
+        pickupPlacemark = [placemarks objectAtIndex:0];
+        
+        pickupAddress = [[pickupPlacemark.addressDictionary valueForKey:@"FormattedAddressLines"] componentsJoinedByString:@", "];
+        
+        if (!pickupAnnotation) {
+            pickupAnnotation = [[PickupAnnotation alloc] initiWithTitle:pickupAddress Location:pickupCoord];
+            
+        } else {
+            pickupAnnotation.coordinate = pickupCoord;
+            pickupAnnotation.title = pickupAddress;
+            
+        }
+        [mapView addAnnotation:pickupAnnotation];
+        
+        
+        CLGeocoder *locatorDrop = [[CLGeocoder alloc]init];
+        CLLocation *locationDrop = [[CLLocation alloc]initWithLatitude:userLat longitude:userLong];
+        [locatorDrop reverseGeocodeLocation:locationDrop completionHandler:^(NSArray *placemarks, NSError *error) {
+            dropoffPlacemark = [placemarks objectAtIndex:0];
+            dropOffAddress = [[dropoffPlacemark.addressDictionary valueForKey:@"FormattedAddressLines"] componentsJoinedByString:@", "];
+
+            if (!dropOffAnnotation) {
+                dropOffAnnotation = [[DropoffAnnotation alloc] initiWithTitle:dropOffAddress Location:dropOffCoord];
+                
+            } else {
+                dropOffAnnotation.coordinate = dropOffCoord;
+                dropOffAnnotation.title = dropOffAddress;
+            }
+            
+            pickUpLabel.text = pickupAddress;
+            dropOffLabel.text = dropOffAddress;
+            
+            [mapView addAnnotation:dropOffAnnotation];
+            [self routeRequested];
+        }];
+    }];
+}
+
+#pragma mark - Ride Cancelled by Driver (Not in use)
+
+-(void)didRequestForRideCancelByDriver:(NSNotification *)notification
+{
+    NSString *message = [notification object];
+    [driverView setHidden:YES];
+    requestLabel.hidden = YES;
+    requestImageView.hidden = YES;
+    self.navigationItem.rightBarButtonItem = cancelButton;
+    
+    inRequest = NO;
+    isRideAccepted = NO;
+    isDriverSelected = NO;
+    [requestRideButton setTitle:@"LOOK FOR AN ALFRED" forState:UIControlStateNormal];
+    
+    requestRideDecisionPopupViewController = [[RideRequestDecisionViewController alloc] initWithNibName:@"RideRequestDecisionViewController" bundle:nil];
+
+    requestRideDecisionPopupViewController.decision = message;
+    requestRideDecisionPopupViewController.isAccepted = NO;
+    [requestRideDecisionPopupViewController setModalPresentationStyle:UIModalPresentationOverCurrentContext];
+    self.navigationController.modalPresentationStyle = UIModalPresentationCurrentContext;
+    [self presentViewController:requestRideDecisionPopupViewController animated:YES completion:^{
+        
+    }];
+}
+
+#pragma mark - Ride End and Rating View
+
+-(void)didRequestForRideEnd:(NSNotification *)notification
+{
+    NSLog(@"Request for ride ended");
+
+    NSString *rideCost = _lastRideInfo[@"price"];
+    double rideCostDouble = [rideCost doubleValue];
+    NSString* decisionStr = [NSString stringWithFormat:@"Ride Cost: $%.2f", rideCostDouble / 100];
+    NSLog(@"%@", decisionStr);
+    
+    requestRideDecisionPopupViewController = [[RideRequestDecisionViewController alloc] initWithNibName:@"RideRequestDecisionViewController" bundle:nil];
+    requestRideDecisionPopupViewController.decision = decisionStr;
+    requestRideDecisionPopupViewController.isAccepted = NO;
+    requestRideDecisionPopupViewController.openRatingView = YES;
+    
+    [requestRideDecisionPopupViewController setModalPresentationStyle:UIModalPresentationOverCurrentContext];
+    self.navigationController.modalPresentationStyle = UIModalPresentationCurrentContext;
+    [self presentViewController:requestRideDecisionPopupViewController animated:YES completion:nil];
+    
+}
+
+// called when the Driver did rated to the Passenger on the RideRatingView
+-(void)didEndedRating:(NSNotification *)notification {
+    
+    _dropoffCoordinatesSetted = NO;
+    _processingRequest = NO;
+    _annotationInteract = NO;
+    isChooseOnMap = NO;
+    isItRetrieval = NO;
+    isActiveDriverChosen = NO;
+    isDriverSelected = NO;
+    mapChangedFromUserInteraction = NO;
+    routeFixed = NO;
+    inRequest  = NO;
+    ifDrop = NO;
+    settingPickupLocation = YES;
+    settingDropoffLocation = YES;
+    withinCountry = NO;
+    isItDropSearch = NO;
+    isItSearchResult = NO;
+    isRideAccepted = NO;
+    
+    [driverView setHidden:YES];
+    
+    self.onRide = @NO;
+    
+    [self.mapView removeAnnotations:[mapView annotations]];
+    [self clearRoute];
+    [self allowSetPickup];
+    
+}
+
+#pragma mark - Rating to the Driver
+
+-(void)didRequestForOpenRatingView:(NSNotification *)notification
+{
+    [NSTimer scheduledTimerWithTimeInterval: 1.0 target: self
+                                   selector: @selector(openRatingView:) userInfo: nil repeats: NO];
+}
+
+-(void)openRatingView:(id)sender{
+    
+    [self performSegueWithIdentifier:@"rateDriver" sender:nil];
+    
+}
+
+#pragma mark - Ride Cancelled by Passenger
+
+- (IBAction)cancelRideByUser:(id)sender {
+    
+    inRequest = NO;
+    isDriverSelected = NO;
+    _processingRequest = NO;
+    self.navigationItem.rightBarButtonItem = cancelButton;
+    [self cancelRideRequest:@"PASSENGER_CANCELED_RIDE"];
+}
+
+-(void)cancelRideRequestFromTimer:(id)sender{
+    
+    NSLog(@"Ride request timer expired");
+    [self cancelRideRequest:@"REQUEST_CANCELED"];
+}
+
+-(void)cancelRideRequest:(NSString *)sender {
+    
+    [cancelRideRequestTimer invalidate];
+    cancelRideRequestTimer = nil;
+    isDriverSelected = NO;
+    self.onRide = @NO;
+    requestLabel.hidden = YES;
+    requestImageView.hidden = YES;
+    [requestRideButton setTitle:@"LOOK FOR AN ALFRED" forState:UIControlStateNormal];
+    inRequest = NO;
+    self.navigationItem.rightBarButtonItem = cancelButton;
+    self.navigationItem.leftBarButtonItem.enabled = YES;
+    [UIView animateWithDuration:2.0 animations:^{
+        driverView.hidden = YES;
+        
+    }];
+    
+    [HUD showUIBlockingIndicatorWithText:@"Canceling ..."];
+    [PFCloud callFunctionInBackground:@"DeleteRide"
+                       withParameters:@{@"rideId": rideID,
+                                        @"reason": sender}
+                                block:^(NSString *success, NSError *error) {
+                                    [HUD hideUIBlockingIndicator];
+                                    if (!error) {
+                                        
+                                        isRideAccepted = NO;
+                                        
+                                        /*NSString *message = ([sender isEqualToString:@"REQUEST_CANCELED"] ? @"Ride request Canceled" : @"Ride canceled");
+                                        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:message
+                                                                                        message:@"please try again."
+                                                                                       delegate:self
+                                                                              cancelButtonTitle:@"Accept"
+                                                                              otherButtonTitles:nil];
+                                        alert.tag=3;
+                                        [alert show]; */
+                                        
+                                    } else {
+                                        NSLog(@"RequestCancel request Failed !!!!");
+                                    }
+                                }];
+
+}
+
+-(void)setOnRide:(NSNumber *)onRide{
+    _onRide = onRide;
+    if([onRide boolValue] == YES){
+        //disable naviation out
+        [self disableNavigation];
+        
+    }else{
+        //enable navigatin out
+        [self enableNavigation];
+    }
+    
+}
+
+-(void)disableNavigation {
+    
+    self.navigationItem.leftBarButtonItem = nil;
+
+}
+
+-(void)enableNavigation {
+    
+    self.navigationItem.leftBarButtonItem = _revealButtonItem;
+    
+}
+
+#pragma mark - Remove Ride Mode
+
+- (void)allowSetPickup {
+
+    //hide drop off settings
+    [dropoffSearchButton setHidden:YES];
+    [dropOffLabel setHidden:YES];
+    [dropofffIcon setHidden:YES];
+    [requestRideButton setHidden:YES];
+    
+    _pickupCoordinatesSetted = NO;
+    ifDrop = NO;
+    
+    [mapView removeAnnotation:pickupAnnotation];
+    
+    [pickUpImage setImage:[UIImage imageNamed:@"pickup"]];
+    pickUpImage.hidden = NO;
+    [pickupOrDropoffButton setTitle:@"Set Pickup Point" forState:UIControlStateNormal];
+    pickupOrDropoffButton.enabled = YES;
+
+    self.navigationItem.rightBarButtonItem = nil;
+    pickupSearchButton.enabled = YES;
+}
+
+#pragma mark - Alert View Delegate
 
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
     
@@ -771,6 +1039,38 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
         _annotationInteract = YES;
     }
     
+}
+
+- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
+    // the user clicked OK
+    if(alertView.tag == 4){
+        assert(inRequest);
+        [self requestRide:nil];
+    }
+    
+    if (alertView.tag == 0) {
+        SWRevealViewController *revealController = [self revealViewController];
+        UIViewController *frontViewController = revealController.frontViewController;
+        UINavigationController *frontNavigationController =nil;
+        
+        if ( [frontViewController isKindOfClass:[UINavigationController class]] )
+            frontNavigationController = (id)frontViewController;
+        
+        if ( ![frontNavigationController.topViewController isKindOfClass:[WalletViewController class]] )
+            
+        {
+            UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+            
+            WalletViewController *frontViewController = (WalletViewController *)[storyboard instantiateViewControllerWithIdentifier:@"WALLET_VIEW_CONTROLLER"];
+            
+            UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:frontViewController];
+            [revealController pushFrontViewController:navigationController animated:YES];
+        }
+        else{
+            [revealController revealToggleAnimated:YES];
+            
+        }
+    }
 }
 
 #pragma mark - Annotations and their views
@@ -867,40 +1167,6 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
             
             [self driverAnnotationCallout:annot];
             _annotationInteract = NO;
-        }
-    }
-}
-
-#pragma mark - Alert View Dismiss
-
-- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
-    // the user clicked OK
-    if(alertView.tag == 4){
-        assert(inRequest);
-        [self requestRide:nil];
-    }
-    
-    if (alertView.tag == 0) {
-        SWRevealViewController *revealController = [self revealViewController];
-        UIViewController *frontViewController = revealController.frontViewController;
-        UINavigationController *frontNavigationController =nil;
-        
-        if ( [frontViewController isKindOfClass:[UINavigationController class]] )
-            frontNavigationController = (id)frontViewController;
-        
-        if ( ![frontNavigationController.topViewController isKindOfClass:[WalletViewController class]] )
-            
-        {
-            UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-            
-            WalletViewController *frontViewController = (WalletViewController *)[storyboard instantiateViewControllerWithIdentifier:@"WALLET_VIEW_CONTROLLER"];
-            
-            UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:frontViewController];
-            [revealController pushFrontViewController:navigationController animated:YES];
-        }
-        else{
-            [revealController revealToggleAnimated:YES];
-            
         }
     }
 }
@@ -1114,8 +1380,7 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
     pickupOrDropoffButton.enabled = YES;
     pickupSearchButton.enabled = NO;
     
-    self.navigationItem.rightBarButtonItem.title = @"Cancel";
-    self.navigationItem.rightBarButtonItem.enabled = YES;
+    self.navigationItem.rightBarButtonItem = cancelButton;
     dropoffSearchButton.hidden = NO;
     dropOffLabel.hidden = NO;
 }
@@ -1225,13 +1490,12 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
         settingPickupLocation = YES;
         
     }
-    
     if(_pickupCoordinatesSetted && _dropoffCoordinatesSetted) {
         routeFixed = YES;
         [self routeRequested];
         
         [UIView animateWithDuration:2.0 animations:^{
-            requestRideButton.hidden=NO;
+            requestRideButton.hidden = NO;
             [requestRideButton setTitle:@"LOOK FOR AN ALFRED" forState:UIControlStateNormal];
         }];
     }
@@ -1252,8 +1516,8 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
         [self clearRoute];
         [self allowSetDropOff];
         
-        settingPickupLocation = NO;
         settingDropoffLocation = NO;
+        settingPickupLocation = NO;
         routeFixed = NO;
         [pickUpImage setHidden:NO];
         [pickupOrDropoffButton setHidden:NO];
@@ -1263,11 +1527,6 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
             
         }];
     }
-}
-
-- (IBAction)cancelRideByUser:(id)sender {
-    
-    
 }
 
 - (IBAction)callDriver:(id)sender {
@@ -1465,7 +1724,10 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
         
     }
     if([segue.identifier isEqualToString:@"rateDriver"]){
-        
+        RideRatingViewController *vc = segue.destinationViewController;
+        NSAssert(_lastRideInfo != nil, @"Ride request can't be null");
+        NSLog(@"Rate to the Driver =================== /n %@ /n ======================= %@", _lastRideInfo, _selectedDriver);
+        vc.rideRequest = _lastRideInfo;
     }
 }
 

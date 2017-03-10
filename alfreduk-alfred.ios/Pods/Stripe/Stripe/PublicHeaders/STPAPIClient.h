@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 #define FAUXPAS_IGNORED_IN_FILE(...)
 FAUXPAS_IGNORED_IN_FILE(APIAvailability)
 
-static NSString *const STPSDKVersion = @"9.2.0";
+static NSString *const STPSDKVersion = @"8.0.0";
 
 @class STPBankAccount, STPBankAccountParams, STPCard, STPCardParams, STPToken, STPPaymentConfiguration;
 
@@ -116,7 +116,7 @@ static NSString *const STPSDKVersion = @"9.2.0";
  *
  *  @return whether or not the user is currently able to pay with Apple Pay.
  */
-+ (BOOL)canSubmitPaymentRequest:(PKPaymentRequest *)paymentRequest NS_AVAILABLE_IOS(8_0);
++ (BOOL)canSubmitPaymentRequest:(PKPaymentRequest *)paymentRequest;
 
 + (BOOL)deviceSupportsApplePay;
 
@@ -129,7 +129,7 @@ static NSString *const STPSDKVersion = @"9.2.0";
  *
  *  @return a `PKPaymentRequest` with proper default values. Returns nil if running on < iOS8.
  */
-+ (PKPaymentRequest *)paymentRequestWithMerchantIdentifier:(NSString *)merchantIdentifier NS_AVAILABLE_IOS(8_0);
++ (nullable PKPaymentRequest *)paymentRequestWithMerchantIdentifier:(NSString *)merchantIdentifier;
 
 + (void)createTokenWithPayment:(PKPayment *)payment
                     completion:(STPTokenCompletionBlock)handler __attribute__((deprecated("Use STPAPIClient instead.")));

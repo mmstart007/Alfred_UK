@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		030A3E6FC46411BF35A817AC /* Pods_Alfred.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F79C7D72F3E202018A4DE06 /* Pods_Alfred.framework */; };
+		820F298EA7DB9CDABD37E7AC /* Pods_Alfred.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9683DC93E2CA14DB007FC17 /* Pods_Alfred.framework */; };
 		840E28281E251A2800842155 /* KCFABManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840E28211E251A2800842155 /* KCFABManager.swift */; };
 		840E28291E251A2800842155 /* KCFABViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840E28221E251A2800842155 /* KCFABViewController.swift */; };
 		840E282A1E251A2800842155 /* KCFABWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840E28231E251A2800842155 /* KCFABWindow.swift */; };
@@ -777,7 +777,6 @@
 /* Begin PBXFileReference section */
 		22967551C2FCA0B8D5C2EAD1 /* Pods-Alfred.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Alfred.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Alfred/Pods-Alfred.debug.xcconfig"; sourceTree = "<group>"; };
 		28CD188269AB7F935CDFCAD8 /* Pods.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		4F79C7D72F3E202018A4DE06 /* Pods_Alfred.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Alfred.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		522E9EE81E4A151F31054FE5 /* Pods-Alfred.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Alfred.release.xcconfig"; path = "Pods/Target Support Files/Pods-Alfred/Pods-Alfred.release.xcconfig"; sourceTree = "<group>"; };
 		840E28211E251A2800842155 /* KCFABManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KCFABManager.swift; sourceTree = "<group>"; };
 		840E28221E251A2800842155 /* KCFABViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KCFABViewController.swift; sourceTree = "<group>"; };
@@ -1430,6 +1429,7 @@
 		86F9923A1B60822600DF7A49 /* AlfredCreditCard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AlfredCreditCard.h; sourceTree = "<group>"; };
 		86F9923B1B60822600DF7A49 /* AlfredCreditCard.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AlfredCreditCard.m; sourceTree = "<group>"; };
 		86FA32EA1B61E16400EF4D2F /* Constants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = "<group>"; };
+		B9683DC93E2CA14DB007FC17 /* Pods_Alfred.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Alfred.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DC0FB5DB1AD74BB800E3FD4E /* DriverCalloutPopupViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DriverCalloutPopupViewController.h; sourceTree = "<group>"; };
 		DC0FB5DC1AD74BB800E3FD4E /* DriverCalloutPopupViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DriverCalloutPopupViewController.m; sourceTree = "<group>"; };
 		DC0FB5E11AD75C1000E3FD4E /* DriverCalloutNotActiveViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DriverCalloutNotActiveViewController.h; sourceTree = "<group>"; };
@@ -1736,7 +1736,7 @@
 				DC74F0C91A749EDD00E5D808 /* MapKit.framework in Frameworks */,
 				DC8B18331A6CEA80009DA114 /* QuartzCore.framework in Frameworks */,
 				84EDF4811E24F8C0000C6685 /* FBSDKCoreKit.framework in Frameworks */,
-				030A3E6FC46411BF35A817AC /* Pods_Alfred.framework in Frameworks */,
+				820F298EA7DB9CDABD37E7AC /* Pods_Alfred.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2953,7 +2953,7 @@
 				DC74F0C81A749EDD00E5D808 /* MapKit.framework */,
 				DC8B18321A6CEA80009DA114 /* QuartzCore.framework */,
 				28CD188269AB7F935CDFCAD8 /* Pods.framework */,
-				4F79C7D72F3E202018A4DE06 /* Pods_Alfred.framework */,
+				B9683DC93E2CA14DB007FC17 /* Pods_Alfred.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -3043,16 +3043,11 @@
 		DCA0687F1A78762E0083F64A /* Alfred */ = {
 			isa = PBXGroup;
 			children = (
-				863512661B5F39CD0007B65E /* DriverListViewController.h */,
-				863512671B5F39CD0007B65E /* DriverListViewController.m */,
 				DCBD18D21A9E790A006B512D /* Driver */,
 				DCBD18D11A9E78FF006B512D /* User */,
 				DCA0687D1A7876150083F64A /* Search */,
 				DCA068801A7876360083F64A /* Custom Annotations */,
 				DC3321111AA43CFA00D88AE0 /* Ride */,
-				865426D11BC8BA1E0008B9DF /* AlfredListTableViewCell.h */,
-				865426D21BC8BA1E0008B9DF /* AlfredListTableViewCell.m */,
-				865426D31BC8BA1E0008B9DF /* AlfredListTableViewCell.xib */,
 			);
 			name = Alfred;
 			sourceTree = "<group>";
@@ -3212,6 +3207,9 @@
 			children = (
 				DC74F0C21A7499B900E5D808 /* RiderViewController.h */,
 				DC74F0C31A7499B900E5D808 /* RiderViewController.m */,
+				865426D11BC8BA1E0008B9DF /* AlfredListTableViewCell.h */,
+				865426D21BC8BA1E0008B9DF /* AlfredListTableViewCell.m */,
+				865426D31BC8BA1E0008B9DF /* AlfredListTableViewCell.xib */,
 			);
 			name = User;
 			sourceTree = "<group>";
@@ -3221,6 +3219,8 @@
 			children = (
 				DC7CE0DF1A9E519C00DF4824 /* DriverViewController.h */,
 				DC7CE0E01A9E519C00DF4824 /* DriverViewController.m */,
+				863512661B5F39CD0007B65E /* DriverListViewController.h */,
+				863512671B5F39CD0007B65E /* DriverListViewController.m */,
 				8656F4051BD08888005AFED8 /* DriverHeadView.xib */,
 				8656F4071BD088F1005AFED8 /* DriverHeadViewController.h */,
 				8656F4081BD088F1005AFED8 /* DriverHeadViewController.m */,
@@ -4459,7 +4459,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.alfredridesharing.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "5e2c3893-355d-4413-b8b4-ab1d01f6a1b1";
+				PROVISIONING_PROFILE = "9b7e96ca-96a4-4579-8838-0d4f7045c089";
 				PROVISIONING_PROFILE_SPECIFIER = "Piao Alfred Dev";
 				SWIFT_OBJC_BRIDGING_HEADER = "Alfred/Alfred-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -4496,7 +4496,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.alfredridesharing.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "5e2c3893-355d-4413-b8b4-ab1d01f6a1b1";
+				PROVISIONING_PROFILE = "9b7e96ca-96a4-4579-8838-0d4f7045c089";
 				PROVISIONING_PROFILE_SPECIFIER = "Piao Alfred Dev";
 				SWIFT_OBJC_BRIDGING_HEADER = "Alfred/Alfred-Bridging-Header.h";
 				SWIFT_VERSION = 3.0;

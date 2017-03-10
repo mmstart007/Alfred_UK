@@ -352,11 +352,9 @@
     
     
     [PFCloud callFunctionInBackground:@"createCustomer"
-                       withParameters:@{
-                                        @"email": [PFUser currentUser][@"Email"],
+                       withParameters:@{@"email": [PFUser currentUser][@"email"],
                                         @"name": [PFUser currentUser][@"FullName"],
-                                        @"objectId":[[PFUser currentUser] objectId]
-                                        }
+                                        @"objectId":[[PFUser currentUser] objectId]}
                                 block:^(id object, NSError *error) {
                                     
                                     //Object is an NSDictionary that contains the stripe customer information, you can use this as is, or create an instance of your own customer class

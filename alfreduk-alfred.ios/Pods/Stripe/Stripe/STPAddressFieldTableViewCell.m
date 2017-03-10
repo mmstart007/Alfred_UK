@@ -11,17 +11,16 @@
 #import "STPPhoneNumberValidator.h"
 #import "STPEmailAddressValidator.h"
 #import "STPCardValidator.h"
-#import "STPLocalizationUtils.h"
 
 @interface STPAddressFieldTableViewCell() <STPFormTextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource>
 
+@property(nonatomic, weak) UILabel *captionLabel;
 @property(nonatomic, weak) STPFormTextField *textField;
 @property(nonatomic) UIToolbar *inputAccessoryToolbar;
 @property(nonatomic) UIPickerView *countryPickerView;
 @property(nonatomic, strong) NSArray *countryCodes;
 @property(nonatomic, weak)id<STPAddressFieldTableViewCellDelegate>delegate;
-@property(nonatomic, strong) NSString *ourCountryCode;
-@property(nonatomic, assign) STPPostalCodeType postalCodeType;
+
 @end
 
 @implementation STPAddressFieldTableViewCell
@@ -34,7 +33,10 @@
     if (self) {
         _delegate = delegate;
         _theme = [STPTheme new];
-        _contents = contents;
+        
+        UILabel *captionLabel = [UILabel new];
+        _captionLabel = captionLabel;
+        [self.contentView addSubview:captionLabel];
         
         STPFormTextField *textField = [[STPFormTextField alloc] init];
         textField.formDelegate = self;
@@ -45,51 +47,110 @@
         [self.contentView addSubview:textField];
         
         UIToolbar *toolbar = [UIToolbar new];
-        UIBarButtonItem *flexibleItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
-                                                                                      target:nil 
-                                                                                      action:nil];
-        UIBarButtonItem *nextItem = [[UIBarButtonItem alloc] initWithTitle:STPLocalizedString(@"Next", nil)
-                                                                     style:UIBarButtonItemStyleDone
-                                                                    target:self
-                                                                    action:@selector(nextTapped:)];
+        UIBarButtonItem *flexibleItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+        UIBarButtonItem *nextItem = [[UIBarButtonItem alloc] initWithTitle:@"Next" style:UIBarButtonItemStyleDone target:self action:@selector(nextTapped:)];
         toolbar.items = @[flexibleItem, nextItem];
         _inputAccessoryToolbar = toolbar;
         
-        NSString *countryCode = [[NSLocale autoupdatingCurrentLocale] objectForKey:NSLocaleCountryCode];
+        NSString *countryCode = [[NSLocale currentLocale] objectForKey:NSLocaleCountryCode];
         NSMutableArray *otherCountryCodes = [[NSLocale ISOCountryCodes] mutableCopy];
-        NSLocale *locale = [NSLocale currentLocale];
         [otherCountryCodes removeObject:countryCode];
-        [otherCountryCodes sortUsingComparator:^NSComparisonResult(NSString *code1, NSString *code2) {
-            NSString *localeID1 = [NSLocale localeIdentifierFromComponents:@{NSLocaleCountryCode: code1}];
-            NSString *localeID2 = [NSLocale localeIdentifierFromComponents:@{NSLocaleCountryCode: code2}];
-            NSString *name1 = [locale displayNameForKey:NSLocaleIdentifier value:localeID1];
-            NSString *name2 = [locale displayNameForKey:NSLocaleIdentifier value:localeID2];
-            return [name1 compare:name2];
-        }];
-        if (countryCode) {
-           _countryCodes = [@[@"", countryCode] arrayByAddingObjectsFromArray:otherCountryCodes];
-        }
-        else {
-           _countryCodes = [@[@""] arrayByAddingObjectsFromArray:otherCountryCodes];
-        }
+        _countryCodes = [@[@"", countryCode] arrayByAddingObjectsFromArray:otherCountryCodes];
         UIPickerView *pickerView = [UIPickerView new];
         pickerView.dataSource = self;
         pickerView.delegate = self;
         _countryPickerView = pickerView;
         
-        _lastInList = lastInList;
         _type = type;
         self.textField.text = contents;
-
-        NSString *ourCountryCode = nil;
-        if ([self.delegate respondsToSelector:@selector(addressFieldTableViewCountryCode)]) {
-            ourCountryCode = self.delegate.addressFieldTableViewCountryCode;
+        if (!lastInList) {
+            self.textField.returnKeyType = UIReturnKeyNext;
         }
-        
-        if (ourCountryCode == nil) {
-            ourCountryCode = countryCode;
+        switch (type) {
+            case STPAddressFieldTypeName:
+                self.captionLabel.text = NSLocalizedString(@"Name", nil);
+                self.textField.placeholder = NSLocalizedString(@"John Appleseed", nil);
+                self.textField.keyboardType = UIKeyboardTypeDefault;
+                break;
+            case STPAddressFieldTypeLine1:
+                self.captionLabel.text = NSLocalizedString(@"Address", nil);
+                self.textField.placeholder = NSLocalizedString(@"123 Address St", nil);
+                self.textField.keyboardType = UIKeyboardTypeDefault;
+                break;
+            case STPAddressFieldTypeLine2:
+                self.captionLabel.text = NSLocalizedString(@"Apt.", nil);
+                self.textField.placeholder = NSLocalizedString(@"#23", nil);
+                self.textField.keyboardType = UIKeyboardTypeDefault;
+                break;
+            case STPAddressFieldTypeCity:
+                self.captionLabel.text = NSLocalizedString(@"City", nil);
+                self.textField.placeholder = NSLocalizedString(@"San Francisco", nil);
+                self.textField.keyboardType = UIKeyboardTypeDefault;
+                break;
+            case STPAddressFieldTypeState:
+                if ([STPPhoneNumberValidator isUSLocale]) {
+                    self.captionLabel.text = NSLocalizedString(@"State", nil);
+                    self.textField.placeholder = NSLocalizedString(@"CA", nil);
+                } else {
+                    self.captionLabel.text = NSLocalizedString(@"County", nil);
+                    self.textField.placeholder = nil;
+                }
+                self.textField.keyboardType = UIKeyboardTypeDefault;
+                break;
+            case STPAddressFieldTypeZip:
+                if ([STPPhoneNumberValidator isUSLocale]) {
+                    self.captionLabel.text = NSLocalizedString(@"ZIP Code", nil);
+                } else {
+                    self.captionLabel.text = NSLocalizedString(@"Postal Code", nil);
+                }
+                
+                self.textField.placeholder = NSLocalizedString(@"12345", nil);
+                self.textField.keyboardType = UIKeyboardTypeNumberPad;
+                self.textField.preservesContentsOnPaste = NO;
+                self.textField.selectionEnabled = NO;
+                if (!lastInList) {
+                    self.textField.inputAccessoryView = self.inputAccessoryToolbar;
+                }
+                break;
+            case STPAddressFieldTypeCountry:
+                self.captionLabel.text = NSLocalizedString(@"Country", nil);
+                self.textField.placeholder = nil;
+                self.textField.keyboardType = UIKeyboardTypeDefault;
+                self.textField.keyboardType = UIKeyboardTypeDefault;
+                self.textField.inputView = self.countryPickerView;
+                NSInteger index = [self.countryCodes indexOfObject:self.contents];
+                if (index == NSNotFound) {
+                    self.textField.text = @"";
+                }
+                else {
+                    [self.countryPickerView selectRow:index inComponent:0 animated:NO];
+                }
+                break;
+            case STPAddressFieldTypePhone:
+                self.captionLabel.text = NSLocalizedString(@"Phone", nil);
+                self.textField.keyboardType = UIKeyboardTypePhonePad;
+                if ([STPPhoneNumberValidator isUSLocale]) {
+                    self.textField.placeholder = NSLocalizedString(@"(555) 123-1234", nil);
+                    self.textField.autoFormattingBehavior = STPFormTextFieldAutoFormattingBehaviorPhoneNumbers;
+                } else {
+                    self.textField.placeholder = nil;
+                    self.textField.autoFormattingBehavior = STPFormTextFieldAutoFormattingBehaviorNone;
+                }
+                self.textField.preservesContentsOnPaste = NO;
+                self.textField.selectionEnabled = NO;
+                if (!lastInList) {
+                    self.textField.inputAccessoryView = self.inputAccessoryToolbar;
+                }
+                break;
+            case STPAddressFieldTypeEmail:
+                self.captionLabel.text = NSLocalizedString(@"Email", nil);
+                self.textField.placeholder = NSLocalizedString(@"you@email.com", @"email field placeholder");
+                self.textField.autocapitalizationType = UITextAutocapitalizationTypeNone;
+                self.textField.autocorrectionType = UITextAutocorrectionTypeNo;
+                self.textField.keyboardType = UIKeyboardTypeEmailAddress;
+                break;
+                
         }
-        [self delegateCountryCodeDidChange:ourCountryCode];
         [self updateAppearance];
     }
     return self;
@@ -100,144 +161,11 @@
     [self updateAppearance];
 }
 
-- (void)setLastInList:(BOOL)lastInList {
-    _lastInList = lastInList;
-    [self updateTextFieldsAndCaptions];
-}
-
-- (void)updateTextFieldsAndCaptions {
-    self.textField.placeholder = [self placeholderForAddressField:self.type];
-    if (!self.lastInList) {
-        self.textField.returnKeyType = UIReturnKeyNext;
-    }
-    else {
-        self.textField.returnKeyType = UIReturnKeyDefault;
-    }
-    switch (self.type) {
-        case STPAddressFieldTypeName: 
-            self.textField.keyboardType = UIKeyboardTypeDefault;
-            break;
-        case STPAddressFieldTypeLine1: 
-            self.textField.keyboardType = UIKeyboardTypeDefault;
-            break;
-        case STPAddressFieldTypeLine2: 
-            self.textField.keyboardType = UIKeyboardTypeDefault;
-            break;
-        case STPAddressFieldTypeCity:
-            self.textField.keyboardType = UIKeyboardTypeDefault;
-            break;
-        case STPAddressFieldTypeState:
-            self.textField.keyboardType = UIKeyboardTypeDefault;
-            break;
-        case STPAddressFieldTypeZip:
-            if ([self countryCodeIsUnitedStates]) { 
-                self.textField.keyboardType = UIKeyboardTypePhonePad;
-            } else {
-                self.textField.keyboardType = UIKeyboardTypeASCIICapable;
-            }
-            
-            self.textField.preservesContentsOnPaste = NO;
-            self.textField.selectionEnabled = NO;
-            if (!self.lastInList) {
-                self.textField.inputAccessoryView = self.inputAccessoryToolbar;
-            }
-            else {
-                self.textField.inputAccessoryView = nil;
-            }
-            break;
-        case STPAddressFieldTypeCountry:
-            self.textField.keyboardType = UIKeyboardTypeDefault;
-            self.textField.inputView = self.countryPickerView;
-            NSInteger index = [self.countryCodes indexOfObject:self.contents];
-            if (index == NSNotFound) {
-                self.textField.text = @"";
-            }
-            else {
-                [self.countryPickerView selectRow:index inComponent:0 animated:NO];
-                self.textField.text = [self pickerView:self.countryPickerView titleForRow:index forComponent:0];
-            }
-            self.textField.validText = [self validContents];
-            break;
-        case STPAddressFieldTypePhone:
-            self.textField.keyboardType = UIKeyboardTypePhonePad;
-            if ([self countryCodeIsUnitedStates]) {
-                self.textField.autoFormattingBehavior = STPFormTextFieldAutoFormattingBehaviorPhoneNumbers;
-            } else {
-                self.textField.autoFormattingBehavior = STPFormTextFieldAutoFormattingBehaviorNone;
-            }
-            self.textField.preservesContentsOnPaste = NO;
-            self.textField.selectionEnabled = NO;
-            if (!self.lastInList) {
-                self.textField.inputAccessoryView = self.inputAccessoryToolbar;
-            }
-            else {
-                self.textField.inputAccessoryView = nil;
-            }
-            break;
-        case STPAddressFieldTypeEmail: 
-            self.textField.autocapitalizationType = UITextAutocapitalizationTypeNone;
-            self.textField.autocorrectionType = UITextAutocorrectionTypeNo;
-            self.textField.keyboardType = UIKeyboardTypeEmailAddress;
-            break;
-            
-    }
-    self.textField.accessibilityLabel = self.textField.placeholder;
-}
-
-+ (NSString *)stateFieldCaptionForCountryCode:(NSString *)countryCode {
-    if ([countryCode isEqualToString:@"US"]) {
-        return STPLocalizedString(@"State", @"Caption for State field on address form (only countries that use state , like United States)");
-    }
-    else if ([countryCode isEqualToString:@"CA"]) {
-        return STPLocalizedString(@"Province", @"Caption for Province field on address form (only countries that use province, like Canada)");
-    }
-    else if ([countryCode isEqualToString:@"GB"]) {
-        return STPLocalizedString(@"County", @"Caption for County field on address form (only countries that use county, like United Kingdom)");
-    }
-    else  {
-        return STPLocalizedString(@"State / Province / Region", @"Caption for generalized state/province/region field on address form (not tied to a specific country's format)");
-    }
-}
-
-- (NSString *)placeholderForAddressField:(STPAddressFieldType)addressFieldType {
-    switch (addressFieldType) {
-        case STPAddressFieldTypeName:
-            return STPLocalizedString(@"Name", @"Caption for Name field on address form");
-        case STPAddressFieldTypeLine1:
-            return STPLocalizedString(@"Address", @"Caption for Address field on address form");
-        case STPAddressFieldTypeLine2:
-            return STPLocalizedString(@"Apt.", @"Caption for Apartment/Address line 2 field on address form");
-        case STPAddressFieldTypeCity:
-            return STPLocalizedString(@"City", @"Caption for City field on address form");
-        case STPAddressFieldTypeState:
-            return [[self class] stateFieldCaptionForCountryCode:self.ourCountryCode];
-        case STPAddressFieldTypeZip:
-            return ([self countryCodeIsUnitedStates] 
-                    ? STPLocalizedString(@"ZIP Code", @"Caption for Zip Code field on address form (only shown when country is United States only)")
-                    : STPLocalizedString(@"Postal Code", @"Caption for Postal Code field on address form (only shown in countries other than the United States)"));
-        case STPAddressFieldTypeCountry:
-            return STPLocalizedString(@"Country", @"Caption for Country field on address form");
-        case STPAddressFieldTypeEmail:
-            return STPLocalizedString(@"Email", @"Caption for Email field on address form");
-        case STPAddressFieldTypePhone:
-            return STPLocalizedString(@"Phone", @"Caption for Phone field on address form");
-    }
-}
-
-- (void)delegateCountryCodeDidChange:(NSString *)countryCode {
-    if (self.type == STPAddressFieldTypeCountry) {
-        self.contents = countryCode;
-    }
-    
-    self.ourCountryCode = countryCode;
-    _postalCodeType = [STPPostalCodeValidator postalCodeTypeForCountryCode:self.ourCountryCode];
-    [self updateTextFieldsAndCaptions];
-    [self setNeedsLayout];
-}
-
 - (void)updateAppearance {
     self.contentView.backgroundColor = self.theme.secondaryBackgroundColor;
     self.backgroundColor = [UIColor clearColor];
+    self.captionLabel.font = self.theme.font;
+    self.captionLabel.textColor = self.theme.secondaryForegroundColor;
     self.textField.placeholderColor = self.theme.tertiaryForegroundColor;
     self.textField.defaultColor = self.theme.primaryForegroundColor;
     self.textField.errorColor = self.theme.errorColor;
@@ -245,13 +173,33 @@
     [self setNeedsLayout];
 }
 
-- (BOOL)countryCodeIsUnitedStates {
-    return [self.ourCountryCode isEqualToString:@"US"];
+- (NSString *)longestPossibleCaption {
+    NSArray *captions = @[
+                          NSLocalizedString(@"Name", nil),
+                          NSLocalizedString(@"Address", nil),
+                          NSLocalizedString(@"Apt.", nil),
+                          NSLocalizedString(@"City", nil),
+                          ([STPPhoneNumberValidator isUSLocale] ? NSLocalizedString(@"State", nil) : NSLocalizedString(@"County", nil)),
+                          ([STPPhoneNumberValidator isUSLocale] ? NSLocalizedString(@"ZIP Code", nil) : NSLocalizedString(@"Postal Code", nil)),
+                          NSLocalizedString(@"Country", nil),
+                          NSLocalizedString(@"Email", nil),
+                          NSLocalizedString(@"Phone", nil),
+                          ];
+    NSString *longestCaption = @"";
+    for (NSString *caption in captions) {
+        if ([caption length] > [longestCaption length]) {
+            longestCaption = caption;
+        }
+    }
+    return longestCaption;
 }
 
 - (void)layoutSubviews {
     [super layoutSubviews];
-    CGFloat textFieldX = 15;
+    NSDictionary *attributes = @{ NSFontAttributeName: self.theme.font };
+    CGFloat captionWidth = [[self longestPossibleCaption] sizeWithAttributes:attributes].width + 5;
+    self.captionLabel.frame = CGRectMake(15, 0, captionWidth, self.bounds.size.height);
+    CGFloat textFieldX = CGRectGetMaxX(self.captionLabel.frame) + 10;
     self.textField.frame = CGRectMake(textFieldX, 1, self.bounds.size.width - textFieldX, self.bounds.size.height - 1);
     self.inputAccessoryToolbar.frame = CGRectMake(0, 0, self.bounds.size.width, 44);
 }
@@ -296,11 +244,11 @@
 }
 
 - (void)setCaption:(NSString *)caption {
-    self.textField.placeholder = caption;
+    self.captionLabel.text = caption;
 }
 
 - (NSString *)caption {
-    return self.textField.placeholder;
+    return self.captionLabel.text;
 }
 
 - (void)setContents:(NSString *)contents {
@@ -324,13 +272,11 @@
         case STPAddressFieldTypeLine2:
             return YES;
         case STPAddressFieldTypeZip:
-            return [STPPostalCodeValidator stringIsValidPostalCode:self.contents
-                                                              type:self.postalCodeType];
+            return [STPPostalCodeValidator stringIsValidPostalCode:self.contents];
         case STPAddressFieldTypeEmail:
             return [STPEmailAddressValidator stringIsValidEmailAddress:self.contents];
         case STPAddressFieldTypePhone:
-            return [STPPhoneNumberValidator stringIsValidPhoneNumber:self.contents
-                                                      forCountryCode:self.ourCountryCode];
+            return [STPPhoneNumberValidator stringIsValidPhoneNumber:self.contents];
     }
 }
 
@@ -343,37 +289,26 @@
         case STPAddressFieldTypeCountry:
         case STPAddressFieldTypeLine2:
             return YES;
-        case STPAddressFieldTypeZip: {
-            if (self.postalCodeType == STPCountryPostalCodeTypeNumericOnly) {
-                return [STPCardValidator stringIsNumeric:self.contents];
-            }
-            else {
-                return YES;
-            }
-        }
+        case STPAddressFieldTypeZip:
+            return [STPCardValidator stringIsNumeric:self.contents];
         case STPAddressFieldTypeEmail:
             return [STPEmailAddressValidator stringIsValidPartialEmailAddress:self.contents];
         case STPAddressFieldTypePhone:
-            return [STPPhoneNumberValidator stringIsValidPartialPhoneNumber:self.contents
-                                                             forCountryCode:self.ourCountryCode];
+            return [STPPhoneNumberValidator stringIsValidPartialPhoneNumber:self.contents];
     }
 }
 
 #pragma mark - UIPickerView
 
 - (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
-    self.ourCountryCode = self.countryCodes[row];
-    self.contents = self.ourCountryCode;
+    self.contents = self.countryCodes[row];
     self.textField.text = [self pickerView:pickerView titleForRow:row forComponent:component];
-    if ([self.delegate respondsToSelector:@selector(addressFieldTableViewCountryCode)]) {
-        self.delegate.addressFieldTableViewCountryCode = self.ourCountryCode;
-    }
 }
 
 - (NSString *)pickerView:(__unused UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(__unused NSInteger)component {
     NSString *countryCode = self.countryCodes[row];
     NSString *identifier = [NSLocale localeIdentifierFromComponents:@{NSLocaleCountryCode: countryCode}];
-    return [[NSLocale autoupdatingCurrentLocale] displayNameForKey:NSLocaleIdentifier value:identifier];
+    return [[NSLocale currentLocale] displayNameForKey:NSLocaleIdentifier value:identifier];
 }
 
 - (NSInteger)numberOfComponentsInPickerView:(__unused UIPickerView *)pickerView {

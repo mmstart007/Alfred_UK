@@ -193,8 +193,4 @@
     return [STPImageLibrary brandImageForCardBrand:self.brand];
 }
 
-- (UIImage *)templateImage {
-    return [STPImageLibrary templatedBrandImageForCardBrand:self.brand];
-}
-
 @end

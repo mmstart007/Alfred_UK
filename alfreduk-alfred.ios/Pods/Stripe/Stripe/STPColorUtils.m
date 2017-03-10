@@ -22,8 +22,4 @@
     return brightness1 >= brightness2 ? color1 : color2;
 }
 
-+ (BOOL)colorIsBright:(UIColor *)color {
-    return [self perceivedBrightnessForColor:color] > 0.3;
-}
-
 @end

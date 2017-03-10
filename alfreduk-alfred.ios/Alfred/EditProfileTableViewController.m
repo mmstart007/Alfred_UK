@@ -7,9 +7,9 @@
 //
 
 #import "EditProfileTableViewController.h"
-
 #import <Parse/Parse.h>
 #import "HUD.h"
+
 @interface EditProfileTableViewController ()
 @property (weak, nonatomic) IBOutlet UITextField *firstNameTextField;
 @property (weak, nonatomic) IBOutlet UITextField *lastNameTextField;
@@ -22,9 +22,8 @@
 @implementation EditProfileTableViewController
 - (IBAction)cancelEdit:(id)sender {
     [self dismissViewControllerAnimated:YES completion:nil];
-    
-    
 }
+
 - (IBAction)doneEdit:(id)sender {
     
     NSString * firstName = _firstNameTextField.text;
@@ -39,7 +38,6 @@
         
     }
     if(lastName.length == 0){
-    
         //shake view
         return;
     }
@@ -49,14 +47,12 @@
         
     }
     //TODO: improve email validation here
-    if(![emailAddress containsString:@"\@"]){
+    if(![emailAddress containsString:@"@"]) {
         //shake view
         return;
-        
     }
     
     PFUser *user = [PFUser currentUser];
-    
     user[@"FirstName"] = firstName;
     user[@"LastName"] = lastName;
     user[@"FullName"] = fullName;
@@ -66,24 +62,12 @@
         [HUD hideUIBlockingIndicator];
         [self dismissViewControllerAnimated:YES completion:nil];
     }];
-    
-    
 }
-
-
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
-    
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
-    
-    [ _femaleSwitch setEnabled:    [[PFUser currentUser][@"Female"] boolValue] ];
-    
-    
+
+    [_femaleSwitch setEnabled: [[PFUser currentUser][@"Female"] boolValue]];
 }
 
 - (void)didReceiveMemoryWarning {

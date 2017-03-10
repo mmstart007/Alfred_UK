@@ -9,9 +9,6 @@
 #import "STPRememberMeTermsView.h"
 #import "STPImageLibrary.h"
 #import "STPImageLibrary+Private.h"
-#import "STPLocalizationUtils.h"
-#import "STPWebViewController.h"
-#import "STPStringUtils.h"
 
 @interface STPRememberMeTermsView()<UITextViewDelegate>
 
@@ -32,7 +29,6 @@
         textView.dataDetectorTypes = UIDataDetectorTypeLink;
         textView.scrollEnabled = NO;
         textView.delegate = self;
-
         // This disables 3D touch previews in the text view.
         for (UIGestureRecognizer *recognizer in textView.gestureRecognizers) {
             if ([[NSStringFromClass([recognizer class]) lowercaseString] containsString:@"preview"] ||
@@ -48,32 +44,17 @@
     return self;
 }
 
-static NSString *const FooterLinkTagPrivacyPolicy = @"pplink";
-static NSString *const FooterLinkTagTermsOfService = @"termslink";
-static NSString *const FooterLinkTagMoreInfo = @"infolink";
-
 - (NSAttributedString *)buildAttributedString {
-    __block NSString *contents = STPLocalizedString(@"Stripe may store my payment info and phone number for use in this app and other apps, and use my number for verification, subject to Stripe's <pplink>Privacy Policy</pplink> and <termslink>Terms</termslink>. <infolink>More Info</infolink>", 
-                                                    @"Footer shown when the user enables Remember Me that shows additional info. The html-style tags control which parts of the text link to the Stripe Privacy Policy, Terms of Service, and Remember Me More Info pages, and can be moved around as needed in the translation (although they CANNOT overlap).");
-    
-    __block NSRange privacyRange;
-    __block NSRange termsRange;
-    __block NSRange learnMoreRange;
-    
-    [STPStringUtils parseRangesFromString:contents 
-                                 withTags:[NSSet setWithArray:@[FooterLinkTagPrivacyPolicy, FooterLinkTagTermsOfService, FooterLinkTagMoreInfo]] 
-                               completion:^(NSString *string, NSDictionary<NSString *,NSValue *> *tagMap) {
-                                   contents = string;
-                                   
-                                   privacyRange = tagMap[FooterLinkTagPrivacyPolicy].rangeValue;
-                                   termsRange = tagMap[FooterLinkTagTermsOfService].rangeValue;
-                                   learnMoreRange = tagMap[FooterLinkTagMoreInfo].rangeValue;
-                               }];
-    
+    NSString *privacyPolicy = [NSLocalizedString(@"Privacy Policy", nil) lowercaseString];
     NSURL *privacyURL = [NSURL URLWithString:@"https://checkout.stripe.com/-/privacy"];
+    NSString *terms = [NSLocalizedString(@"Terms", nil) lowercaseString];
     NSURL *termsURL = [NSURL URLWithString:@"https://checkout.stripe.com/-/terms"];
+    NSString *learnMore = [NSLocalizedString(@"More info", nil) lowercaseString];
     NSURL *learnMoreURL = [NSURL URLWithString:@"https://checkout.stripe.com/-/remember-me"];
-    
+    NSString *contents = NSLocalizedString(@"Stripe may store my payment info and phone number for use in this app and other apps, and use my number for verification, subject to Stripe's Privacy Policy and Terms. More Info", nil);
+    NSRange privacyRange = [contents.lowercaseString rangeOfString:privacyPolicy];
+    NSRange termsRange = [contents.lowercaseString rangeOfString:terms];
+    NSRange learnMoreRange = [contents.lowercaseString rangeOfString:learnMore];
     NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
     paragraphStyle.alignment = NSTextAlignmentLeft;
     NSDictionary *attributes = @{
@@ -118,29 +99,13 @@ static NSString *const FooterLinkTagMoreInfo = @"infolink";
                                          };
 }
 
-- (CGFloat)heightForWidth:(CGFloat)maxWidth {
-    CGFloat availableWidth = maxWidth - (self.insets.left + self.insets.right);
-    return ([self.textView sizeThatFits:CGSizeMake(availableWidth, CGFLOAT_MAX)].height
-            + self.insets.top
-            + self.insets.bottom);
-}
-
 - (void)layoutSubviews {
     [super layoutSubviews];
     self.textView.frame = UIEdgeInsetsInsetRect(self.bounds, self.insets);
 }
 
-- (void)setInsets:(UIEdgeInsets)insets {
-    _insets = insets;
-    [self setNeedsLayout];
-}
-
-- (BOOL)textView:(UITextView *)textView shouldInteractWithURL:(NSURL *)URL inRange:(NSRange)characterRange {
-    if (self.pushViewControllerBlock) {
-        STPWebViewController *webViewController = [[STPWebViewController alloc] initWithURL:URL 
-                                                                                      title:[textView.text substringWithRange:characterRange]];
-        self.pushViewControllerBlock(webViewController);
-    }
+- (BOOL)textView:(__unused UITextView *)textView shouldInteractWithURL:(NSURL *)URL inRange:(__unused NSRange)characterRange {
+    [[UIApplication sharedApplication] openURL:URL];
     return NO;
 }
 

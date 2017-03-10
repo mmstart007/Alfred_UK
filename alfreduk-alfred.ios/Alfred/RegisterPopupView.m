@@ -92,7 +92,7 @@
     return [emailTest evaluateWithObject:checkString];
 }
 
--(void)performRegistration{
+-(void)performRegistration {
 
     self.activityIndicator.hidden = NO;
     [self.activityIndicator startAnimating];
@@ -116,7 +116,7 @@
     user[@"EnabledAsDriver"] = @NO;
     user[@"Rating"] = @0.0;
     user[@"Balance"] = @0.0;
-    user[@"Email"] = self.emailField.text;
+    user[@"email"] = self.emailField.text;
     user[@"location"] = [PFGeoPoint geoPointWithLatitude:0 longitude:0];
     user[@"locationAddress"] = @"Undetermined";
     

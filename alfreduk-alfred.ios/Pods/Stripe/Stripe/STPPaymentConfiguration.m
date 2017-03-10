@@ -32,10 +32,8 @@
     if (self) {
         _additionalPaymentMethods = STPPaymentMethodTypeAll;
         _requiredBillingAddressFields = STPBillingAddressFieldsNone;
-        _requiredShippingAddressFields = PKAddressFieldNone;
         _companyName = [NSBundle stp_applicationName];
         _smsAutofillDisabled = NO;
-        _shippingType = STPShippingTypeShipping;
     }
     return self;
 }
@@ -45,8 +43,6 @@
     copy.publishableKey = self.publishableKey;
     copy.additionalPaymentMethods = self.additionalPaymentMethods;
     copy.requiredBillingAddressFields = self.requiredBillingAddressFields;
-    copy.requiredShippingAddressFields = self.requiredShippingAddressFields;
-    copy.shippingType = self.shippingType;
     copy.companyName = self.companyName;
     copy.appleMerchantIdentifier = self.appleMerchantIdentifier;
     copy.smsAutofillDisabled = self.smsAutofillDisabled;

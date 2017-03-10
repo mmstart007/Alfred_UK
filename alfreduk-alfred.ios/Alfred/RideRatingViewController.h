@@ -19,9 +19,6 @@
 
 @property(strong,nonatomic)PFObject *rideRequest;
 
-
-
-
 @property (weak, nonatomic) IBOutlet UIImageView *profilePicImageView;
 @property (weak, nonatomic) IBOutlet UIImageView *profileBackgroundImageView;
 @property (weak, nonatomic) IBOutlet HCSStarRatingView *rate1View;

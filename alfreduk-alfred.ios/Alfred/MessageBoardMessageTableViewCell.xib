@@ -1,9 +1,13 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9531" systemVersion="14F1021" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11762" systemVersion="16C67" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
@@ -31,8 +35,8 @@
                         <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="533 Liberty Ave, Jersey City, NJ" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4ID-x5-t8M">
-                        <rect key="frame" x="84" y="30" width="205" height="21"/>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="533 Liberty Ave, Jersey City, NJ" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4ID-x5-t8M">
+                        <rect key="frame" x="84" y="30" width="180" height="21"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="180" id="RpS-ZR-H6D"/>
                             <constraint firstAttribute="height" constant="21" id="YYp-1F-hZM"/>
@@ -40,8 +44,8 @@
                         <fontDescription key="fontDescription" type="system" pointSize="12"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="79 Sanford Pl, Jersey City, NJ" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PQv-SJ-bU6">
-                        <rect key="frame" x="84" y="50" width="205" height="21"/>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="79 Sanford Pl, Jersey City, NJ" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PQv-SJ-bU6">
+                        <rect key="frame" x="84" y="50" width="180" height="21"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="180" id="Ppv-Bf-Rdk"/>
                             <constraint firstAttribute="height" constant="21" id="bWe-ws-3oK"/>
@@ -63,7 +67,7 @@
                             <constraint firstAttribute="width" constant="48" id="v6F-fG-z8E"/>
                         </constraints>
                         <fontDescription key="fontDescription" type="system" pointSize="10"/>
-                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="30-Oct-86 3:00 PM" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wz2-pN-BG1">
@@ -112,8 +116,8 @@
                             <constraint firstAttribute="width" constant="15" id="vi7-PJ-Uht"/>
                         </constraints>
                     </imageView>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="arrow1" translatesAutoresizingMaskIntoConstraints="NO" id="2k0-Ew-dYD">
-                        <rect key="frame" x="293" y="43" width="9" height="16"/>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="arrow1" translatesAutoresizingMaskIntoConstraints="NO" id="2k0-Ew-dYD">
+                        <rect key="frame" x="297" y="43" width="9" height="16"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="16" id="0aV-Kj-YWy"/>
                             <constraint firstAttribute="width" constant="9" id="GU6-9o-eiH"/>
@@ -143,8 +147,8 @@
                         <fontDescription key="fontDescription" type="system" pointSize="8"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="pound" translatesAutoresizingMaskIntoConstraints="NO" id="Mzu-Nd-d02">
-                        <rect key="frame" x="145" y="79" width="16" height="15"/>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="pound" translatesAutoresizingMaskIntoConstraints="NO" id="Mzu-Nd-d02">
+                        <rect key="frame" x="145" y="77.5" width="16" height="16"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="16" id="RkY-Y0-oHi"/>
                             <constraint firstAttribute="width" constant="16" id="kk1-vj-472"/>
@@ -288,7 +292,7 @@
                     </mask>
                 </variation>
             </tableViewCellContentView>
-            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+            <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
             <connections>
                 <outlet property="driverLabel" destination="nrb-Rc-fbq" id="V2N-ev-y5T"/>
                 <outlet property="dropoffLabel" destination="PQv-SJ-bU6" id="yLL-jO-8kD"/>
@@ -315,6 +319,6 @@
         <image name="pound" width="256" height="256"/>
         <image name="profile_pic_teja" width="402" height="402"/>
         <image name="req button" width="1005" height="183"/>
-        <image name="seated" width="100" height="100"/>
+        <image name="seated" width="50" height="50"/>
     </resources>
 </document>

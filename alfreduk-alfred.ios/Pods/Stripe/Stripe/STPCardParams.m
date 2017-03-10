@@ -123,23 +123,23 @@
 + (BOOL)handleValidationErrorForParameter:(NSString *)parameter error:(NSError **)outError {
     if (outError != nil) {
         if ([parameter isEqualToString:@"number"]) {
-            *outError = [self createErrorWithMessage:[NSError stp_cardErrorInvalidNumberUserMessage]
+            *outError = [self createErrorWithMessage:STPCardErrorInvalidNumberUserMessage
                                            parameter:parameter
                                        cardErrorCode:STPInvalidNumber
                                      devErrorMessage:@"Card number must be between 10 and 19 digits long and Luhn valid."];
         } else if ([parameter isEqualToString:@"cvc"]) {
-            *outError = [self createErrorWithMessage:[NSError stp_cardInvalidCVCUserMessage]
+            *outError = [self createErrorWithMessage:STPCardErrorInvalidCVCUserMessage
                                            parameter:parameter
                                        cardErrorCode:STPInvalidCVC
                                      devErrorMessage:@"Card CVC must be numeric, 3 digits for Visa, Discover, MasterCard, JCB, and Discover cards, and 3 or 4 "
                          @"digits for American Express cards."];
         } else if ([parameter isEqualToString:@"expMonth"]) {
-            *outError = [self createErrorWithMessage:[NSError stp_cardErrorInvalidExpMonthUserMessage]
+            *outError = [self createErrorWithMessage:STPCardErrorInvalidExpMonthUserMessage
                                            parameter:parameter
                                        cardErrorCode:STPInvalidExpMonth
                                      devErrorMessage:@"expMonth must be less than 13"];
         } else if ([parameter isEqualToString:@"expYear"]) {
-            *outError = [self createErrorWithMessage:[NSError stp_cardErrorInvalidExpYearUserMessage]
+            *outError = [self createErrorWithMessage:STPCardErrorInvalidExpYearUserMessage
                                            parameter:parameter
                                        cardErrorCode:STPInvalidExpYear
                                      devErrorMessage:@"expYear must be this year or a year in the future"];
@@ -150,7 +150,7 @@
             *outError = [[NSError alloc] initWithDomain:StripeDomain
                                                    code:STPAPIError
                                                userInfo:@{
-                                                          NSLocalizedDescriptionKey: [NSError stp_unexpectedErrorMessage],
+                                                          NSLocalizedDescriptionKey: STPUnexpectedError,
                                                           STPErrorMessageKey: @"There was an error within the Stripe client library when trying to generate the "
                                                           @"proper validation error. Contact support@stripe.com if you see this."
                                                           }];

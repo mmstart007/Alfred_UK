@@ -25,4 +25,5 @@
 @property (weak, nonatomic) IBOutlet UILabel *ratingLabel;
 
 -(void)updateData;
+
 @end

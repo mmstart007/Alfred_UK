@@ -10,9 +10,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-/**
- STPTheme objects can be used to visually style Stripe-provided UI. See https://stripe.com/docs/mobile/ios#theming for more information.
- */
 @interface STPTheme : NSObject<NSCopying>
 
 /**
@@ -74,19 +71,6 @@ NS_ASSUME_NONNULL_BEGIN
  *  The medium-weight font to be used for all bold text in views using this theme. Make sure to select an appropriate size.
  */
 @property(nonatomic, copy, null_resettable)UIFont  *emphasisFont;
-
-/**
- *  The navigation bar style to use for any view controllers presented modally
- *  by the SDK. The default value will be determined based on the brightness
- *  of the theme's `primaryBackgroundColor`.
- */
-@property(nonatomic)UIBarStyle barStyle;
-
-/**
- *  A Boolean value indicating whether the navigation bar for any view controllers
- *  presented modally by the SDK should be translucent. The default value is NO.
- */
-@property(nonatomic)BOOL translucentNavigationBar;
 
 /**
  *  This font is automatically derived from the font, with a slightly lower point size, and will be used for supplementary labels.

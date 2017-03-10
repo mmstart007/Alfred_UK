@@ -71,7 +71,7 @@
             for (NSInteger i=0; i < 3; i++) {
                 STPCodeInternalTextField *textField = [STPCodeInternalTextField new];
                 textField.delegate = self;
-                textField.keyboardType = UIKeyboardTypePhonePad;
+                textField.keyboardType = UIKeyboardTypeNumberPad;
                 textField.internalDelegate = self;
                 textField.textAlignment = NSTextAlignmentCenter;
                 [textFields addObject:textField];
@@ -229,7 +229,11 @@
         [nextField becomeFirstResponder];
     } else {
         [textField resignFirstResponder];
-        [self.delegate codeTextField:self didEnterCode:self.code];
+        NSMutableString *code = [NSMutableString string];
+        for (UITextField *aTextField in self.textFields) {
+            [code appendString:aTextField.text];
+        }
+        [self.delegate codeTextField:self didEnterCode:code];
     }
     return NO;
 }
@@ -248,25 +252,6 @@
 - (UITextField *)fieldAfter:(UITextField *)field {
     NSInteger index = [self.textFields indexOfObject:field];
     return [self.textFields stp_boundSafeObjectAtIndex:index+1];
-}
-
-- (NSString *)code {
-    NSMutableString *code = [NSMutableString string];
-    for (UITextField *aTextField in self.textFields) {
-        [code appendString:aTextField.text];
-    }
-    return code.copy;
-}
-
-- (void)setCode:(NSString *)code {
-    [self.textFields enumerateObjectsUsingBlock:^(UITextField *_Nonnull aTextField, NSUInteger idx, __unused BOOL * _Nonnull stop) {
-        if (idx < code.length) {
-            aTextField.text = [code substringWithRange:NSMakeRange(idx, 1)];
-        }
-        else {
-            aTextField.text = @"";
-        }
-    }];
 }
 
 @end

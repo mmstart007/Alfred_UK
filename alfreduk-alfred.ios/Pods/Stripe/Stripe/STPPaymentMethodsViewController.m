@@ -23,16 +23,11 @@
 #import "STPPaymentMethodsInternalViewController.h"
 #import "UIViewController+Stripe_NavigationItemProxy.h"
 #import "STPTheme.h"
-#import "STPColorUtils.h"
-#import "STPWeakStrongMacros.h"
-#import "STPLocalizationUtils.h"
-#import "STPDispatchFunctions.h"
-#import "UINavigationController+Stripe_Completion.h"
 
 @interface STPPaymentMethodsViewController()<STPPaymentMethodsInternalViewControllerDelegate, STPAddCardViewControllerDelegate>
 
 @property(nonatomic)STPPaymentConfiguration *configuration;
-@property(nonatomic)STPTheme *theme;
+@property(nonatomic) STPTheme *theme;
 @property(nonatomic)id<STPBackendAPIAdapter> apiAdapter;
 @property(nonatomic)STPAPIClient *apiClient;
 @property(nonatomic)STPPromise<STPPaymentMethodTuple *> *loadingPromise;
@@ -62,27 +57,25 @@
                              delegate:(id<STPPaymentMethodsViewControllerDelegate>)delegate {
     STPPromise<STPPaymentMethodTuple *> *promise = [STPPromise new];
     [apiAdapter retrieveCustomer:^(STPCustomer * _Nullable customer, NSError * _Nullable error) {
-        stpDispatchToMainThreadIfNecessary(^{
-            if (error) {
-                [promise fail:error];
-            } else {
-                STPCard *selectedCard;
-                NSMutableArray<STPCard *> *cards = [NSMutableArray array];
-                for (id<STPSource> source in customer.sources) {
-                    if ([source isKindOfClass:[STPCard class]]) {
-                        STPCard *card = (STPCard *)source;
-                        [cards addObject:card];
-                        if ([card.stripeID isEqualToString:customer.defaultSource.stripeID]) {
-                            selectedCard = card;
-                        }
+        if (error) {
+            [promise fail:error];
+        } else {
+            STPCard *selectedCard;
+            NSMutableArray<STPCard *> *cards = [NSMutableArray array];
+            for (id<STPSource> source in customer.sources) {
+                if ([source isKindOfClass:[STPCard class]]) {
+                    STPCard *card = (STPCard *)source;
+                    [cards addObject:card];
+                    if ([card.stripeID isEqualToString:customer.defaultSource.stripeID]) {
+                        selectedCard = card;
                     }
                 }
-                STPCardTuple *cardTuple = [STPCardTuple tupleWithSelectedCard:selectedCard cards:cards];
-                STPPaymentMethodTuple *tuple = [STPPaymentMethodTuple tupleWithCardTuple:cardTuple
-                                                                         applePayEnabled:configuration.applePayEnabled];
-                [promise succeed:tuple];
             }
-        });
+            STPCardTuple *cardTuple = [STPCardTuple tupleWithSelectedCard:selectedCard cards:cards];
+            STPPaymentMethodTuple *tuple = [STPPaymentMethodTuple tupleWithCardTuple:cardTuple
+                                                                     applePayEnabled:configuration.applePayEnabled];
+            [promise succeed:tuple];
+        }
     }];
     return [self initWithConfiguration:configuration
                             apiAdapter:apiAdapter
@@ -99,45 +92,38 @@
     [self.view addSubview:activityIndicator];
     self.activityIndicator = activityIndicator;
     
-    self.navigationItem.title = STPLocalizedString(@"Loading…", @"Title for screen when data is still loading from the network.");
+    self.navigationItem.title = NSLocalizedString(@"Loading...", nil);
     
-    self.backItem = [UIBarButtonItem stp_backButtonItemWithTitle:STPLocalizedString(@"Back", @"Text for back button") 
-                                                           style:UIBarButtonItemStylePlain 
-                                                          target:self
-                                                          action:@selector(cancel:)];
+    self.backItem = [UIBarButtonItem stp_backButtonItemWithTitle:NSLocalizedString(@"Back", nil) style:UIBarButtonItemStylePlain target:self action:@selector(cancel:)];
     self.cancelItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancel:)];
-    self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:STPLocalizedString(@"Back", @"Text for back button") 
-                                                                             style:UIBarButtonItemStylePlain 
-                                                                            target:nil 
-                                                                            action:nil];
-    WEAK(self);
+    self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Back", nil) style:UIBarButtonItemStylePlain target:nil action:nil];
+    __weak typeof(self) weakself = self;
     [self.loadingPromise onSuccess:^(STPPaymentMethodTuple *tuple) {
-        STRONG(self);
         UIViewController *internal;
         if (tuple.paymentMethods.count > 0) {
-            internal = [[STPPaymentMethodsInternalViewController alloc] initWithConfiguration:self.configuration
-                                                                                        theme:self.theme prefilledInformation:self.prefilledInformation
+            internal = [[STPPaymentMethodsInternalViewController alloc] initWithConfiguration:weakself.configuration
+                                                                                        theme:weakself.theme prefilledInformation:weakself.prefilledInformation
                                                                            paymentMethodTuple:tuple
-                                                                                     delegate:self];
+                                                                                     delegate:weakself];
         } else {
-            STPAddCardViewController *addCardViewController = [[STPAddCardViewController alloc] initWithConfiguration:self.configuration theme:self.theme];
+            STPAddCardViewController *addCardViewController = [[STPAddCardViewController alloc] initWithConfiguration:weakself.configuration theme:weakself.theme];
             addCardViewController.delegate = self;
             addCardViewController.prefilledInformation = self.prefilledInformation;
             internal = addCardViewController;
             
         }
         internal.stp_navigationItemProxy = self.navigationItem;
-        [self addChildViewController:internal];
+        [weakself addChildViewController:internal];
         internal.view.alpha = 0;
-        [self.view insertSubview:internal.view belowSubview:self.activityIndicator];
-        [self.view addSubview:internal.view];
-        internal.view.frame = self.view.bounds;
-        [internal didMoveToParentViewController:self];
+        [weakself.view insertSubview:internal.view belowSubview:weakself.activityIndicator];
+        [weakself.view addSubview:internal.view];
+        internal.view.frame = weakself.view.bounds;
+        [internal didMoveToParentViewController:weakself];
         [UIView animateWithDuration:0.2 animations:^{
-            self.activityIndicator.alpha = 0;
+            weakself.activityIndicator.alpha = 0;
             internal.view.alpha = 1;
         } completion:^(__unused BOOL finished) {
-            self.activityIndicator.animating = NO;
+            weakself.activityIndicator.animating = NO;
         }];
         [self.navigationItem setRightBarButtonItem:internal.stp_navigationItemProxy.rightBarButtonItem animated:YES];
     }];
@@ -164,13 +150,6 @@
     [self.cancelItem stp_setTheme:self.theme];
     self.activityIndicator.tintColor = self.theme.accentColor;
     self.view.backgroundColor = self.theme.primaryBackgroundColor;
-    [self setNeedsStatusBarAppearanceUpdate];
-}
-
-- (UIStatusBarStyle)preferredStatusBarStyle {
-    return ([STPColorUtils colorIsBright:self.theme.primaryBackgroundColor] 
-            ? UIStatusBarStyleDefault
-            : UIStatusBarStyleLightContent);
 }
 
 - (void)cancel:(__unused id)sender {
@@ -192,12 +171,10 @@
 
 - (void)internalViewControllerDidCreateToken:(STPToken *)token completion:(STPErrorBlock)completion {
     [self.apiAdapter attachSourceToCustomer:token completion:^(NSError * _Nullable error) {
-        stpDispatchToMainThreadIfNecessary(^{
-            completion(error);
-            if (!error) {
-                [self finishWithPaymentMethod:token.card];
-            }
-        });
+        completion(error);
+        if (!error) {
+            [self finishWithPaymentMethod:token.card];
+        }
     }];
 }
 
@@ -209,22 +186,6 @@
                didCreateToken:(STPToken *)token
                    completion:(STPErrorBlock)completion {
     [self internalViewControllerDidCreateToken:token completion:completion];
-}
-
-- (void)dismissWithCompletion:(STPVoidBlock)completion {
-    if ([self stp_isAtRootOfNavigationController]) {
-        [self.presentingViewController dismissViewControllerAnimated:YES completion:completion];
-    }
-    else {
-        UIViewController *previous = self.navigationController.viewControllers.firstObject;
-        for (UIViewController *viewController in self.navigationController.viewControllers) {
-            if (viewController == self) {
-                break;
-            }
-            previous = viewController;
-        }
-        [self.navigationController stp_popToViewController:previous animated:YES completion:completion];
-    }
 }
 
 @end
@@ -244,23 +205,20 @@
         _apiAdapter = apiAdapter;
         _loadingPromise = loadingPromise;
         _delegate = delegate;
-        WEAK(self);
+        __weak typeof(self) weakself = self;
         [loadingPromise onSuccess:^(STPPaymentMethodTuple *tuple) {
-            STRONG(self);
-            self.paymentMethods = tuple.paymentMethods;
-            self.selectedPaymentMethod = tuple.selectedPaymentMethod;
+            weakself.paymentMethods = tuple.paymentMethods;
+            weakself.selectedPaymentMethod = tuple.selectedPaymentMethod;
         }];
         [[[self.stp_didAppearPromise voidFlatMap:^STPPromise * _Nonnull{
             return loadingPromise;
         }] onSuccess:^(STPPaymentMethodTuple *tuple) {
-            STRONG(self);
             if (tuple.selectedPaymentMethod) {
-                [self.delegate paymentMethodsViewController:self
+                [weakself.delegate paymentMethodsViewController:weakself
                                          didSelectPaymentMethod:tuple.selectedPaymentMethod];
             }
         }] onFailure:^(NSError *error) {
-            STRONG(self);
-            [self.delegate paymentMethodsViewController:self didFailToLoadWithError:error];
+            [weakself.delegate paymentMethodsViewController:weakself didFailToLoadWithError:error];
         }];
     }
     return self;

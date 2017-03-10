@@ -12,84 +12,37 @@
 
 @implementation STPPhoneNumberValidator
 
-+ (NSString *)countryCodeOrCurrentLocaleCountryFromString:(nullable NSString *)nillableCode {
-    NSString *countryCode = nillableCode;
-    if (!countryCode) {
-        countryCode = [[NSLocale autoupdatingCurrentLocale] objectForKey:NSLocaleCountryCode];
-    }
-    return countryCode;
-}
-                                                           
 + (BOOL)stringIsValidPartialPhoneNumber:(NSString *)string {
-    return [self stringIsValidPartialPhoneNumber:string forCountryCode:nil];
+    if (![self isUSLocale]) {
+        return YES;
+    }
+    return [STPCardValidator sanitizedNumericStringForString:string].length <= 10;
 }
 
 + (BOOL)stringIsValidPhoneNumber:(NSString *)string {
-    if (!string) {
-        return NO;
-    }
-    return [self stringIsValidPhoneNumber:string forCountryCode:nil];
-}
-
-+ (BOOL)stringIsValidPartialPhoneNumber:(NSString *)string
-                         forCountryCode:(nullable NSString *)nillableCode {
-    NSString *countryCode = [self countryCodeOrCurrentLocaleCountryFromString:nillableCode];
-    
-    if ([countryCode isEqualToString:@"US"]) {
-        return [STPCardValidator sanitizedNumericStringForString:string].length <= 10;
-    }
-    else {
+    if (![self isUSLocale]) {
         return YES;
     }
-}
-
-+ (BOOL)stringIsValidPhoneNumber:(NSString *)string 
-                  forCountryCode:(nullable NSString *)nillableCode {
-    NSString *countryCode = [self countryCodeOrCurrentLocaleCountryFromString:nillableCode];
-    
-    if ([countryCode isEqualToString:@"US"]) {
-        return [STPCardValidator sanitizedNumericStringForString:string].length == 10;
-    }
-    else {
-        return YES;
-    }
+    return [STPCardValidator sanitizedNumericStringForString:string].length == 10;
 }
 
 + (NSString *)formattedSanitizedPhoneNumberForString:(NSString *)string {
-    return [self formattedSanitizedPhoneNumberForString:string
-                                         forCountryCode:nil];
-}
-
-+ (NSString *)formattedSanitizedPhoneNumberForString:(NSString *)string 
-                                      forCountryCode:(nullable NSString *)nillableCode {
-    NSString *countryCode = [self countryCodeOrCurrentLocaleCountryFromString:nillableCode];
     NSString *sanitized = [STPCardValidator sanitizedNumericStringForString:string];
-    return [self formattedPhoneNumberForString:sanitized
-                                forCountryCode:countryCode];
+    return [self formattedPhoneNumberForString:sanitized];
 }
 
 + (NSString *)formattedRedactedPhoneNumberForString:(NSString *)string {
-    return [self formattedRedactedPhoneNumberForString:string
-                                        forCountryCode:nil];
-}
-
-+ (NSString *)formattedRedactedPhoneNumberForString:(NSString *)string
-                                     forCountryCode:(nullable NSString *)nillableCode {
-    NSString *countryCode = [self countryCodeOrCurrentLocaleCountryFromString:nillableCode];
     NSScanner *scanner = [NSScanner scannerWithString:string];
     NSMutableString *prefix = [NSMutableString stringWithCapacity:string.length];
     [scanner scanUpToString:@"*" intoString:&prefix];
     NSString *number = [string stringByReplacingOccurrencesOfString:prefix withString:@""];
     number = [number stringByReplacingOccurrencesOfString:@"*" withString:@"•"];
-    number = [self formattedPhoneNumberForString:number
-                                  forCountryCode:countryCode];
+    number = [self formattedPhoneNumberForString:number];
     return [NSString stringWithFormat:@"%@ %@", prefix, number];
 }
 
-+ (NSString *)formattedPhoneNumberForString:(NSString *)string 
-                             forCountryCode:(NSString *)countryCode {
-    
-    if (![countryCode isEqualToString:@"US"]) {
++ (NSString *)formattedPhoneNumberForString:(NSString *)string {
+    if (![self isUSLocale]) {
         return string;
     }
     if (string.length >= 6) {
@@ -105,6 +58,10 @@
                 ];
     }
     return string;
+}
+
++ (BOOL)isUSLocale {
+    return [[[NSLocale autoupdatingCurrentLocale] localeIdentifier] isEqualToString:@"en_US"];
 }
 
 @end

@@ -63,12 +63,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (UIImage *)brandImageForCardBrand:(STPCardBrand)brand;
 
 /**
- *  This returns the appropriate icon for the specified card brand as a 
- *  single color template that can be tinted
- */
-+ (UIImage *)templatedBrandImageForCardBrand:(STPCardBrand)brand;
-
-/**
  *  This returns a small icon indicating the CVC location for the given card brand.
  */
 + (UIImage *)cvcImageForCardBrand:(STPCardBrand)brand;

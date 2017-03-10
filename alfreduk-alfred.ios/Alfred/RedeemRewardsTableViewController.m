@@ -34,63 +34,40 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
 
     balance = [[PFUser currentUser][@"Balance"] intValue];
-
-    
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    
-    self.tableView.backgroundView=[[UIImageView alloc] initWithImage:
-                                   [UIImage imageNamed:@"BackgroundImage"]];
-    
+    self.tableView.backgroundView=[[UIImageView alloc] initWithImage: [UIImage imageNamed:@"BackgroundImage"]];
     UIImage *image1 = [[UIImage imageNamed:@"menu"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-    
     UIBarButtonItem *revealButtonItem = [[UIBarButtonItem alloc] initWithImage:image1
                                                                          style:UIBarButtonItemStylePlain target:self action:@selector(revealToggle:)];
-    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForEnterPromoCode:) name:@"didRequestForEnterPromoCode" object:nil];
-
-    
-    
     SWRevealViewController *revealViewController = self.revealViewController;
     self.navigationItem.leftBarButtonItem = revealButtonItem;
     self.navigationItem.rightBarButtonItem = nil;
     self.navigationItem.title = @"REDEEM REWARDS";
     //[self hideNavigationBar];
     
-    
     if ( revealViewController ){
         [self.view addGestureRecognizer:revealViewController.panGestureRecognizer];
-        
-        
         [self.navigationItem.leftBarButtonItem setTarget:self.revealViewController];
         [self.view addGestureRecognizer:self.revealViewController.panGestureRecognizer];
     }
-
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
-    
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
 }
 
-
-
-- (void)dealloc
-{
+- (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"didRequestForEnterPromoCode" object:nil];
     
 }
-- (void) didRequestForEnterPromoCode:(NSNotification *)notification
-{   UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Enter Promo Code" message:@"" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Accept", nil] ;
+
+- (void) didRequestForEnterPromoCode:(NSNotification *)notification {
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Enter Promo Code" message:@"" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Accept", nil] ;
     alertView.tag = 1;
     alertView.alertViewStyle = UIAlertViewStylePlainTextInput;
     [alertView show];
-    
 }
 
--(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+-(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
     
     if (buttonIndex==1) {
         UITextField * alertTextField = [alertView textFieldAtIndex:0];
@@ -102,65 +79,46 @@
         else{
             [self addPromoCode:alertTextField.text];
         }
-
     }
-    
-    
 }
 
-
--(void)invalidEntry{
+-(void)invalidEntry {
     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Enter Promo Code" message:@"Invalid entry" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Ok", nil] ;
     alertView.tag = 1;
     alertView.alertViewStyle = UIAlertViewStylePlainTextInput;
     [alertView show];
 }
 
-
--(void)addPromoCode:(NSString*)promoCode{
+-(void)addPromoCode:(NSString*)promoCode {
     [HUD showUIBlockingIndicatorWithText:@"Validating.."];
     
     dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
-        
-        
         NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
         NSString *tokenID = [prefs stringForKey:@"token"];
         [[NSUserDefaults standardUserDefaults] synchronize];
-        
-        
         AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
         [manager setRequestSerializer:[AFHTTPRequestSerializer serializer]];
         manager.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"application/json"];
-        //[manager.requestSerializer setValue:tokenID forHTTPHeaderField:@"tokenId"];
-        
         manager.requestSerializer = [AFJSONRequestSerializer serializer];
         manager.responseSerializer = [AFJSONResponseSerializer serializer];
-        
-        
         NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:promoCode,@"promoCode",tokenID,@"userId",nil];
-        
-        
         NSString* URL_SIGNIN = @"http://ec2-52-74-6-189.ap-southeast-1.compute.amazonaws.com:8080/addPromoCode";
-        
         [manager POST:URL_SIGNIN parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
             
             NSLog(@"Success: %@", responseObject);
             NSString* message = responseObject[@"message"];
+            [HUD hideUIBlockingIndicator];
             if ([message isEqualToString:@"10.0 amount added to wallet"]) {
                 [self getUserWallet:tokenID];
-            }
-            
-            else if ([message isEqualToString:@"User can add promo code of another Alfred user only once."]){
+            } else if ([message isEqualToString:@"User can add promo code of another Alfred user only once."]){
                 UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Error"
                                                                     message:@"User can add promo code of another Alfred user only once."
                                                                    delegate:nil
                                                           cancelButtonTitle:@"Ok"
                                                           otherButtonTitles:nil];
                 [alertView show];
-                
 
-            }
-            else{
+            } else {
                 UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Error"
                                                                     message:@"Invalid Promo Code."
                                                                    delegate:nil
@@ -169,57 +127,37 @@
                 [alertView show];
 
             }
-            [HUD hideUIBlockingIndicator];
-
-            
         } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
             NSLog(@"Error: %@", [error localizedDescription]);
             [HUD hideUIBlockingIndicator];
-
         }];
         
         dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
             
         });
     });
-    
-    
 }
 
--(void)getUserWallet:(NSString*)tokenID{
+-(void)getUserWallet:(NSString*)tokenID {
     [HUD showUIBlockingIndicatorWithText:@"Updating Wallet.."];
-    
-    
     dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
-        
-        
-        
         AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
         [manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Accept"];
         [manager.requestSerializer setValue:tokenID forHTTPHeaderField:@"tokenId"];
-        
-        
         [manager GET:@"http://ec2-52-74-6-189.ap-southeast-1.compute.amazonaws.com:8080/getUserWalletData"
           parameters:nil
              success:^(AFHTTPRequestOperation *operation, id responseObject) {
+
                  NSLog(@"JSON: %@", responseObject);
                  
-                 
                  NSArray* cards = responseObject[@"cards"];
-                 int balanceInt = [responseObject[@"balance"] intValue];
-                 
-                 
-                 
+                 int balanceInt = [responseObject[@"Balance"] intValue];
                  NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
                  [prefs setObject:cards forKey:@"cards"];
-                 [prefs setValue:[NSNumber numberWithInt:balanceInt] forKey:@"balance"];
-                 
+                 [prefs setValue:[NSNumber numberWithInt:balanceInt] forKey:@"Balance"];
                  [[NSUserDefaults standardUserDefaults] synchronize];
-                 
                  [self.tableView reloadData];
-
                  [HUD hideUIBlockingIndicator];
-                 
                  UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Success"
                                                                      message:@"£10.0 amount added to wallet."
                                                                     delegate:nil
@@ -239,25 +177,12 @@
                  [alertView show];
                  
                  NSLog(@"Error: %@", [error localizedDescription]);
-                 
-                 
-                 
-                 
              }];
-        
-        
-        
-        
-        
         dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
             [self.tableView reloadData];
 
         });
     });
-    
-    
-    
-    
 }
 
 
@@ -277,21 +202,14 @@
     // Return the number of rows in the section.
     if (section==0) {
         return 2;
-    }
-    else if (section==1){
+    } else if (section==1){
         return 1;
-    }
-    else if (section==2){
+    } else if (section==2){
         return 1;
-    }
-    else if (section==3){
+    } else if (section==3){
         return 1;
-    }
-
-    
-    else
+    } else
         return 2;
-
 }
 
 
@@ -299,22 +217,14 @@
     //static NSString *simpleTableIdentifier = @"ProfilePicTableViewCell";
     UITableViewCell *cell;
   
-    
-
- 
-    
     if ([indexPath section]==1) {
         static NSString *simpleTableIdentifier = @"MyWalletHeadingTableViewCell";
         MyWalletHeadingTableViewCell *cell = (MyWalletHeadingTableViewCell *)[tableView dequeueReusableCellWithIdentifier:simpleTableIdentifier];
-        
-        
-        if (cell == nil)
-        {
+        if (cell == nil) {
             NSArray *nib = [[NSBundle mainBundle] loadNibNamed:@"MyWalletHeadingTableViewCell" owner:self options:nil];
             cell = [nib objectAtIndex:0];
         }
         cell.backgroundColor = [UIColor clearColor];
-
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         cell.headingLabel.text = @"ACCOUNT BALANCE";
         return cell;
@@ -323,21 +233,14 @@
     if ([indexPath section]==2) {
         static NSString *simpleTableIdentifier = @"MyWalletBalanceTableViewCell";
         MyWalletBalanceTableViewCell *cell = (MyWalletBalanceTableViewCell *)[tableView dequeueReusableCellWithIdentifier:simpleTableIdentifier];
-        
-        
-        if (cell == nil)
-        {
+        if (cell == nil) {
             NSArray *nib = [[NSBundle mainBundle] loadNibNamed:@"MyWalletBalanceTableViewCell" owner:self options:nil];
             cell = [nib objectAtIndex:0];
         }
         cell.backgroundColor = [UIColor clearColor];
-
-       
-        
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
         NSString* balanceStr = [NSString stringWithFormat:@"£%ld",(long)balance];
         [cell.balanceLabel setText:balanceStr];
-
-        cell.selectionStyle = UITableViewCellSelectionStyleNone;
         return cell;
     }
     
@@ -345,18 +248,11 @@
         static NSString *simpleTableIdentifier = @"RedeemCouponTableViewCell";
         RedeemCouponTableViewCell *cell = (RedeemCouponTableViewCell *)[tableView dequeueReusableCellWithIdentifier:simpleTableIdentifier];
         
-        
-        if (cell == nil)
-        {
+        if (cell == nil) {
             NSArray *nib = [[NSBundle mainBundle] loadNibNamed:@"RedeemCouponTableViewCell" owner:self options:nil];
             cell = [nib objectAtIndex:0];
         }
         cell.backgroundColor = [UIColor clearColor];
-
-        
-       
-        
-        
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         return cell;
     }
@@ -365,17 +261,13 @@
         static NSString *simpleTableIdentifier = @"RedeemBottomTableViewCell";
         RedeemBottomTableViewCell *cell = (RedeemBottomTableViewCell *)[tableView dequeueReusableCellWithIdentifier:simpleTableIdentifier];
         
-        
-        if (cell == nil)
-        {
+        if (cell == nil) {
             NSArray *nib = [[NSBundle mainBundle] loadNibNamed:@"RedeemBottomTableViewCell" owner:self options:nil];
             cell = [nib objectAtIndex:0];
         }
         cell.backgroundColor = [UIColor clearColor];
-
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
-       
-        
+
         if (indexPath.row==1) {
             cell.bgImageView.hidden = YES;
 
@@ -386,13 +278,10 @@
     return cell;
 }
 
-
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    
     if ([indexPath section]==0) {
         if (indexPath.row==0) {
-            
             
             if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone ){
                 
@@ -401,49 +290,33 @@
                 if( screenHeight < screenWidth ){
                     screenHeight = screenWidth;
                 }
-                
                 if( screenHeight > 480 && screenHeight < 667 ){
                     return 20;
-                    
-                    
                 } else if ( screenHeight > 480 && screenHeight < 736 ){
                     return 20;
-                    
                 } else if ( screenHeight > 480 ){
                     return 20;
-                    
                 } else {
                     return 20;
-                    
                 }
             }
-        }
-        else
+        } else
             return 130;
         
-    }
-    else if ([indexPath section]==1) {
+    } else if ([indexPath section]==1) {
         return 35;
-    }
-    
-    else if ([indexPath section]==2) {
+    } else if ([indexPath section]==2) {
         return 35;
-    }
-    else if ([indexPath section]==3) {
+    } else if ([indexPath section]==3) {
         return 80;
-    }
-    
-    else if ([indexPath section]==4) {
-        
+    } else if ([indexPath section]==4) {
         if (indexPath.row==0) {
             return 85;
-        }
-        else{
+        } else {
             return 50;
         }
     }
     return 45;
-    
 }
 
 

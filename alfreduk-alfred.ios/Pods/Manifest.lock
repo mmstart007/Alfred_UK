@@ -1,36 +1,38 @@
 PODS:
-  - Bolts (1.8.4):
-    - Bolts/AppLinks (= 1.8.4)
-    - Bolts/Tasks (= 1.8.4)
-  - Bolts/AppLinks (1.8.4):
+  - Bolts (1.7.0):
+    - Bolts/AppLinks (= 1.7.0)
+    - Bolts/Tasks (= 1.7.0)
+  - Bolts/AppLinks (1.7.0):
     - Bolts/Tasks
-  - Bolts/Tasks (1.8.4)
+  - Bolts/Tasks (1.7.0)
   - CMMapLauncher (1.1.0)
-  - Crashlytics (3.8.3):
+  - Crashlytics (3.7.2):
     - Fabric (~> 1.6.3)
-  - Fabric (1.6.11)
+  - Fabric (1.6.7)
   - Facebook-iOS-SDK (3.24.4):
     - Bolts (~> 1.2)
+  - Instabug (5.3)
   - MaterialControls (1.2.2)
-  - Parse (1.14.2):
-    - Bolts/Tasks (~> 1.8)
+  - Parse (1.13.0):
+    - Bolts/Tasks (~> 1.6)
   - ParseFacebookUtils (1.10.0):
     - Bolts/Tasks (~> 1.5)
     - Facebook-iOS-SDK (~> 3.24)
     - Parse (~> 1.9)
-  - SDWebImage (3.8.2):
-    - SDWebImage/Core (= 3.8.2)
-  - SDWebImage/Core (3.8.2)
+  - SDWebImage (3.8.1):
+    - SDWebImage/Core (= 3.8.1)
+  - SDWebImage/Core (3.8.1)
   - SinchVerification (0.9-beta1)
-  - Stripe (9.2.0)
+  - Stripe (8.0.0)
   - TWMessageBarManager (1.8.1)
 
 DEPENDENCIES:
   - CMMapLauncher
   - Crashlytics
   - Fabric
+  - Instabug
   - MaterialControls (~> 1.2.2)
-  - Parse (~> 1.14)
+  - Parse
   - ParseFacebookUtils (~> 1.10)
   - SDWebImage (~> 3.7)
   - SinchVerification (= 0.9-beta1)
@@ -38,19 +40,20 @@ DEPENDENCIES:
   - TWMessageBarManager
 
 SPEC CHECKSUMS:
-  Bolts: 8a7995239dbe724f9cba2248b766d48b7ebdd322
+  Bolts: a0058fa3b331c5a1e4402d534f2dae36dbff31e4
   CMMapLauncher: 668b949522d1789506e3c8d9dbc1b0384ee20573
-  Crashlytics: 2b6dbe138a42395577cfa73dfa1aa7248cadf39e
-  Fabric: 5911403591946b8228ab1c51d98f1d7137e863c6
+  Crashlytics: 130ab943f8c78cda7a814b434f270b2e2c8a3cba
+  Fabric: caf7580c725e64db144f610ac65cd60956911dc7
   Facebook-iOS-SDK: 5a7c414a084708220b72d5fd016f2cf3eb6deda4
+  Instabug: 16031235d7656f3b7104232a25ec4cecb3c0ce3b
   MaterialControls: 1c6b29e78d3a13d8dd6a67ed31b6d26eb5de8f72
-  Parse: 4335d65f40cb3d43190d723144bbe1afb9c38230
+  Parse: f51c24d2feb412e4b2d6cc73d37cb24e8d0089bc
   ParseFacebookUtils: 7030f53c989fda36ad50029d90edec1327424317
-  SDWebImage: 098e97e6176540799c27e804c96653ee0833d13c
+  SDWebImage: 35f9627a3e44b4f292a8a8ce6a531fa488239b91
   SinchVerification: e722ee7f15c7037f907632ce12d2d3c496b41a0a
-  Stripe: a47770e82db059d0e7e160f9aabc2997055ee911
+  Stripe: 1e20396b4dad7b9a08312bf914c233154fb8fcfd
   TWMessageBarManager: fd84e7948ba7968a2b5d9454859135761214ec56
 
-PODFILE CHECKSUM: a84f96d481c1461442bdd051e87693a5a6737afa
+PODFILE CHECKSUM: f374d0e8f33f62040e1e2fdfb729cfe5ce6f35ad
 
 COCOAPODS: 1.1.1

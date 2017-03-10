@@ -134,9 +134,7 @@
 //method to move the view up/down whenever the keyboard is shown/dismissed
 -(void)setViewMovedUp:(BOOL)movedUp
 {
-    
-    
-    
+
 }
 
 - (void)didReceiveMemoryWarning {
@@ -164,12 +162,14 @@
                                         @"numberOfSeats": [NSNumber numberWithInt: seats],
                                         @"pricePerSeat": [NSNumber numberWithInt: pricePerSeat * 100],
                                         @"ladiesOnly": [NSNumber numberWithBool: isLadies]}
-                                block:^(NSString *success, NSError *error) {
+                                block:^(PFObject *object, NSError *error) {
                                     [ HUD hideUIBlockingIndicator];
                                     if (!error) {
                                         NSLog(@"Driver data updated sucessfully");
+                                        [[NSNotificationCenter defaultCenter] postNotificationName:@"didConfigureRide"
+                                                                                            object:nil
+                                                                                          userInfo:@{@"driverPathwayObject": object,}];
                                         [self.navigationController popViewControllerAnimated:YES];
-                                        [[NSNotificationCenter defaultCenter] postNotificationName:@"didConfigureRide" object:nil];
                                     } else {
                                         [[[UIAlertView alloc]initWithTitle:@"Error" message:@"Sorry, can save the ride settings, please try again" delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
                                         NSLog(@"failed");

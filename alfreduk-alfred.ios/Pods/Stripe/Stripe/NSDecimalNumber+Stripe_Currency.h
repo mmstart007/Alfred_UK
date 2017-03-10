@@ -13,8 +13,6 @@
 + (NSDecimalNumber *)stp_decimalNumberWithAmount:(NSInteger)amount
                                         currency:(NSString *)currency;
 
-- (NSInteger)stp_amountWithCurrency:(NSString *)currency;
-
 @end
 
 void linkNSDecimalNumberCurrencyCategory(void);
