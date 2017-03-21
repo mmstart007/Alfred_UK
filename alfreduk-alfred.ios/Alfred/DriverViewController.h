@@ -56,6 +56,8 @@
 - (IBAction)rejectRideForUser:(id)sender;
 
 @property(strong,nonatomic) NSTimer *driverLocationTimer;
+@property(strong,nonatomic) NSTimer *cancelRideRequestTimer;
+@property(strong,nonatomic) NSTimer *cancelRideTimer;
 
 @property(strong,nonatomic) DropoffAnnotation *dropOffAnnotation;
 @property(strong,nonatomic) RequestRidePopupViewController *requestRidePopupViewController;

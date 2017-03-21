@@ -17,8 +17,9 @@
 #import "CHDraggingCoordinator.h"
 #import "CHDraggableView.h"
 #import "CHDraggableView+Avatar.h"
-
 #import "KLCPopup/KLCPopup.h"
+
+const int RIDE_CANCEL_EXPIRATION_TIME = 5*60; // in seconds
 
 @import MapKit;
 
@@ -57,7 +58,8 @@
 
 @synthesize mapView,region;
 @synthesize startRideButton;
-@synthesize cancelButton,locationManager,driverLocationTimer;
+@synthesize cancelButton,locationManager;
+@synthesize cancelRideRequestTimer,driverLocationTimer,cancelRideTimer;
 @synthesize dropOffAddress,dropOffAnnotation;
 @synthesize userView,bottomLayoutConstrint;
 @synthesize userProfilePic,userMobile,userName,ratingView;
@@ -129,8 +131,6 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForRideAcceptedForDriver:) name:@"didRequestForRideAcceptedForDriver" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didEndedRating:) name:@"didEndedRating" object:nil];
     
-//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(driverDecisionTaken:) name:@"driverDecisionTaken" object:nil];
-//    
 //    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForRideRequest:) name:@"didRequestForStartTheMessageBoardRide" object:nil];
 //    
 //    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForRideAcceptedByAnotherDriver:) name:@"didRequestForRideAcceptedByAnotherDriver" object:nil];
@@ -187,6 +187,14 @@
 
 // called when the driver accept the Ride on the RequestRidePopupView
 -(void)didAcceptRide:(NSNotification *)notification {
+    [cancelRideTimer invalidate];
+    cancelRideTimer = nil;
+    
+    cancelRideTimer = [NSTimer scheduledTimerWithTimeInterval: RIDE_CANCEL_EXPIRATION_TIME
+                                                              target: self
+                                                            selector: @selector(didCancelRide:)
+                                                            userInfo: nil
+                                                             repeats: NO ];
     [UIView animateWithDuration:2.0 animations:^{
         userView.hidden = NO;
         startRideButton.enabled = YES;
@@ -196,16 +204,20 @@
 
 // called when the Driver did rated to the Passenger on the RideRatingView
 -(void)didEndedRating:(NSNotification *)notification {
-    
+    cancelRideButton.enabled = YES;
     [self checkExistingPathway];
     
+}
+
+-(void)didCancelRide:(id)sender {
+    cancelRideButton.enabled = NO;
 }
 
 // Ride End and Popup the RideRequestDecisionView
 -(void)didRequestForRideEnd {
     NSString *rideCost = _lastRideInfo[@"price"];
     double rideCostDouble = [rideCost doubleValue];
-    NSString* decisionStr = [NSString stringWithFormat:@"Ride Cost: $%.2f", rideCostDouble / 100];
+    NSString* decisionStr = [NSString stringWithFormat:@"Ride Cost: £%.2f", rideCostDouble / 100];
     
     requestRideDecisionPopupViewController = [[RideRequestDecisionViewController alloc] initWithNibName:@"RideRequestDecisionViewController" bundle:nil];
     requestRideDecisionPopupViewController.decision = decisionStr;
@@ -321,7 +333,6 @@
 -(void)didRequestForRideAcceptedForDriver:(NSNotification *)notification
 {
     requestRideDecisionPopupViewController = [[RideRequestDecisionViewController alloc] initWithNibName:@"RideRequestDecisionViewController" bundle:nil];
-    
     requestRideDecisionPopupViewController.decision = @"You have been accepted as the driver";
     requestRideDecisionPopupViewController.isAccepted = YES;
     [requestRideDecisionPopupViewController setModalPresentationStyle:UIModalPresentationOverCurrentContext];
@@ -342,8 +353,7 @@
     NSString *currentRideId = [notification object];
     if ([currentRideId isEqualToString:rideID]) {
         requestRideDecisionPopupViewController = [[RideRequestDecisionViewController alloc] initWithNibName:@"RideRequestDecisionViewController" bundle:nil];
-        NSString *passengerName = passenger[@"FullName"];
-        NSString *decision = [NSString stringWithFormat: @"Your ride was cancelled by %@.\nPlease request again.", passengerName];
+        NSString *decision = @"Passenger has cancelled ride.";
         requestRideDecisionPopupViewController.decision = decision;
         requestRideDecisionPopupViewController.isAccepted = NO;
         [requestRideDecisionPopupViewController setModalPresentationStyle:UIModalPresentationOverCurrentContext];
@@ -574,7 +584,7 @@
     
     ratingView.userInteractionEnabled = NO;
     [userView setHidden:YES];
-  
+
     mapView.delegate = self;
     [mapView setRotateEnabled:NO];
 
@@ -906,13 +916,9 @@
                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
                     [self updateLocationBarOnCenterLocation];
                 });
-                
             }
-            
         }];
-        
     }
-    
 }
 
 -(void)navigateToDestination:(id)sender{
@@ -923,6 +929,7 @@
         
     NSLog(@"Driver is navigating to destination");
     
+    cancelRideButton.enabled = NO;
     [startRideButton setTitle:@"END RIDE" forState:UIControlStateNormal];
     [startRideButton removeTarget:self action:@selector(navigateToDestination:) forControlEvents:UIControlEventTouchUpInside];
     [startRideButton addTarget:self action:@selector(endRide:) forControlEvents:UIControlEventTouchUpInside];

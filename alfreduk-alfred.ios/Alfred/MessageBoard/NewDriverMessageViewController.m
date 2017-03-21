@@ -92,8 +92,6 @@
     pickupAddress = nil;
     dropoffAddress = nil;
     
-    self.titleTextField.delegate = self;
-    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForLocation:) name:@"didRequestForLocation" object:nil];
     
     
@@ -454,7 +452,7 @@
 #pragma  mark - Price
 -(void)updatePriceLabel{
 
-    self.priceLabel.text = [ NSString stringWithFormat:@"%d £", _travelPrice];
+    self.priceLabel.text = [ NSString stringWithFormat:@"£%d", _travelPrice];
 
 }
 - (IBAction)decrementPrice:(id)sender {

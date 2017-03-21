@@ -43,12 +43,12 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForLocation:) name:@"didRequestForLocation" object:nil];
 
     
-    UIImage *drawerImage = [[UIImage imageNamed:@"menu"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+    //UIImage *drawerImage = [[UIImage imageNamed:@"menu"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
     
-    UIBarButtonItem *revealButtonItem = [[UIBarButtonItem alloc] initWithImage:drawerImage
-                                                                         style:UIBarButtonItemStylePlain target:self action:@selector(revealToggle:)];
-    
-    UIBarButtonItem* rightButton = [[UIBarButtonItem alloc] initWithTitle:@"BACK" style:UIBarButtonItemStylePlain target:self action:@selector(backView:)];
+//    UIBarButtonItem *revealButtonItem = [[UIBarButtonItem alloc] initWithImage:drawerImage
+//                                                                         style:UIBarButtonItemStylePlain target:self action:@selector(revealToggle:)];
+//    
+//    UIBarButtonItem* rightButton = [[UIBarButtonItem alloc] initWithTitle:@"BACK" style:UIBarButtonItemStylePlain target:self action:@selector(backView:)];
     
     SWRevealViewController *revealViewController = self.revealViewController;
 

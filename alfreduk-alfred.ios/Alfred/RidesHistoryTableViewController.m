@@ -20,14 +20,12 @@
     int rideRequests;
     int finishedRides;
     int canceledRides;
-    
+    int driverRideRequests;
     int driverRidesDone;
     int driverRidesCancelled;
     
-   
-    
-    
 }
+
 @property (weak, nonatomic) IBOutlet UILabel *rideRequestsLabel;
 @property (weak, nonatomic) IBOutlet UILabel *finishedRidesLabel;
 @property (weak, nonatomic) IBOutlet UILabel *canceledRidesLabel;
@@ -37,6 +35,8 @@
 @end
 
 @implementation RidesHistoryTableViewController
+
+@synthesize rideRequestsLabel,finishedRidesLabel,canceledRidesLabel,driverRidesDoneLabel,driverRidesCanceledLabel;
 @synthesize userRideData,driverRideData,profilePic;
 @synthesize name;
 
@@ -48,144 +48,23 @@
     self.navigationController.navigationBar.backgroundColor = [UIColor clearColor];
 }
 
-
-
 - (void)viewDidLoad {
-    
-    
-    
     [super viewDidLoad];
-    
-    rideRequests = 0;
-    finishedRides = 0;
-    canceledRides = 0;
-    driverRidesDone = 0;
-    driverRidesCancelled = 0;
-    [self getUsersRideHistory];
-    
-    
-
- 
-    name = [PFUser currentUser] [@"FullName"];
-    
-    profilePic = [PFUser currentUser][@"ProfilePicUrl"];
- 
-  
-
-    
-
-    
-
-    
-   
-    
     self.title = @"Ride History";
+    finishedRides = [userRideData[@"rideCount"] intValue];
+    canceledRides = [userRideData[@"canceledRide"] intValue];
+    rideRequests = finishedRides + canceledRides;
+    driverRidesDone = [driverRideData[@"rideCount"] intValue];
+    driverRidesCancelled = [driverRideData[@"canceledRide"] intValue];
+    driverRideRequests = driverRidesDone + driverRidesCancelled;
     
-   
-    [self getDriverRideHistory];
-    [self getUsersRideHistory];
+    rideRequestsLabel.text = [NSString stringWithFormat:@"%3d", rideRequests];
+    finishedRidesLabel.text = [NSString stringWithFormat:@"%3d", finishedRides];
+    canceledRidesLabel.text = [NSString stringWithFormat:@"%3d", canceledRides];
+    driverRidesDoneLabel.text = [NSString stringWithFormat:@"%3d", driverRideRequests];
+    driverRidesCanceledLabel.text = [NSString stringWithFormat:@"%3d", driverRidesCancelled];
 }
 
-
--(void)getDriverRideHistory{
-    
-    PFQuery *query1 = [PFQuery queryWithClassName:@"RideRequest"];
-    [query1 whereKey:@"driver" equalTo:[PFUser currentUser]];
-    
-    [query1 countObjectsInBackgroundWithBlock:^(int count, NSError *error){
-        if(!error){
-            
-            driverRidesDone = count;
-            
-            
-            [self reloadData];
-        }
-        
-    }];
-    
-    PFQuery *query2 = [PFQuery queryWithClassName:@"RideRequest"];
-    [query2 whereKey:@"driver" equalTo:[PFUser currentUser]];
-    [query2 whereKey:@"canceledByDriver" equalTo:@YES];
-    
-    
-    [query2 countObjectsInBackgroundWithBlock:^(int count, NSError *error){
-        if(!error){
-            
-            driverRidesCancelled = count;
-            
-            
-            [self reloadData];
-        }
-        
-    }];
-    
-    
-
-}
--(void)getUsersRideHistory{
-    
-    
-    PFQuery *query1 = [PFQuery queryWithClassName:@"RideRequest"];
-    [query1 whereKey:@"requestedBy" equalTo:[PFUser currentUser]];
-    
-    [query1 countObjectsInBackgroundWithBlock:^(int count, NSError *error){
-        if(!error){
-            
-            rideRequests  = count;
-            
-            [self reloadData];
-        }
-        
-    }];
-    
-    PFQuery *query2 = [PFQuery queryWithClassName:@"RideRequest"];
-    [query2 whereKey:@"requestedBy" equalTo:[PFUser currentUser]];
-    [query2 whereKey:@"finished" equalTo:@YES];
-    [query2 countObjectsInBackgroundWithBlock:^(int count, NSError *error){
-        if(!error){
-            
-            finishedRides  = count;
-            
-            [self reloadData];
-        }
-        
-    }];
-    
-    PFQuery *query3 = [PFQuery queryWithClassName:@"RideRequest"];
-    [query3 whereKey:@"requestedBy" equalTo:[PFUser currentUser]];
-    [query3 whereKey:@"canceled" equalTo:@YES];
-    [query3 countObjectsInBackgroundWithBlock:^(int count, NSError *error){
-        if(!error){
-            
-            canceledRides  = count;
-            
-            [self reloadData];
-        }
-        
-    }];
-    
-    
-    
-    
-}
-
-
--(void)reloadData{
-    self.rideRequestsLabel.text = [NSString stringWithFormat:@"%d",rideRequests];
-    self.canceledRidesLabel.text = [NSString stringWithFormat:@"%d",canceledRides];
-    self.finishedRidesLabel.text = [NSString stringWithFormat:@"%d", finishedRides];
-    
-    
-    self.driverRidesDoneLabel.text= [NSString stringWithFormat:@"%d", driverRidesDone];
-    self.driverRidesCanceledLabel.text = [NSString stringWithFormat:@"%d", driverRidesCancelled];
-    
-    
-
-}
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
 
 
 

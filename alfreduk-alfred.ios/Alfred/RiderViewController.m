@@ -26,7 +26,7 @@
 
 const int CHOOSE_ALFRED_ALERT_TAG = 1;
 const int PHONE_VERIFY_ALERT_TAG = 3;
-const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
+const int RIDE_REQUEST_EXPIRATION_TIME = 5*60; // in seconds
 
 @interface RiderViewController ()<SWRevealViewControllerDelegate>{
     
@@ -58,12 +58,12 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
 @synthesize mapView,locationManager,region, pickUpImage,bryantPark, bryantParkAnn;
 @synthesize pickupOrDropoffButton,pickUpLabel,pickupAnnotation,pickupCoord,pickupAddress,pickupPlacemark;
 @synthesize dropOffLabel,dropOffAnnotation,dropOffCoord,dropOffAddress,dropoffPlacemark,dropofffIcon;
-@synthesize dropoffSearchButton;
+@synthesize dropoffSearchButton,rideCancelButton;
 @synthesize routeDetails,pickupCity,routeDistance;
 @synthesize cancelButton;
 @synthesize pickupSearchButton,availabilityBar;
 @synthesize pickupSearchAddress,pickupSearchCoord,dropOffSearchAddress,dropOffSearchCoord,requestRideButton;
-@synthesize queryDriverTimer, updateLocationTimer, cancelRideRequestTimer;
+@synthesize queryDriverTimer, updateLocationTimer,cancelRideRequestTimer,cancelRideTimer;
 @synthesize requestImageView,requestLabel,isRideAccepted;
 @synthesize driverView;
 @synthesize retrievedDict;
@@ -102,8 +102,6 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
     withinCountry = NO;
     isItDropSearch = NO;
     isItSearchResult = NO;
-    
-    _lastRideInfo = nil;
     
     //configure driver view and make it hidden
     self.driverView.layer.cornerRadius = 0.5;
@@ -254,12 +252,10 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForMessageBoardRideRejected:) name:@"didRequestForMessageBoardRideRejected" object:nil]; */
 }
 
--(void)didRequestForRideDecisionCloseView:(NSNotification *)notification
-{
+-(void)didRequestForRideDecisionCloseView:(NSNotification *)notification {
     
     NSArray *boolDecision = [notification object];
     isRideAccepted = [[boolDecision objectAtIndex:0] boolValue];
-    
 }
 
 #pragma mark - Select Alfred Notification
@@ -534,7 +530,7 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
     
     if (!inRequest) {
 
-        balance = [NSNumber numberWithDouble:[[PFUser currentUser][@"Balance"] doubleValue]];
+        balance = [PFUser currentUser][@"Balance"];
         if(![[PFUser currentUser][@"PhoneVerified"] boolValue]){
             
             [[TWMessageBarManager sharedInstance] showMessageWithTitle:@"Ooops! "
@@ -562,10 +558,9 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
             PFGeoPoint *dropoffLocation = selectedDriverArray[2];
             NSNumber *seats             = selectedDriverArray[3];
             NSNumber *price             = selectedDriverArray[4];
+                        assert([seats intValue] > 0 );
             
-            assert([seats intValue] > 0 );
-            
-            if (self.balance < price) {
+            if ([balance doubleValue] <= [price doubleValue]) {
                 
                 UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Low Balance"
                                                                 message:@"Please add balance to your wallet."
@@ -651,7 +646,9 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
         [requestRideButton setTitle:@"CANCEL REQUEST" forState:UIControlStateNormal];
         
         requestRideDecisionPopupViewController = [[RideRequestDecisionViewController alloc] initWithNibName:@"RideRequestDecisionViewController" bundle:nil];
-        NSString *decision = [NSString stringWithFormat:@"Your ride was accepted by Driver"];
+        
+        NSArray *notificationArr = [notification object];
+        NSString *decision = @"Your ride was accepted by driver.";
         requestRideDecisionPopupViewController.decision = decision;
         requestRideDecisionPopupViewController.isAccepted = YES;
         [requestRideDecisionPopupViewController setModalPresentationStyle:UIModalPresentationOverCurrentContext];
@@ -665,16 +662,14 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
                 
                 isRideAccepted = YES;
                 
-                NSArray*  rideRequestArray = [notification object];
-                
                 // this is the notification object when a new ride request
                 // is accepted by the driver
                 // the notification contains the objectId of the request
                 // and the push is sent from CloudCode
                 // so the first object is the ride id
-                assert(rideRequestArray.count > 0);
+                assert(notificationArr.count > 0);
                 
-                driverID = [rideRequestArray firstObject];
+                driverID = [notificationArr firstObject];
                 
                 //the ride id should be equal to the ride request made by the user
                 // so lets assert that
@@ -720,7 +715,6 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
     self.driverProfilePic.layer.borderWidth = 0;
     
     if (isRideAccepted) {
-        
         requestLabel.hidden = YES;
         requestImageView.hidden = YES;
         //move the dropoff to the botom
@@ -732,10 +726,16 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
         //requestRideButton.hidden=YES;
         [driverView setHidden:NO];
         
+        [cancelRideTimer invalidate];
+        cancelRideTimer = nil;
+        
+        cancelRideTimer = [NSTimer scheduledTimerWithTimeInterval: RIDE_REQUEST_EXPIRATION_TIME
+                                                                  target: self
+                                                                selector: @selector(disableCancelRideFromTimer:)
+                                                                userInfo: nil
+                                                                 repeats: NO ];
         if (isItRetrieval) {
-            
             [self retrieveTheAnnotationsAndRoute:retrievedDict];
-            
         }
     }
 }
@@ -859,7 +859,7 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
 
     NSString *rideCost = _lastRideInfo[@"price"];
     double rideCostDouble = [rideCost doubleValue];
-    NSString* decisionStr = [NSString stringWithFormat:@"Ride Cost: $%.2f", rideCostDouble / 100];
+    NSString* decisionStr = [NSString stringWithFormat:@"Ride Cost: £%.2f", rideCostDouble / 100];
     NSLog(@"%@", decisionStr);
     
     requestRideDecisionPopupViewController = [[RideRequestDecisionViewController alloc] initWithNibName:@"RideRequestDecisionViewController" bundle:nil];
@@ -893,6 +893,7 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
     isItDropSearch = NO;
     isItSearchResult = NO;
     isRideAccepted = NO;
+    rideCancelButton.enabled = YES;
     
     [driverView setHidden:YES];
     
@@ -929,7 +930,11 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
     [self cancelRideRequest:@"PASSENGER_CANCELED_RIDE"];
 }
 
--(void)cancelRideRequestFromTimer:(id)sender{
+-(void)disableCancelRideFromTimer:(id)sender {
+    rideCancelButton.enabled = NO;
+}
+
+-(void)cancelRideRequestFromTimer:(id)sender {
     
     NSLog(@"Ride request timer expired");
     [self cancelRideRequest:@"REQUEST_CANCELED"];
@@ -1038,7 +1043,6 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
     }else{
         _annotationInteract = YES;
     }
-    
 }
 
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
@@ -1057,12 +1061,9 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 4*60; // in seconds
             frontNavigationController = (id)frontViewController;
         
         if ( ![frontNavigationController.topViewController isKindOfClass:[WalletViewController class]] )
-            
         {
             UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-            
             WalletViewController *frontViewController = (WalletViewController *)[storyboard instantiateViewControllerWithIdentifier:@"WALLET_VIEW_CONTROLLER"];
-            
             UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:frontViewController];
             [revealController pushFrontViewController:navigationController animated:YES];
         }

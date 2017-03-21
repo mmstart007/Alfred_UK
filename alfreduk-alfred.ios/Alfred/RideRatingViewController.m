@@ -12,7 +12,6 @@
 
 @property (weak, nonatomic) IBOutlet UIView *contentView;
 @property (weak, nonatomic) IBOutlet UITableView *ratingTableView;
-
 @property (weak, nonatomic) IBOutlet UILabel *priceLabel;
 
 @end
@@ -38,11 +37,7 @@
     };
     assert(ratedUser!= nil);
     double price = [self.rideRequest[@"price"] doubleValue] /100;
-    self.priceLabel.text = [NSString stringWithFormat:@"%5.2lf £",price];
-    
-    CGRect frame = self.contentView.layer.frame;
-    frame.size.width = self.view.bounds.size.width ;
-    self.contentView.layer.frame = frame;
+    self.priceLabel.text = [NSString stringWithFormat:@"£%5.2lf",price];
     
     [ratedUser fetchIfNeededInBackgroundWithBlock:^(PFObject * _Nullable object, NSError * _Nullable error) {
         
@@ -54,7 +49,7 @@
         
         //set profile pic
         
-        self.rideCostLabel.text = [NSString stringWithFormat:@"Ride cost: %4.2lf £",[self.rideRequest[@"ridePrice"] doubleValue]/100];
+        self.rideCostLabel.text = [NSString stringWithFormat:@"Ride cost: £%4.2lf",[self.rideRequest[@"ridePrice"] doubleValue]/100];
         NSString *profilePicUrl = ratedUser[@"ProfilePicUrl"];
         
         self.profilePicImageView.layer.cornerRadius = self.profilePicImageView.frame.size.width *0.5;
@@ -89,11 +84,9 @@
     PFObject* ratingData;
     assert(rideRequest!= nil);
     if(isUser) {
-        
         //rate the driver
         user= rideRequest[@"driver"];
         ratingData = user[@"driverRating"];
-        
     }else{
         user = rideRequest[@"passenger"];
         ratingData = user[@"userRating"];
@@ -119,10 +112,8 @@
             if(error){
                 NSLog(@"Rating save failed =========================== \n %@", error.localizedDescription);
             }else{
-                
                 [[NSNotificationCenter defaultCenter] postNotificationName:@"didEndedRating" object:nil];
                 [self dismissViewControllerAnimated:YES completion:nil];
-                
             }
         }]; //ratingData saved
     }];
@@ -146,7 +137,6 @@
     
     if([[PFUser currentUser][@"UserMode"] boolValue]){
         //it is user
-        
         switch (indexPath.row) {
             case 0:
                 titleLabel.text = @"Punctuality";
@@ -197,6 +187,7 @@
 }
 
 -(double)computeRating {
+    
     double rating1 = self.rate1View.value;
     double rating2 = self.rate2View.value;
     double rating3 = self.rate3View.value;

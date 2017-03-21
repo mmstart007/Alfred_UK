@@ -75,7 +75,7 @@
 
 -(UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
 
-    const NSString *identifier = @"HistoryCell";
+    NSString *identifier = @"HistoryCell";
     UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:identifier];
     
     PFObject * request = _withdrawalsList[indexPath.row];
@@ -85,7 +85,7 @@
     UILabel *dateLabel =[cell viewWithTag:2];
     UILabel *statusLabel = [cell viewWithTag:3];
     
-    amountLabel.text = [NSString stringWithFormat:@"%3.2lf £", amountInGBP];
+    amountLabel.text = [NSString stringWithFormat:@"£%3.2lf", amountInGBP];
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     [formatter setDateFormat:@"MM dd, yyyy"];
     

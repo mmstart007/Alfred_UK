@@ -11,6 +11,7 @@
 #import <SDWebImage/UIImageView+WebCache.h>
 
 #define kOFFSET_FOR_KEYBOARD 80.0
+#define AVAILABLE_SEATS 3
 
 @interface RideSettingsViewController (){
     CGSize keyboardSize;
@@ -35,15 +36,11 @@
 - (IBAction)increaseSeats:(id)sender {
     
     seats = seats + 1;
-    if(seats == 6){
-        
+    if(seats == AVAILABLE_SEATS) {
         self.increaseSeatsBtn.enabled = false;
-        
     }
     self.seatsLabel.text = [NSString stringWithFormat:@"%d", seats];
     self.decreaseBtn.enabled = YES;
-    
-    
 }
 
 - (IBAction)decreaseSeats:(id)sender {
@@ -56,32 +53,21 @@
 }
 
 - (IBAction)increasePrice:(id)sender {
-    
     pricePerSeat = pricePerSeat + 2;
     if(pricePerSeat == 50){
-        
         self.increasePriceBtn.enabled = false;
-        
     }
     self.priceLabel.text = [NSString stringWithFormat:@"%5.2lf", pricePerSeat];
     self.decreasePriceBtn.enabled = YES;
-    
-    
-    
 }
 
 - (IBAction)decreasePrice:(id)sender {
-    
     pricePerSeat = pricePerSeat - 2;
     if(pricePerSeat == 2){
-        
         self.decreasePriceBtn.enabled = false;
-        
     }
     self.priceLabel.text = [NSString stringWithFormat:@"%5.2lf", pricePerSeat];
     self.increasePriceBtn.enabled = YES;
-    
-    
 }
 
 - (IBAction)ladiesTouchUpInside:(id)sender {

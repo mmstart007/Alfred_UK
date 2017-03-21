@@ -2666,7 +2666,6 @@
 				DC74F1501A76F0E200E5D808 /* Redeem Rewards */,
 				DC74F12E1A76DC2E00E5D808 /* My Wallet */,
 				DC74F1101A76CD6400E5D808 /* Share */,
-				DC74F1011A76C19100E5D808 /* Rides History */,
 				DC74F0F71A76B88700E5D808 /* Profile */,
 				DC74F0DE1A769AA900E5D808 /* Side Menu */,
 				DC74F1781A772D7F00E5D808 /* Splash */,
@@ -2676,13 +2675,6 @@
 				DCB3FAA01A6E1AFF00389E2A /* Forgot Password */,
 				DCB3FA9F1A6E1AB400389E2A /* Registration */,
 				DC72425B1A6C66950060161D /* Supporting Files */,
-				868A50841C79066E00E2F0E0 /* WithdrawalViewController.h */,
-				868A50851C79066F00E2F0E0 /* WithdrawalViewController.m */,
-				861AB04F1C794D9200563465 /* WithdrawalView.xib */,
-				861AB0511C79566D00563465 /* WithdrawalView.h */,
-				861AB0521C79566D00563465 /* WithdrawalView.m */,
-				861AB0541C7978C600563465 /* BankInfoTableViewController.h */,
-				861AB0551C7978C600563465 /* BankInfoTableViewController.m */,
 			);
 			path = Alfred;
 			sourceTree = "<group>";
@@ -2768,6 +2760,7 @@
 				DC74F0E11A769CAB00E5D808 /* ProfileTableViewController.m */,
 				861606E31BEA95A500890C13 /* EditProfileTableViewController.h */,
 				861606E41BEA95A500890C13 /* EditProfileTableViewController.m */,
+				DC74F1011A76C19100E5D808 /* Rides History */,
 			);
 			name = Profile;
 			sourceTree = "<group>";
@@ -2804,13 +2797,20 @@
 		DC74F12E1A76DC2E00E5D808 /* My Wallet */ = {
 			isa = PBXGroup;
 			children = (
+				DC74F12F1A76DC3700E5D808 /* My Wallet Cells */,
+				DC27229F1AB4A3A900F22D85 /* Add Credit Card */,
 				86B118661BCABAE300AAAE95 /* WalletViewController.h */,
 				86B118671BCABAE300AAAE95 /* WalletViewController.m */,
-				DC27229F1AB4A3A900F22D85 /* Add Credit Card */,
-				DC74F12F1A76DC3700E5D808 /* My Wallet Cells */,
 				86A368721BCB519F00346831 /* AddBalanceView.h */,
 				86A368731BCB519F00346831 /* AddBalanceView.m */,
 				86A368771BCB6F7200346831 /* AddBalanceDelegate.h */,
+				861AB0541C7978C600563465 /* BankInfoTableViewController.h */,
+				861AB0551C7978C600563465 /* BankInfoTableViewController.m */,
+				868A50841C79066E00E2F0E0 /* WithdrawalViewController.h */,
+				868A50851C79066F00E2F0E0 /* WithdrawalViewController.m */,
+				861AB04F1C794D9200563465 /* WithdrawalView.xib */,
+				861AB0511C79566D00563465 /* WithdrawalView.h */,
+				861AB0521C79566D00563465 /* WithdrawalView.m */,
 			);
 			name = "My Wallet";
 			sourceTree = "<group>";
@@ -3426,6 +3426,7 @@
 				861400A51B671FE500135988 /* ShellScript */,
 				B4AA680387FF619C2C7621EB /* [CP] Embed Pods Frameworks */,
 				C6A71E4AABBEC58C8AB43960 /* [CP] Copy Pods Resources */,
+				946667B81E7277B30000EFAF /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -4109,6 +4110,19 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Fabric/Fabric.framework/run\" d189a8e71b86a8b68aedb2b28373e125d0bc3a0f 4fbca784460f1ebce14d5e76d3e1e67b4b6606bbb62b96c87563633a94ce9d1c";
+		};
+		946667B81E7277B30000EFAF /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "SCRIPT_SRC=$(find \"$PROJECT_DIR\" -name 'Instabug_dsym_upload.sh' | head -1)\nif [ ! \"${SCRIPT_SRC}\" ]; then\necho \"Instabug: err: script not found. Make sure that you're including Instabug.bundle in your project directory\"\nexit 1\nfi\nAPP_TOKEN=\"cffcbde018bdf1456464686a8b484859\"\nsource \"${SCRIPT_SRC}\"";
 		};
 		B4AA680387FF619C2C7621EB /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;

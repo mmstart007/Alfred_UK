@@ -21,9 +21,12 @@
     NSString *profileImageURL;
     NSData *_imageData;
     int _rideCount;
-    double _ridePriceInCents;
+    int _ridePriceInCents;
     UIImage *_profilePicture;
     UIImage *_bluredProfilePicture;
+    PFUser *currentUser;
+    PFObject *userRatingObj;
+    PFObject *driverRatingObj;
 }
 @property (weak, nonatomic) IBOutlet UIImageView *backgroundImageView;
 
@@ -39,35 +42,36 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
- 
-    //NSUserDefaults* settings = [NSUserDefaults standardUserDefaults];
-
     self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:nil action:nil];
-
-    [self.mailLabel setText: [PFUser currentUser ][@"email"]];
-    [ self.phoneNumberLabel setText: [PFUser currentUser ][@"Phone"] ];
-    [self.nameLabel setText:[PFUser currentUser] [@"FullName"]];
+ 
+    [self.mailLabel setText: [PFUser currentUser][@"email"]];
+    [ self.phoneNumberLabel setText: [PFUser currentUser][@"Phone"] ];
+    [self.nameLabel setText:[PFUser currentUser][@"FullName"]];
     
-    PFQuery *query;
-    if([[PFUser currentUser][@"UserMode"] boolValue] == YES) {
-        query = [PFQuery queryWithClassName:@"UserRating"];
-    }else{
-        query = [PFQuery queryWithClassName:@"DriverRating"];
-    }
-    [query whereKey:@"user" equalTo:[PFUser currentUser]];
-    [query getFirstObjectInBackgroundWithBlock:^(PFObject * _Nullable object, NSError * _Nullable error) {
-        if(!error){
-            NSLog(@"Rating: %lf",[object[@"rating"] doubleValue] );
-            
-            _rideCount = [object[@"rideCount"] intValue];
-            _ridePriceInCents = [[PFUser currentUser][@"Balance"] boolValue] / 100;
+    PFQuery *userQuery = [PFUser query];
+    [userQuery includeKey:@"userRating"];
+    [userQuery includeKey:@"driverRating"];
+    [HUD showUIBlockingIndicatorWithText:@"Loading.."];
+    [userQuery getObjectInBackgroundWithId:[PFUser currentUser].objectId block:^(PFObject * _Nullable object, NSError * _Nullable error) {
+        [HUD hideUIBlockingIndicator];
+        if (error) {
+            NSLog(@"Failed to get User Rating Object");
+        } else {
+            currentUser = (PFUser *)object;
+            NSLog(@"%@", currentUser);
+            userRatingObj = currentUser[@"userRating"];
+            driverRatingObj = currentUser[@"driverRating"];
+            if([currentUser[@"UserMode"] boolValue] == YES) {
+                _rideCount = [userRatingObj[@"rideCount"] intValue];
+                self.ratingView.value = [userRatingObj[@"rating"] doubleValue];
+            }else{
+                _rideCount = [driverRatingObj[@"rideCount"] intValue];
+                self.ratingView.value = [driverRatingObj[@"rating"] doubleValue];
+            }
+            _ridePriceInCents = [currentUser[@"Balance"] intValue] / 100;
             self.ridesAmountLabel.text = [NSString stringWithFormat:@"%3d", _rideCount];
-            self.moneyAmountLabel.text = [NSString stringWithFormat:@"%.02f", _ridePriceInCents];
-            self.ratingView.value = [object[@"rating"] doubleValue];
+            self.moneyAmountLabel.text = [NSString stringWithFormat:@"%3d", _ridePriceInCents];
             [self.ratingView setNeedsDisplay];
-            
-        }else{
-            NSLog(@"Failed to get user rating");
         }
     }];
 
@@ -147,7 +151,6 @@
     picker.sourceType = UIImagePickerControllerSourceTypeCamera;
     picker.allowsEditing = YES;
     [self presentViewController:picker animated:YES completion:NULL];
-    
 }
 
 -(void)chooseFromGallery {
@@ -211,6 +214,12 @@
         }
         if(indexPath.row == 1){
             //ride history
+            UIStoryboard *main = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+            RidesHistoryTableViewController * controller = [main instantiateViewControllerWithIdentifier:@"RidesHistoryId"];
+            controller.currentUser = currentUser;
+            controller.driverRideData = driverRatingObj;
+            controller.userRideData = userRatingObj;
+            [self.navigationController pushViewController:controller animated:YES];
             return;
         }
         if(indexPath.row == 2){

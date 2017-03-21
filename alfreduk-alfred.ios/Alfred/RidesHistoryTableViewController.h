@@ -10,10 +10,14 @@
 #import "AFHTTPRequestOperationManager.h"
 #import "AFHTTPRequestOperation.h"
 #import "HUD.h"
+#import <Parse/Parse.h>
 
 @interface RidesHistoryTableViewController : UITableViewController
-@property(strong,nonatomic)NSDictionary* driverRideData;
-@property(strong,nonatomic)NSDictionary* userRideData;
+
+@property(strong,nonatomic) PFObject *driverRideData;
+@property(strong,nonatomic) PFObject* userRideData;
+@property(strong,nonatomic) PFUser* currentUser;
 @property(strong,nonatomic) NSString* profilePic;
 @property (strong,nonatomic) NSString* name;
+
 @end

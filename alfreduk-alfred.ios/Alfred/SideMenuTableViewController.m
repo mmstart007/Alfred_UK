@@ -301,12 +301,6 @@
             [cell.menuButton addTarget:self action:@selector(shareButton:) forControlEvents:UIControlEventTouchUpInside];
             
         }
-        //        if (indexPath.row==5) {
-        //            [cell.menuPicImageView setImage:[UIImage imageNamed:@"redeem menu"]];
-        //            [cell.menuButton setTitle:@"REDEEM REWARDS" forState:UIControlStateNormal];
-        //            [cell.menuButton addTarget:self action:@selector(redeemButton:) forControlEvents:UIControlEventTouchUpInside];
-        //
-        //        }
         if (indexPath.row==5) {
             [cell.menuPicImageView setImage:[UIImage imageNamed:@"register menu"]];
             [cell.menuButton setTitle:@"REGISTER AS DRIVER" forState:UIControlStateNormal];

@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface EditProfileTableViewController : UITableViewController
+@interface EditProfileTableViewController : UITableViewController <UITextFieldDelegate>
 
 @end

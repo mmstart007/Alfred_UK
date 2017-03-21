@@ -240,10 +240,8 @@ return YES;
     if (state == UIApplicationStateActive) {
         
         NSDictionary *mainAlert = [userInfo valueForKey:@"aps"] ;
-        
         NSString *keyAlert = [userInfo valueForKey:@"key"];
-        
-        
+
         NSLog(@"%@", userInfo);
         NSLog(@"%@",mainAlert);
         
@@ -284,7 +282,7 @@ return YES;
             
             NSString* driverId =userInfo[@"driverID"];
             assert(driverId != nil);
-            NSArray* rideRequestArray = @[driverId];
+            NSArray* rideRequestArray = @[driverId, mainAlert[@"alert"]];
             [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForRideAcceptedForDriver" object:rideRequestArray];
         }
         if ([keyAlert isEqualToString:@"RIDE_END_DRIVER"]) {
@@ -331,77 +329,92 @@ return YES;
 
     if (state == UIApplicationStateInactive || state == UIApplicationStateBackground) {
         
+        NSDictionary *mainAlert = [userInfo valueForKey:@"aps"] ;
         NSString *keyAlert = [userInfo valueForKey:@"key"];
         
-        NSLog(@"%@",userInfo);
+        NSLog(@"%@", userInfo);
+        NSLog(@"%@",mainAlert);
         
+        /* RIDE_REQUEST */
         
         if ([keyAlert isEqualToString:@"RIDE_REQUEST"]) {
-            NSString* requestId =userInfo[@"rid"];
-            NSLog(@"Request ID: %@",requestId);
             
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForRideRequest" object:requestId];
+            NSString* requestId = userInfo[@"rid"];
+            if(requestId!= NULL){
+                [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForRideRequest" object:requestId];
+            }
+        }
+        // Ride request Canceled by Passenger. will receive to Driver
+        if ([keyAlert isEqualToString:@"REQUEST_CANCEL"]) {
             
+            NSString* rideId = userInfo[@"rid"];
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForRideRequestCancel" object:rideId];
+        }
+        // Ride request Canceled by Driver. will receive to Passenger
+        if ([keyAlert isEqualToString:@"RIDE_REJECT"]) {
+            
+            NSString *message = mainAlert[@"alert"];
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForRideCancelByDriver" object:message];
+        }
+        // Ride Canceled by Passenger. will receive to Driver
+        if ([keyAlert isEqualToString:@"RIDE_CANCEL_PASSENGER"]) {
+            
+            NSString* rideId =userInfo[@"rid"];
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForRideRequestCancel" object:rideId];
+        }
+        // Ride Canceled by Driver. wukk receuve to Passenger
+        if ([keyAlert isEqualToString:@"RIDE_CANCEL_DRIVER"]) {
+            
+            NSString *message = mainAlert[@"alert"];
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForRideCancelByDriver" object:message];
         }
         if ([keyAlert isEqualToString:@"RIDE_ACCEPT"]) {
             
-            NSString* rideId =userInfo[@"requestRideId"];
-            NSArray* rideRequestArray = [[NSArray alloc] initWithObjects:rideId, nil];
+            NSString* driverId =userInfo[@"driverID"];
+            assert(driverId != nil);
+            NSArray* rideRequestArray = @[driverId, mainAlert[@"alert"]];
             [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForRideAcceptedForDriver" object:rideRequestArray];
-            
         }
-        if ([keyAlert isEqualToString:@"RIDE_REJECT"]) {
-            NSString* rideId =userInfo[@"rideId"];
-            NSArray* rideRequestArray = [[NSArray alloc] initWithObjects:rideId, nil];
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForRideCancelByDriver" object:rideRequestArray];
-        }
-        if ([keyAlert isEqualToString:@"RIDE_STARTED"]) {
+        if ([keyAlert isEqualToString:@"RIDE_END_DRIVER"]) {
             
-            NSString* rideId =userInfo[@"rideId"];
-            NSArray* rideRequestArray = [[NSArray alloc] initWithObjects:rideId, nil];
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForMessageBoardRidePickedUp" object:rideRequestArray];
+            NSString* rideId = userInfo[@"rid"];
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForRideEnd" object:rideId];
         }
-        if ([keyAlert isEqualToString:@"RIDE_ENDED"]) {
-            NSString* rideCost =userInfo[@"rideCost"];
-            NSString* rideId =userInfo[@"rideId"];
-            NSString* whichID ;
-            NSArray* rideRequestArray;
-            if (userInfo[@"driverId"]) {
-                whichID =userInfo[@"driverId"];
-            } else {
-                whichID =userInfo[@"userId"];
-            }
-            rideRequestArray = [[NSArray alloc] initWithObjects:rideCost,rideId,whichID, nil];
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForRideEnd" object:rideRequestArray];
-        }
-        if ([keyAlert isEqualToString:@"RIDE_REQUEST_CANCELLED"]) {
-            
-            NSString* rideId =userInfo[@"rideId"];
-            
-            NSArray* rideRequestArray = [[NSArray alloc] initWithObjects:rideId, nil];
-            
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForRideRequestCancel" object:rideRequestArray];
-        }
+        
+        
+        
+        
         if ([keyAlert isEqualToString:@"RIDE_ACCEPTED_BY_ANOTHER_DRIVER"]) {
-            NSString* rideId =userInfo[@"rideId"];
+            NSString* rideId =mainAlert[@"rideId"];
             NSArray* rideRequestArray = [[NSArray alloc] initWithObjects:rideId, nil];
             [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForRideAcceptedByAnotherDriver" object:rideRequestArray];
         }
         if ([keyAlert isEqualToString:@"REQUEST_BOARD_RIDE_STARTED"]) {
-            NSString* rideId =userInfo[@"rideId"];
+            
+            NSString* rideId =mainAlert[@"rideId"];
             NSArray* rideRequestArray = [[NSArray alloc] initWithObjects:rideId, nil];
             [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForMessageBoardRideStarted" object:rideRequestArray];
         }
+        if ([keyAlert isEqualToString:@"RIDE_STARTED"]) {
+            
+            NSString* rideId =mainAlert[@"rideId"];
+            NSArray* rideRequestArray = [[NSArray alloc] initWithObjects:rideId, nil];
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForMessageBoardRidePickedUp" object:rideRequestArray];
+        }
         if ([keyAlert isEqualToString:@"REQUEST_BOARD_RIDE_ENDED"]) {
             
-            NSString* rideId =userInfo[@"rideId"];
+            NSString* rideId =mainAlert[@"rideId"];
             NSArray* rideRequestArray = [[NSArray alloc] initWithObjects:rideId, nil];
             [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForMessageBoardRideEnded" object:rideRequestArray];
         }
-        if ([keyAlert isEqualToString:@"RIDE_REJECTED_BY_DRIVER"]) {
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForMessageBoardRideRejected" object:nil];
+        if([keyAlert isEqualToString:@"DRIVER_ENABLED"]){
+            
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"didBecomeEnabledAsDriver" object:nil];
         }
-        
+        if([keyAlert isEqualToString:@"DRIVER_DISABLED"]){
+            
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"didBecomeDisabledAsDriver" object:nil];
+        }
     }
     
     application.applicationIconBadgeNumber = 0;

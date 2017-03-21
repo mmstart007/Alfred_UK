@@ -13,11 +13,9 @@
 @end
 
 @implementation RideRequestDecisionViewController
-@synthesize topLayoutConstraint,bottomLayoutConstraint,leftLayoutConstraint,rightLayoutConstraint,decision,decisionTextView,isAccepted,openRatingView;
+@synthesize topLayoutConstraint,bottomLayoutConstraint,leftLayoutConstraint,rightLayoutConstraint,decision,decisionTextView,isAccepted,openRatingView,supportTeamView;
 
 - (void)viewDidLoad {
-    
-    
     self.popUpView.layer.cornerRadius = 0.5;
     self.popUpView.layer.shadowOpacity = 0.8;
     self.popUpView.layer.shadowOffset = CGSizeMake(0.0f, 0.0f);
@@ -26,7 +24,9 @@
 
     decisionTextView.text = decision;
     decisionTextView.textAlignment = NSTextAlignmentCenter;
-    
+    if (openRatingView) {
+        supportTeamView.hidden = NO;
+    }
     
     if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone ){
         
@@ -35,52 +35,35 @@
         if( screenHeight < screenWidth ){
             screenHeight = screenWidth;
         }
-        
         if( screenHeight > 480 && screenHeight < 667 ){
             topLayoutConstraint.constant = 180;
             bottomLayoutConstraint.constant = 180;
-            
         } else if ( screenHeight > 480 && screenHeight < 736 ){
             topLayoutConstraint.constant = 220;
             bottomLayoutConstraint.constant = 220;
             leftLayoutConstraint.constant = 80;
             rightLayoutConstraint.constant = 80;
-            
-            
         } else if ( screenHeight > 480 ){
             topLayoutConstraint.constant = 240;
             bottomLayoutConstraint.constant = 240;
             leftLayoutConstraint.constant = 80;
             rightLayoutConstraint.constant = 80;
-            
-            
-            
         } else {
             topLayoutConstraint.constant = 150;
             bottomLayoutConstraint.constant =150;
-            
-            
         }
-    }
-    else{
+    } else {
             topLayoutConstraint.constant = 370;
             bottomLayoutConstraint.constant = 370;
             self.leftLayoutConstraint.constant = 240;
             self.rightLayoutConstraint.constant = 240;
-
     }
-
     [super viewDidLoad];
-    
-    
-    // Do any additional setup after loading the view from its nib.
 }
 
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"didRequestForRideRequestCancel" object:nil];
-    
-    
 }
 
 -(void)didRequestForRideRequestCancel:(NSNotification *)notification
@@ -94,16 +77,6 @@
     // Dispose of any resources that can be recreated.
 }
 
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
-
 - (IBAction)closeTheView:(id)sender {
     [self dismissViewControllerAnimated:YES completion:nil];
 
@@ -114,4 +87,23 @@
         [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForRideDecisionCloseView" object:boolDecision];
     }
 }
+
+- (IBAction)contactToSupport:(id)sender {
+    
+}
+
+/*
+ #pragma mark - Navigation
+ 
+ // In a storyboard-based application, you will often want to do a little preparation before navigation
+ - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+ // Get the new view controller using [segue destinationViewController].
+ // Pass the selected object to the new view controller.
+ }
+ */
+
+
+
+
+
 @end

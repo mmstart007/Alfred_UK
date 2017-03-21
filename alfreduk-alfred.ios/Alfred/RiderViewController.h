@@ -47,6 +47,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *dropOffLabel;
 @property (weak, nonatomic) IBOutlet UIButton *dropoffSearchButton;
 @property (weak, nonatomic) IBOutlet UIButton *pickupSearchButton;
+@property (weak, nonatomic) IBOutlet UIButton *rideCancelButton;
 @property (weak, nonatomic) IBOutlet UILabel *availabilityBar;
 @property (weak, nonatomic) IBOutlet UIImageView *dropofffIcon;
 @property (weak, nonatomic) IBOutlet UIImageView *requestImageView;
@@ -97,6 +98,7 @@
 @property(strong,nonatomic) NSTimer *queryDriverTimer;
 @property(strong,nonatomic) NSTimer *updateLocationTimer;
 @property(strong,nonatomic) NSTimer *cancelRideRequestTimer;
+@property(strong,nonatomic) NSTimer *cancelRideTimer;
 
 @property(strong,nonatomic) NSMutableArray *arrayOfDriverAnnotations;
 @property(strong,nonatomic) NSArray* driversArray;

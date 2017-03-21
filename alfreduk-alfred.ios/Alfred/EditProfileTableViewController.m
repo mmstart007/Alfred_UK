@@ -10,32 +10,40 @@
 #import <Parse/Parse.h>
 #import "HUD.h"
 
-@interface EditProfileTableViewController ()
+@interface EditProfileTableViewController () {
+    UIBarButtonItem *doneButton;
+}
+
 @property (weak, nonatomic) IBOutlet UITextField *firstNameTextField;
 @property (weak, nonatomic) IBOutlet UITextField *lastNameTextField;
 @property (weak, nonatomic) IBOutlet UITextField *emaiTextField;
 @property (weak, nonatomic) IBOutlet UISwitch *femaleSwitch;
 
+
 @end
 
 
+
 @implementation EditProfileTableViewController
+
+@synthesize firstNameTextField,lastNameTextField,emaiTextField,femaleSwitch;
+
+
 - (IBAction)cancelEdit:(id)sender {
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (IBAction)doneEdit:(id)sender {
     
-    NSString * firstName = _firstNameTextField.text;
-    NSString * lastName = _lastNameTextField.text;
+    NSString * firstName = firstNameTextField.text;
+    NSString * lastName = lastNameTextField.text;
     NSString *fullName = [NSString stringWithFormat:@"%@ %@", firstName, lastName];
-    NSString *emailAddress = _emaiTextField.text;
-    
-    NSNumber *isFemale = [NSNumber numberWithBool:_femaleSwitch.on];
+    NSString *emailAddress = emaiTextField.text;
+    NSNumber *isFemale = [NSNumber numberWithBool:femaleSwitch.isOn];
+
     if(firstName.length == 0){
         //shake view
         return ;
-        
     }
     if(lastName.length == 0){
         //shake view
@@ -44,7 +52,6 @@
     if(emailAddress.length == 0){
         //shake view
         return;
-        
     }
     //TODO: improve email validation here
     if(![emailAddress containsString:@"@"]) {
@@ -64,15 +71,38 @@
     }];
 }
 
+- (IBAction)switchAction:(id)sender {
+    self.navigationItem.rightBarButtonItem = doneButton;
+    UISwitch *s = (UISwitch*)sender;
+    //Change value on second switch
+    [femaleSwitch setOn:!s.isOn];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
-
-    [_femaleSwitch setEnabled: [[PFUser currentUser][@"Female"] boolValue]];
+    PFUser *currentUser = [PFUser currentUser];
+    firstNameTextField.text = currentUser[@"FirstName"];
+    lastNameTextField.text  = currentUser[@"LastName"];
+    emaiTextField.text = currentUser[@"email"];
+    BOOL gender = [currentUser[@"Female"] boolValue];
+    if (gender) {
+        [femaleSwitch setOn:YES];
+    } else {
+        [femaleSwitch setOn:NO];
+    }
+    doneButton = [[UIBarButtonItem alloc] initWithTitle:@"Done" style:UIBarButtonItemStylePlain target:self action:@selector(doneEdit:)];
+    self.navigationItem.rightBarButtonItem = nil;
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+#pragma mark - UITextField Delegate
+-(BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
+    self.navigationItem.rightBarButtonItem = doneButton;
+    return YES;
 }
 
 

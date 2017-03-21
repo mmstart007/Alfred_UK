@@ -26,9 +26,8 @@
 @end
 
 @implementation WalletViewController
+
 - (IBAction)addBalance:(id)sender {
-    
-    
     if( cards.count == 0){
         [[[UIAlertView alloc] initWithTitle:@"Can't upload balance" message:@"Please add a payment method" delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
         return ;
@@ -36,7 +35,6 @@
     }
     // Show in popup
     KLCPopupLayout layout = KLCPopupLayoutMake(KLCPopupHorizontalLayoutCenter,KLCPopupVerticalLayoutCenter);
-    
     NSArray *nib = [[NSBundle mainBundle] loadNibNamed:@"AddBalanceView" owner:self options:nil];
     AddBalanceView * view =(AddBalanceView*) [nib objectAtIndex:0];
     CGRect screenRect = [[UIScreen mainScreen] bounds];
@@ -54,22 +52,15 @@
                             dismissOnBackgroundTouch:NO
                                dismissOnContentTouch:NO];
     [popup showWithLayout:layout];
-
-
 }
 
 - (void)viewDidLoad {
-    
-    
+
     [super viewDidLoad];
 
-
-    
     cards = [[NSMutableArray alloc]init];
     defaultCardIndex = 0;
-    
-    
-    
+
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(keyboardWillShow)
                                                  name:UIKeyboardWillShowNotification
@@ -79,30 +70,21 @@
                                              selector:@selector(keyboardWillHide)
                                                  name:UIKeyboardWillHideNotification
                                                object:nil];
-    
-    
-    
+
     UIImage *drawerImage = [[UIImage imageNamed:@"menu"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-    
     UIBarButtonItem *revealButtonItem = [[UIBarButtonItem alloc] initWithImage:drawerImage
                                                                           style:UIBarButtonItemStylePlain target:self action:@selector(revealToggle:)] ;
     SWRevealViewController *revealViewController = self.revealViewController;
     self.navigationItem.leftBarButtonItem = revealButtonItem;
     self.navigationItem.rightBarButtonItem = nil;
-    
-    //[self hideNavigationController];
-    
     self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:nil action:nil];
     
     if ( revealViewController ){
         [self.view addGestureRecognizer:revealViewController.panGestureRecognizer];
-        
-        
         [self.navigationItem.leftBarButtonItem setTarget:self.revealViewController];
         [self.view addGestureRecognizer:self.revealViewController.panGestureRecognizer];
     }
 }
-
 
 -(void)viewDidAppear:(BOOL)animated{
     
@@ -110,6 +92,7 @@
     [self updateWallet];
 
 }
+
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
@@ -123,9 +106,7 @@
                                                   object:nil];
 }
 
-
 #define kOFFSET_FOR_KEYBOARD 80.0
-
 -(void)keyboardWillShow {
     // Animate the current view out of the way
     if (self.view.frame.origin.y >= 0)
@@ -154,21 +135,18 @@
     [popup dismissPresentingPopup];
     
 }
+
 -(void)addBalanceView:(AddBalanceView*)view didAddedBalance:(double )balanceAdded{
 
     [popup dismissPresentingPopup];
-    
     int amountInCents =  balanceAdded * 100;//in cents
-    
     NSMutableDictionary *details = [[NSMutableDictionary alloc] init];
-    
     details[@"amount"] = [NSNumber numberWithInt:amountInCents];
     details[@"currency"] = @"gbp";
     details[@"customer"]  = [PFUser currentUser][@"stripeCustomerId"];
     details[@"card"] = cards[defaultCardIndex][@"StripeToken"]; //stripe token for card
     
     [HUD showUIBlockingIndicatorWithText:@"Please wait.."];
-    
     [PFCloud callFunctionInBackground:@"chargeCustomer" withParameters:details block:^(id object, NSError *error)
      {
          if (!error)
@@ -206,7 +184,6 @@
         return 44;
     
     }
-
 }
 
 -(NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section{
@@ -224,8 +201,6 @@
     return nil;
 }
 
-
-
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
 
     //int section  = indexPath.section;
@@ -233,8 +208,7 @@
     
     if(indexPath.section == 0){
         
-        UITableViewCell * cell = [self.tableView
-                                  dequeueReusableCellWithIdentifier:@"BALANCE_CELL"];
+        UITableViewCell * cell = [self.tableView dequeueReusableCellWithIdentifier:@"BALANCE_CELL"];
         
         _balanceLabel = (UILabel*)[cell viewWithTag:1 ];
         _addBalance = (UIButton*) [cell viewWithTag:2];
@@ -244,16 +218,14 @@
     
     }else if(indexPath.section == 1){
         
-        UITableViewCell *cell = [self.tableView
-                                  dequeueReusableCellWithIdentifier:@"PROMO_CODE_CELL"];
+        UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:@"PROMO_CODE_CELL"];
         return cell;
     
     }
     if(indexPath.section == 2){
         
         if(row == cards.count){
-            UITableViewCell * cell = [self.tableView
-                                      dequeueReusableCellWithIdentifier:@"ADD_CARD_CELL"];
+            UITableViewCell * cell = [self.tableView dequeueReusableCellWithIdentifier:@"ADD_CARD_CELL"];
             return  cell;
         
         }
@@ -289,26 +261,8 @@
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         return cell;
     }
-        
-    
-        
-    
     return nil;
-
 }
-
-
-//-(void)textFieldDidBeginEditing:(UITextField *)sender
-//{
-//    if ([sender isEqual:mailTf])
-//    {
-//        //move the main view, so that the keyboard does not hide it.
-//        if  (self.view.frame.origin.y >= 0)
-//        {
-//            [self setViewMovedUp:YES];
-//        }
-//    }
-//}
 
 //method to move the view up/down whenever the keyboard is shown/dismissed
 -(void)setViewMovedUp:(BOOL)movedUp
@@ -342,17 +296,13 @@
 }
 
 
--(void)updateWallet{
-    //in cents
-    
-    balance = [[PFUser currentUser][@"Balance"] intValue];
+-(void)updateWallet {
 
+    balance = [[PFUser currentUser][@"Balance"] intValue];
     [self.balanceLabel setText:[NSString stringWithFormat:@"%3.2lf", balance/100.0]];
     
-    //[HUD showUIBlockingIndicatorWithText:@"Updating wallet..."];
     PFQuery *query = [PFQuery queryWithClassName:@"Card"];
     [query whereKey:@"User" equalTo:[PFUser currentUser]];
-    
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError * error){
         if(!error){
             
@@ -371,13 +321,9 @@
         }else{
             NSLog(@"Failed to load user cards");
         }
-       // [HUD hideUIBlockingIndicator];
-        
     }];
-    
-
-
 }
+
 -(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
     return 4;
     
@@ -386,22 +332,12 @@
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
 
     if(indexPath.section == 2){
-        
-        
         if(indexPath.row == cards.count){
-        
             [self performSegueWithIdentifier:@"AddCardSegue" sender:self];
             return;
         }
-        
-        
-        
         //select proper row
-
-        
-        
         if(defaultCardIndex != indexPath.row){
-        
             cards[defaultCardIndex][@"isDefault"]= @NO;
             [cards[defaultCardIndex] saveInBackground];
             defaultCardIndex = indexPath.row ;
@@ -409,10 +345,6 @@
             [cards[defaultCardIndex] saveInBackground];
             [self.tableView reloadData];
         }
-           
-        
- 
-       
     }
     
     else if(indexPath.section == 1){
@@ -421,20 +353,11 @@
     
     }
     else if(indexPath.section == 3){
-            
-    
         UIStoryboard *main = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
         WithdrawalViewController *controller =  [main instantiateViewControllerWithIdentifier:@"WithdrawalViewController"];
         [self.navigationController pushViewController:controller animated:YES];
-        
-        
     }
-    
-    
 }
-
-
-
 
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
 
@@ -445,7 +368,6 @@
 
 }
 
-
 // Swipe to delete.
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -454,6 +376,7 @@
         [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
     }
 }
+
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
     // Return YES if you want the specified item to be editable.
     if(indexPath.section == 1) return NO;
@@ -464,31 +387,18 @@
 
 -(void)removeCardFromServer:(long)cardIndex{
     
-    
     [HUD showUIBlockingIndicator];
-    
     PFObject *cardToRemove = cards[cardIndex];
     [cards removeObject: cardToRemove];
-   
     [cardToRemove deleteInBackgroundWithBlock:^(BOOL succed, NSError *error){
-        
         if(succed){
-            
             [self  updateWallet];
-            
         }else{
             
         }
         [HUD hideUIBlockingIndicator];
     }];
-    
-    
-    
-    
-    
-    
 }
-
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

@@ -84,6 +84,7 @@
         [view.layer addAnimation:animation forKey:@"shake"];
     }
 }
+
 -(IBAction)login:(id)sender{
 
     [self touchesBegan:nil withEvent:nil];// hide keyboard
@@ -297,7 +298,7 @@
                 userProfile[@"LastName"] = lastName;
             }
             if(genderString){
-                userProfile[@"Gender"] = genderString;  
+                userProfile[@"Female"] = genderString;
             }
             
             NSString *email = userData[@"email"];

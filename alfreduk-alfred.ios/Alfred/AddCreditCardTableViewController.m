@@ -33,12 +33,10 @@
     STPCard *card;
 }
 @property (weak, nonatomic) IBOutlet UIView *cardNumberView;
-
 @property (weak, nonatomic) IBOutlet UITextField *cardTextField;
 @property (weak, nonatomic) IBOutlet UIView *expiryView;
 @property (weak, nonatomic) IBOutlet UITableViewCell *cvvView;
 @property (weak, nonatomic) IBOutlet UITextField *zipView;
-
 @property (weak, nonatomic) IBOutlet UITextField *expiryTextField;
 @property (weak, nonatomic) IBOutlet UITextField *cvvTextField;
 @property (weak, nonatomic) IBOutlet UITextField *zipCodeTextField;
@@ -50,43 +48,19 @@
 
 - (void)viewDidLoad {
     
-    
+    [super viewDidLoad];
     UIEdgeInsets inset = UIEdgeInsetsMake(64, 0, 0, 0);
     self.tableView.contentInset = inset;
-    
-    [super viewDidLoad];
     self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
-    
-    
-    
     self.expiryTextField.delegate = self;
     self.cardTextField.delegate = self;
     self.cvvTextField.delegate = self;
-    
     [self.errorLabel setText:@""];
     card = [[STPCard alloc] init];
-    
-    
-  
-
-  
-                                   
-  
-
-    
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target: self action:@selector(dimissAddNewCard)];
-    
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Save" style:UIBarButtonItemStyleDone target:self action:@selector(save)];
-    
-    
-    
-   
-    [self.cardTextField becomeFirstResponder];
-    
-
-    
-
-}
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Save" style:UIBarButtonItemStyleDone target:self action:@selector(saveCard)];
+    UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
+    [self.view addGestureRecognizer:tap];}
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
@@ -127,19 +101,12 @@
             textField.text = [textField.text stringByReplacingCharactersInRange:range withString:@""];
             return NO;
         }
-
-        
-        
     }
     if(textField == self.cvvTextField){
-        
-        
         //cvv code
-        
         if(range.location == 3){
             return NO;
         }
-
     }
     if(textField == self.expiryTextField){
         //expiry text field
@@ -158,7 +125,6 @@
             textField.text = [textField.text stringByReplacingCharactersInRange:range withString:@""];
             return NO;
         }
-
     }
     else{
         // zip code text field
@@ -170,35 +136,24 @@
         if (range.location == 9 && range.length == 0){
             return NO;
         }
-    
     }
     return YES;
 }
 
-
-- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-    for (UIView * txt in self.view.subviews){
-        if ([txt isKindOfClass:[UITextField class]] && [txt isFirstResponder]) {
-            [txt resignFirstResponder];
-        }
-    }
+- (void)handleTap:(UITapGestureRecognizer *)recognizer {
+    [self.view endEditing:YES];
 }
 
-- (void) shake:(UIView*)view {
+- (void)shake:(UIView*)view {
     
     CAKeyframeAnimation *animation = [CAKeyframeAnimation animationWithKeyPath:@"transform.translation.x"];
-    
     animation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear];
     animation.duration = 0.6;
     animation.values = @[ @(-20), @(20), @(-20), @(20), @(-10), @(10), @(-5), @(5), @(0) ];
-    
     [view.layer addAnimation:animation forKey:@"shake"];
-    
 }
 
--(void)save{
-    
-    
+-(void)saveCard {
     [self.errorLabel setText:@""];
     NSLog(@"Adding card");
     //check field details
@@ -208,7 +163,6 @@
     [self.expiryTextField resignFirstResponder];
     [self.cvvTextField resignFirstResponder];
     [self.zipCodeTextField resignFirstResponder];
-
     
     if(self.cardTextField.text.length == 0){
         [self.errorLabel setText:@"Card number is required."];
@@ -232,10 +186,7 @@
     }
     
     [HUD showUIBlockingIndicatorWithText:@"Adding Card..."];
-   
-    
-    
-    
+
     card.number = self.cardTextField.text ;
     NSLog(@"%@", [NSString stringWithFormat:@"Card Number: %@",self.cardTextField.text ]);
     
@@ -254,7 +205,6 @@
     
     NSLog(@"%@", [NSString stringWithFormat:@"CVV: %@",self.cvvTextField.text]);
     
-    
     //genera un token con el nuevo card y lo guarda
     [Stripe createTokenWithCard:card completion:^(STPToken *token, NSError *error) {
        
@@ -266,48 +216,37 @@
             [HUD hideUIBlockingIndicator];
         } else {
             
-            
             //add card to customer, pues este ya existe
-            
-            if([PFUser currentUser][@"stripeCustomerId"] != nil){
-                
-                [self addCardToCustomer:(NSString *)token.tokenId];
-                
+            NSString *stpTokenID = (NSString *)token.tokenId;
+            if([PFUser currentUser][@"stripeCustomerId"] != nil) {
+                [self addCardToCustomer:stpTokenID];
             }
             else{
-                
                 //no existe customer, lo creo por primera vez
-                [self createCustomer:(NSString *)token.tokenId completion:^(id object, NSError * error){
+                [self createCustomer:stpTokenID completion:^(id object, NSError * error){
                     [HUD hideUIBlockingIndicator];
-
                     if(!error){
                         NSLog(@"Succeeded");
                         
                         [PFUser currentUser][@"stripeCustomerId"] = object[@"id"];
                         [[PFUser currentUser] saveInBackground];
+                        [self addCardToCustomer:stpTokenID];
                         
-                        [self addCardToCustomer:token.tokenId];
                     }else{
-                    
                         [[TWMessageBarManager sharedInstance] showMessageWithTitle:@"Ooops! "
                                                                        description:@"Can't add the card to your wallet"
                                                                               type:TWMessageBarMessageTypeError];
                         NSLog(@"%@", error.localizedDescription);
                     }
-                    
                 }];
             }
         }
     }];
-    
-    
-  
 }
 
+-(void)addCardToCustomer:(NSString*)tokenId{
 
--(void) addCardToCustomer:(NSString*)tokenId{
-
-    NSString *customerId = [PFUser  currentUser][@"stripeCustomerId"];
+    NSString *customerId = [PFUser currentUser][@"stripeCustomerId"];
     assert(customerId!=NULL);
     
     [PFCloud callFunctionInBackground:@"stripeAddCardToCustomer"
@@ -320,49 +259,41 @@
                                     [HUD hideUIBlockingIndicator];
                                     //Object is an NSDictionary that contains the stripe customer information, you can use this as is, or create an instance of your own customer class
                                     
-                                    
                                     //save data for user wallet in parse
                                     PFObject *cardObject =[PFObject objectWithClassName:@"Card"];
                                     NSArray *items = [(NSString*)object componentsSeparatedByString:@"\""];
-                                    
-                                    
-                                    
                                     cardObject[@"User"]= [PFUser currentUser];
                                     cardObject[@"LastFour"] = card.last4;
                                     cardObject[@"Expiry"] = [NSString stringWithFormat:@"%2lu/%2lu",(unsigned long)card.expMonth,(unsigned long) card.expYear];
                                     cardObject[@"StripeToken"] = items[3];
                                     [cardObject saveInBackground];
                                     
-                                    // [self dismissViewControllerAnimated:YES completion:nil];
-                                   [self.navigationController popViewControllerAnimated:YES];
+                                    [self.navigationController popViewControllerAnimated:YES];
                                     
                                 }];
-
-
 }
-
 
 -(void)createCustomer:(NSString *)token completion:(PFIdResultBlock)handler
 {
-    
-    
-    //NSString * email= [PFUser currentUser][@"Email"];
-    //NSString * fullName =[PFUser currentUser][@"FullName"];
-    //NSString * objectId = [PFUser currentUser].objectId;
-    
+    NSString * email= [PFUser currentUser][@"email"];
+    NSString * fullName =[PFUser currentUser][@"FullName"];
+    NSString * objectId = [PFUser currentUser].objectId;
     
     [PFCloud callFunctionInBackground:@"createCustomer"
-                       withParameters:@{@"email": [PFUser currentUser][@"email"],
-                                        @"name": [PFUser currentUser][@"FullName"],
-                                        @"objectId":[[PFUser currentUser] objectId]}
+                       withParameters:@{@"email": email,
+                                        @"name": fullName,
+                                        @"objectId":objectId}
                                 block:^(id object, NSError *error) {
                                     
                                     //Object is an NSDictionary that contains the stripe customer information, you can use this as is, or create an instance of your own customer class
+                                    if (!error) {
+                                        NSLog(@"Create Customer success!!!");
+                                    } else {
+                                        NSLog(@"Create Customer faild!!!");
+                                    }
                                     handler(object,error);
                                 }];
 }
-
-
 
 //cancel adding a new card
 -(void)dimissAddNewCard{

@@ -13,12 +13,16 @@
 @property BOOL openRatingView;
 
 @property (weak, nonatomic) IBOutlet UIView *popUpView;
+@property (weak, nonatomic) IBOutlet UITextView *decisionTextView;
+@property (weak, nonatomic) IBOutlet UIView *supportTeamView;
+
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *topLayoutConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *bottomLayoutConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *rightLayoutConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *leftLayoutConstraint;
 @property(strong,nonatomic) NSString* decision;
-@property (weak, nonatomic) IBOutlet UITextView *decisionTextView;
+
 - (IBAction)closeTheView:(id)sender;
+- (IBAction)contactToSupport:(id)sender;
 
 @end
