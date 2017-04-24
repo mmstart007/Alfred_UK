@@ -37,14 +37,11 @@
 - (IBAction)addBalance:(id)sender {
     
     [ self.amountTextField resignFirstResponder ];
-    if(self.amountTextField.text.length == 0){
+    if(self.amountTextField.text.length == 0) {
         [self shake];
-    }else if([self.amountTextField.text doubleValue] >500){
-        
+    } else if([self.amountTextField.text doubleValue] >500) {
         [self shake];
-        
-    
-    }else{
+    } else {
         [delegate addBalanceView:self didAddedBalance:[self.amountTextField.text doubleValue]];
     }
 }

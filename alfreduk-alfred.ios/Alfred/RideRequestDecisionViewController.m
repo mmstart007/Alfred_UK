@@ -89,7 +89,42 @@
 }
 
 - (IBAction)contactToSupport:(id)sender {
+    if ([MFMailComposeViewController canSendMail]) {
+        MFMailComposeViewController *mail = [[MFMailComposeViewController alloc] init];
+        mail.mailComposeDelegate = self;
+        [mail setSubject:@""];
+        [mail setMessageBody:@"" isHTML:NO];
+        [mail setToRecipients:@[@"info@alfredridesharing.com"]];
+        
+        [self presentViewController:mail animated:YES completion:NULL];
+    } else {
+        [[[UIAlertView alloc] initWithTitle:@"Error" message:@"Your device cannot send email. Please check Email setting." delegate:nil cancelButtonTitle:@"Accept" otherButtonTitles:nil] show];
+    }
+}
+
+#pragma mark - MFMailComposeViewControllerDelegate
+
+- (void)mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error
+{
+    switch (result) {
+        case MFMailComposeResultSent:
+            NSLog(@"You sent the email.");
+            break;
+        case MFMailComposeResultSaved:
+            NSLog(@"You saved a draft of this email");
+            break;
+        case MFMailComposeResultCancelled:
+            NSLog(@"You cancelled sending this email.");
+            break;
+        case MFMailComposeResultFailed:
+            NSLog(@"Mail failed:  An error occurred when trying to compose this email");
+            break;
+        default:
+            NSLog(@"An error occurred when trying to compose this email");
+            break;
+    }
     
+    [controller dismissViewControllerAnimated:YES completion:NULL];
 }
 
 /*
@@ -101,9 +136,5 @@
  // Pass the selected object to the new view controller.
  }
  */
-
-
-
-
 
 @end

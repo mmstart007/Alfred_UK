@@ -6,9 +6,10 @@
 //
 //
 
+#import <Parse/Parse.h>
+#import <TWMessageBarManager/TWMessageBarManager.h>
+
 #import "NewDriverMessageViewController.h"
-
-
 #import "MessageBoardNewTableViewController.h"
 #import "SWRevealViewController.h"
 #import "MessageBoardNewLogoTableViewCell.h"
@@ -19,13 +20,10 @@
 #import "MessageBoardNewTimeTableViewCell.h"
 #import "MessageBoardNewPriceTableViewCell.h"
 #import "MessageBoardNewSendTableViewCell.h"
-
-#import <Parse/Parse.h>
 #import "AlfredMessage.h"
 #import "ActionSheetPicker.h"
 #import "HUD.h"
 
-#import <TWMessageBarManager/TWMessageBarManager.h>
 
 @interface NewDriverMessageViewController (){
 
@@ -38,34 +36,25 @@
 
 }
 
-
 @property (weak, nonatomic) IBOutlet UILabel *pickupAddressLabel;
-
 @property (weak, nonatomic) IBOutlet UILabel *dropoffAddressLabel;
 @property (weak, nonatomic) IBOutlet UITextField *titleTextField;
-
 @property (weak, nonatomic) IBOutlet UILabel *seatsLabel;
 @property (weak, nonatomic) IBOutlet UISwitch *femaleOnlySwitch;
 @property (weak, nonatomic) IBOutlet UITextView *notesTextView;
 @property (weak, nonatomic) IBOutlet UIButton *incrementButton;
 @property (weak, nonatomic) IBOutlet UIButton *decrementButton;
 @property (weak, nonatomic) IBOutlet UIButton *dateButton;
-
 @property (weak, nonatomic) IBOutlet UILabel *dateLabel;
 @property (weak, nonatomic) IBOutlet UILabel *priceLabel;
-
 @property (weak, nonatomic) IBOutlet UIButton *priceDecrementButton;
 @property (weak, nonatomic) IBOutlet UIButton *priceIncrementButton;
-
-
-
 
 @end
 
 @implementation NewDriverMessageViewController
 
 @synthesize pickupAddress,dropoffAddress;
-
 @synthesize pickLocationViewController;
 @synthesize pickLat,pickLong,dropLat,dropLong,city;
 
@@ -94,51 +83,30 @@
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForLocation:) name:@"didRequestForLocation" object:nil];
     
-    
-    //  self.tableView.backgroundView=[[UIImageView alloc] initWithImage:
-    //                              [UIImage imageNamed:@"message_bg"]];
-    
-    
-    
-    
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    
     self.tableView.delegate = self;
-    
-    
     
     UIBarButtonItem* leftButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(backView:)];
     
     UIBarButtonItem* rightButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Done" style:UIBarButtonItemStylePlain target:self action:@selector(postMessage:)];
-    
-    
-    
-    
-    
     self.navigationItem.leftBarButtonItem = leftButtonItem;
     self.navigationItem.rightBarButtonItem = rightButtonItem;
     self.title = @"New message";
-    
+
+    self.tableView.backgroundColor = [UIColor groupTableViewBackgroundColor];
     self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
     
 }
 
-
 - (void)dealloc
 {
-    
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"didRequestForLocation" object:nil];
-    
-    
-    
 }
 
 -(void)didRequestForLocation:(NSNotification *)notification{
     NSMutableArray* locationArray = [notification object];
     
     if (isItPick) {
-        
-        
         pickLat = [locationArray[0] doubleValue];
         pickLong = [locationArray[1] doubleValue];
         city = locationArray[2];
@@ -154,14 +122,8 @@
         dropoffAddress = locationArray[3];
         _isDropoffChecked = YES;
         self.dropoffAddressLabel.text = dropoffAddress;
-        
-        
     }
 }
-
-
-
-
 
 /*!
  @abstract Dimiss the view controller
@@ -177,10 +139,6 @@
     // Dispose of any resources that can be recreated.
 }
 
-
-
-
-
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     
     if(indexPath.section == 0){
@@ -191,17 +149,10 @@
         else if(indexPath.row == 1){
             [self dropoffButton:self];
         }
-        
     }
-    
 }
 
-
 - (void)dateWasSelected:(NSDate *)selectedDate element:(id)element {
-    
-    
-    //may have originated from textField or barButtonItem, use an IBOutlet instead of element
-    //  self.dateTextLabel.text =  selectedDate.description;
     
     NSDateFormatter * formatter = [[NSDateFormatter alloc]init];
     [formatter setDateFormat:@"MMM dd, HH:mm"];
@@ -211,75 +162,44 @@
     _travelDate = selectedDate;
     
 }
+
 -(void)cancelDatePicker{
-    
-    
     
 }
 
-
 #pragma mark - ui interactions
-
-
--(void)dropoffButton:(id)sender{
-    
-    
+-(void)dropoffButton:(id)sender {
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-    
-    
     pickLocationViewController = [storyboard instantiateViewControllerWithIdentifier:@"PickLocationView"];
-    
-    
-    
-    
     pickLocationViewController.isPickup = NO;
     isItPick = NO;
-    
     [self.navigationController pushViewController:pickLocationViewController animated:YES];
-    
-    
-    
-    
 }
 
 -(void)pickupButton:(id)sender{
-    
-    
+
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-    
-    
     pickLocationViewController = [storyboard instantiateViewControllerWithIdentifier:@"PickLocationView"];
-    
-    
     pickLocationViewController.isPickup = YES;
-    
-    //    pickLocationViewController.isPickup = NO;
     isItPick = YES;
     
     [self.navigationController pushViewController:pickLocationViewController animated:YES];
-    
-    
-    
-    
 }
 
 /*!
  @abstract Post a new message to the message board, called when clicken on the button, post a message
  */
-
 -(void)postMessage:(id)sender{
     
     //TODO validate fields here
     
     if(pickupAddress == nil){
-        
-        
+
         [[TWMessageBarManager sharedInstance] showMessageWithTitle:@"Error! "
                                                        description:@"Please enter a pickup location"
                                                               type:TWMessageBarMessageTypeError];
         return;
-        
-        
+
     }
     if(dropoffAddress==  nil){
         
@@ -313,37 +233,26 @@
         return;
         return;
     }
-    
-    
+
     [HUD showUIBlockingIndicatorWithText:@"Please wait.."];
-    
-    
+
     PFObject *boardMessage = [PFObject objectWithClassName:@"BoardMessage"];
     boardMessage[@"pickupAddress"] = pickupAddress;
     boardMessage[@"dropoffAddress"] = dropoffAddress;
     boardMessage[@"title"]   = self.titleTextField.text;
     boardMessage[@"desc"] = self.notesTextView.text;
     boardMessage[@"seats" ] =  [NSNumber numberWithInt:[ self.seatsLabel.text intValue]];
-    
     boardMessage[@"femaleOnly"] = [NSNumber numberWithBool:self.femaleOnlySwitch.on];
     boardMessage[@"city"] = city;
     //TODO: adjust the message properly
     boardMessage[@"driverMessage"] = @YES;
-    
     boardMessage[@"pricePerSeat"] = [NSNumber numberWithDouble:_travelPrice];
-    
-    
-    
     boardMessage [@"pickupLat"]  = [NSNumber numberWithDouble:pickLat] ;
     boardMessage[@"pickupLong"]  = [NSNumber numberWithDouble:pickLong] ;
     boardMessage[@"dropoffLat"]= [NSNumber numberWithDouble:dropLat] ;
     boardMessage[@"dropoffLong"]= [NSNumber numberWithDouble:dropLong] ;
-    
-    
     boardMessage[@"date"] = _travelDate;
     boardMessage[@"author"] = [PFUser currentUser];
-    
-    
     [boardMessage saveInBackgroundWithBlock:^(BOOL succeeded, NSError* error){
         if(error){
             NSLog(@"Failed to post new message");
@@ -357,21 +266,7 @@
         
         [HUD hideUIBlockingIndicator];
     }];
-    
-    
-    
-    
-    // what happends after requesting a ride
-    
-    //[self dismissViewControllerAnimated:YES completion:nil];
-    
 }
-
-
-
-
-
-
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
     for (UIView * txt in self.view.subviews){
@@ -381,19 +276,7 @@
     }
 }
 
-
-#pragma mark  - Table view delegate
-
-
-/*
- #pragma mark - Navigation
- 
- // In a storyboard-based application, you will often want to do a little preparation before navigation
- - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
- // Get the new view controller using [segue destinationViewController].
- // Pass the selected object to the new view controller.
- }
- */
+#pragma mark - UIButton Action.
 - (IBAction)incrementSeats:(id)sender {
     
     int seats = [self.seatsLabel.text intValue];
@@ -405,8 +288,6 @@
     }
     self.decrementButton.enabled = TRUE;
     self.seatsLabel.text = [NSString stringWithFormat:@"%d",seats];
-    
-    
 }
 
 - (IBAction)decrementSeats:(id)sender {
@@ -415,8 +296,6 @@
     seats -=1;
     if(seats == 1){
         self.decrementButton.enabled = FALSE;
-        
-        
     }
     self.incrementButton.enabled = TRUE;
     self.seatsLabel.text = [NSString stringWithFormat:@"%d",seats];
@@ -427,34 +306,28 @@
     
     return YES;
 }
+
 - (IBAction)selectDate:(id)sender {
     
-    
     //hide keyboard
-    
     [self.titleTextField resignFirstResponder];
     
-    
     int two_months = 30 * 24 *60 *60;
-    
     NSDate *today = [NSDate dateWithTimeIntervalSinceNow:0];
     NSDate *maxDate = [NSDate dateWithTimeIntervalSinceNow:two_months];
     
     //create a date picker alowing only 2 month from now
     ActionSheetDatePicker *picker = [[ActionSheetDatePicker alloc] initWithTitle:@"Travel date" datePickerMode:UIDatePickerModeDateAndTime selectedDate:today
                                                                      minimumDate:today maximumDate:maxDate target:self action:@selector(dateWasSelected:element:) cancelAction:@selector(cancelDatePicker) origin:sender];
-    
     [picker showActionSheetPicker];
-    
-    
-    
 }
+
 #pragma  mark - Price
 -(void)updatePriceLabel{
 
     self.priceLabel.text = [ NSString stringWithFormat:@"£%d", _travelPrice];
-
 }
+
 - (IBAction)decrementPrice:(id)sender {
     
     self.priceIncrementButton.enabled = YES;
@@ -464,8 +337,8 @@
         self.priceDecrementButton.enabled = NO;
     }
     [self updatePriceLabel];
-    
 }
+
 - (IBAction)incrementPrice:(id)sender {
     self.priceDecrementButton.enabled = YES;
     

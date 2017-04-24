@@ -12,7 +12,15 @@
 #import "HCSStarRatingView/HCSStarRatingView.h"
 
 
-@interface RequestRidePopupViewController ()
+@interface RequestRidePopupViewController () {
+    
+    double pickupLatitude;
+    double pickupLongitude;
+    double dropoffLatitude;
+    double dropoffLongitude;
+}
+
+
 @property (weak, nonatomic) IBOutlet HCSStarRatingView *ratingView;
 
 @end
@@ -63,6 +71,11 @@ userPic;
     [self.seatsLabel setText:[NSString stringWithFormat:@"%d",seats] ];
     double price = seats * pricePerSeat;
     [self.totalPrice setText:[NSString stringWithFormat:@"%3.1lf",price]];
+
+    pickupLatitude = [rideRequest[@"pickupLatitude"] doubleValue];
+    pickupLongitude = [rideRequest[@"pickupLongitude"] doubleValue];
+    dropoffLatitude = [rideRequest[@"dropoffLatitude"] doubleValue];
+    dropoffLongitude = [rideRequest[@"dropoffLongitude"] doubleValue];
 }
 
 - (void)dealloc
@@ -125,6 +138,28 @@ userPic;
     
     [self acceptOrRejectRideRequest:YES];
     [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (IBAction)pickupButtonTap:(id)sender {
+    NSString *urlString;
+    if ([[UIApplication sharedApplication] canOpenURL: [NSURL URLWithString:@"comgooglemaps:"]]) {
+        urlString = [NSString stringWithFormat:@"comgooglemaps://?center=%f,%f&q=%f,%f",pickupLatitude,pickupLongitude,pickupLatitude,pickupLongitude];
+    } else {
+        urlString = [NSString stringWithFormat:@"http://maps.google.com/maps?ll=%f,%f",pickupLatitude,pickupLongitude];
+    }
+    NSLog(@"%@", urlString);
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:urlString]];
+}
+
+- (IBAction)dropOffButtonTap:(id)sender {
+    NSString *urlString;
+    if ([[UIApplication sharedApplication] canOpenURL: [NSURL URLWithString:@"comgooglemaps:"]]) {
+        urlString = [NSString stringWithFormat:@"comgooglemaps://?center=%f,%f&q=%f,%f",dropoffLatitude,dropoffLongitude,dropoffLatitude,dropoffLongitude];
+    } else {
+        urlString = [NSString stringWithFormat:@"http://maps.google.com/maps?ll=%f,%f",dropoffLatitude,dropoffLongitude];
+    }
+    NSLog(@"%@", urlString);
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:urlString]];
 }
 
 -(void)acceptOrRejectRideRequest:(BOOL)accepted{

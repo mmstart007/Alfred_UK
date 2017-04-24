@@ -28,7 +28,7 @@ const int CHOOSE_ALFRED_ALERT_TAG = 1;
 const int PHONE_VERIFY_ALERT_TAG = 3;
 const int RIDE_REQUEST_EXPIRATION_TIME = 5*60; // in seconds
 
-@interface RiderViewController ()<SWRevealViewControllerDelegate>{
+@interface RiderViewController ()<SWRevealViewControllerDelegate> {
     
     //this variable holds the state when the rider got the acceptation push form the driver and he process the request
     BOOL _processingRequest;

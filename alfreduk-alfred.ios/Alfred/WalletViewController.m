@@ -14,6 +14,7 @@
 #import "KLCPopup/KLCPopup.h"
 #import "AddBalanceView.h"
 #import "WithdrawalViewController.h"
+#import "TWMessageBarManager.h"
 
 @interface WalletViewController(){
 
@@ -158,13 +159,11 @@
              [[PFUser currentUser]saveInBackground];
              [self.balanceLabel setText:[NSString stringWithFormat:@"%3.2lf", balance/100]];
              
-         }
-         else{
+         } else {
              
-             NSString *errorMsg = @"Unknown error";
-             errorMsg = error.userInfo[@"error"];
-             
-             [[[UIAlertView alloc]initWithTitle:@"Failed to add balance" message:errorMsg delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil , nil] show];
+             [[TWMessageBarManager sharedInstance] showMessageWithTitle:@"Ooops! "
+                                                            description:@"Can't add the Balance. Please check your Internet connection."
+                                                                   type:TWMessageBarMessageTypeError];
              
          }
          [HUD hideUIBlockingIndicator];

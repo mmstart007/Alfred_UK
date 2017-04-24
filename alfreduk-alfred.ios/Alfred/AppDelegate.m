@@ -35,10 +35,8 @@
 @synthesize window;
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
-    
-    
     [[UIBarButtonItem appearance] setTintColor:[UIColor whiteColor]];
-
+    
     // Setup Instabug
     [Instabug startWithToken:@"cffcbde018bdf1456464686a8b484859" invocationEvent:IBGInvocationEventNone];
     [Instabug setUserStepsEnabled:YES];
@@ -56,18 +54,14 @@
     }];
     [Parse initializeWithConfiguration:configuration];
     
-    //    [PFUser enableRevocableSessionInBackground];
-    //    [PFAnalytics trackAppOpenedWithLaunchOptions:launchOptions];
-    
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     
     [PFFacebookUtils initializeFacebook];
     
     [[UINavigationBar appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName: [UIColor whiteColor]}];
     [[UINavigationBar appearance] setTranslucent:NO];
-    [[UINavigationBar appearance] setBarTintColor:[UIColor colorWithRed:56.0f/255 green:169.0f/255 blue:180.0f/255 alpha:0.2f]];
-    [[UINavigationBar appearance]setTintColor:[UIColor whiteColor]];
-    //handle notification launching
+    [[UINavigationBar appearance] setBarTintColor:[UIColor colorWithRed:80.0f/255 green:180.0f/255 blue:190.0f/255 alpha:1.0f]];
+    [[UINavigationBar appearance] setTintColor:[UIColor whiteColor]];
     
     NSDictionary *remoteNotification =[launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
     [application setStatusBarStyle:UIStatusBarStyleLightContent];
@@ -79,39 +73,25 @@
         
     }
     
+    //[[STPPaymentConfiguration sharedConfiguration] setPublishableKey:@"pk_test_4Tqbf4pCpIlnN7JOIx5Llp9W"];
     [Stripe setDefaultPublishableKey:StripePublicTestKey];
-    
     
     [GBVersionTracking track];
     
     if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0)
     {
-        
         //notifications types supported by the app
         UIUserNotificationType types = UIUserNotificationTypeAlert | UIUserNotificationTypeBadge | UIUserNotificationTypeSound;
         //create the notification settings
         UIUserNotificationSettings * notificationSettings = [UIUserNotificationSettings settingsForTypes:types categories:nil];
         //register the notification settings on the app
         [[UIApplication sharedApplication] registerUserNotificationSettings: notificationSettings];
-        
         //this is deprecated on iOS 8
         [[UIApplication sharedApplication] registerForRemoteNotifications];
     }
-
+    
     self.locationManager = [[CLLocationManager alloc] init];
     [self.locationManager requestWhenInUseAuthorization];
-    
-    //WARNING: for development purposes, skip login
-    /*if ([GBVersionTracking isFirstLaunchEver]) {
-     
-     UIStoryboard *mainStoryboard = [UIStoryboard storyboardWithName:storyboard bundle: nil];
-     
-     ViewController *navigationController = (ViewController *)[mainStoryboard instantiateViewControllerWithIdentifier:@"SplashId"];
-     
-     self.window.rootViewController = navigationController;
-     }
-     else{
-    */
     
     UIStoryboard *mainStoryboard = [UIStoryboard storyboardWithName:@"Main" bundle: nil];
     if (![PFUser currentUser]) {
@@ -123,7 +103,7 @@
         self.window.rootViewController = loginViewController;
         
         [self.window makeKeyAndVisible ];
-    }else{
+    } else {
         
         SWRevealViewController * revealViewController = [SWRevealViewController alloc];
         
@@ -132,26 +112,21 @@
         if([[PFUser currentUser][@"UserMode"] boolValue]){
             RiderViewController *riderViewController = (RiderViewController*)[mainStoryboard instantiateViewControllerWithIdentifier:@"MainPageId"];
             UINavigationController *controller = [[UINavigationController alloc]initWithRootViewController:riderViewController];
-                revealViewController = [revealViewController initWithRearViewController:menu frontViewController:controller];
+            revealViewController = [revealViewController initWithRearViewController:menu frontViewController:controller];
             self.window.rootViewController = revealViewController;
             
-        }else{
-        
+        } else {
             DriverViewController *driverViewController = (DriverViewController*)[mainStoryboard instantiateViewControllerWithIdentifier:@"DriverMainID"];
             UINavigationController *controller = [[UINavigationController alloc]initWithRootViewController:driverViewController];
-                        revealViewController = [revealViewController initWithRearViewController:menu frontViewController:controller];
+            revealViewController = [revealViewController initWithRearViewController:menu frontViewController:controller];
             self.window.rootViewController = revealViewController;
+        }
     }
+    
+    return YES;
 }
-
-
-return YES;
-}
-
 
 -(void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings{
-    
-    
     UIUserNotificationType types = [notificationSettings types];
     if (types  & UIUserNotificationTypeSound ){
         NSLog(@"User allowed sound notifications");
@@ -163,7 +138,6 @@ return YES;
         NSLog(@"User allowed badge notifications");
     }
     NSLog(@"End of user allowed notificatios");
-    
 }
 
 - (void)application:(UIApplication*)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData*)deviceToken
@@ -188,15 +162,10 @@ return YES;
 
 - (void)application:(UIApplication*)application didFailToRegisterForRemoteNotificationsWithError:(NSError*)error
 {
-    
-    
     NSLog(@"Failed to register for remote notifications");
     NSLog(@"%@", error.localizedDescription);
     //what happends here
-    
-    
 }
-
 
 - (BOOL)application:(UIApplication *)application
             openURL:(NSURL *)url

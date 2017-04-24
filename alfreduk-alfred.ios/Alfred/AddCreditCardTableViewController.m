@@ -27,11 +27,9 @@
 
 @interface AddCreditCardTableViewController ()<UITextFieldDelegate>{
 
-
-
-
-    STPCard *card;
+    STPCardParams *card;
 }
+
 @property (weak, nonatomic) IBOutlet UIView *cardNumberView;
 @property (weak, nonatomic) IBOutlet UITextField *cardTextField;
 @property (weak, nonatomic) IBOutlet UIView *expiryView;
@@ -57,6 +55,7 @@
     self.cvvTextField.delegate = self;
     [self.errorLabel setText:@""];
     card = [[STPCard alloc] init];
+    
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target: self action:@selector(dimissAddNewCard)];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Save" style:UIBarButtonItemStyleDone target:self action:@selector(saveCard)];
     UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
@@ -187,9 +186,6 @@
     
     [HUD showUIBlockingIndicatorWithText:@"Adding Card..."];
 
-    card.number = self.cardTextField.text ;
-    NSLog(@"%@", [NSString stringWithFormat:@"Card Number: %@",self.cardTextField.text ]);
-    
     NSString *expiry = self.expiryTextField.text;
     NSScanner *scanner = [NSScanner scannerWithString:expiry];
     NSInteger month;
@@ -197,12 +193,14 @@
     NSInteger year ;
     [scanner scanString:@"/" intoString:nil];
     [scanner scanInteger:&year];
-    NSLog(@"%@", [NSString stringWithFormat:@"Expiry: %2ld/%2ld",(long)month,(long)year]);
     
+    card.number = self.cardTextField.text ;
     card.expMonth = month;
     card.expYear = year;
     card.cvc = self.cvvTextField.text;
     
+    NSLog(@"%@", [NSString stringWithFormat:@"Card Number: %@",self.cardTextField.text ]);
+    NSLog(@"%@", [NSString stringWithFormat:@"Expiry: %2ld/%2ld",(long)month,(long)year]);
     NSLog(@"%@", [NSString stringWithFormat:@"CVV: %@",self.cvvTextField.text]);
     
     //genera un token con el nuevo card y lo guarda
@@ -236,7 +234,7 @@
                         [[TWMessageBarManager sharedInstance] showMessageWithTitle:@"Ooops! "
                                                                        description:@"Can't add the card to your wallet"
                                                                               type:TWMessageBarMessageTypeError];
-                        NSLog(@"%@", error.localizedDescription);
+                        //NSLog(@"%@", error.localizedDescription);
                     }
                 }];
             }
@@ -257,19 +255,22 @@
                                 block:^(id object, NSError *error) {
                                     
                                     [HUD hideUIBlockingIndicator];
-                                    //Object is an NSDictionary that contains the stripe customer information, you can use this as is, or create an instance of your own customer class
-                                    
-                                    //save data for user wallet in parse
-                                    PFObject *cardObject =[PFObject objectWithClassName:@"Card"];
-                                    NSArray *items = [(NSString*)object componentsSeparatedByString:@"\""];
-                                    cardObject[@"User"]= [PFUser currentUser];
-                                    cardObject[@"LastFour"] = card.last4;
-                                    cardObject[@"Expiry"] = [NSString stringWithFormat:@"%2lu/%2lu",(unsigned long)card.expMonth,(unsigned long) card.expYear];
-                                    cardObject[@"StripeToken"] = items[3];
-                                    [cardObject saveInBackground];
-                                    
-                                    [self.navigationController popViewControllerAnimated:YES];
-                                    
+                                    if (!error) {
+                                        //save data for user wallet in parse
+                                        PFObject *cardObject =[PFObject objectWithClassName:@"Card"];
+                                        NSArray *items = [(NSString*)object componentsSeparatedByString:@"\""];
+                                        cardObject[@"User"]= [PFUser currentUser];
+                                        cardObject[@"LastFour"] = card.last4;
+                                        cardObject[@"Expiry"] = [NSString stringWithFormat:@"%2lu/%2lu",(unsigned long)card.expMonth,(unsigned long) card.expYear];
+                                        cardObject[@"StripeToken"] = items[3];
+                                        [cardObject saveInBackground];
+                                        
+                                        [self.navigationController popViewControllerAnimated:YES];
+                                    } else {
+                                        [[TWMessageBarManager sharedInstance] showMessageWithTitle:@"Ooops! "
+                                                                                       description:@"Can't add the card to your wallet"
+                                                                                              type:TWMessageBarMessageTypeError];
+                                    }
                                 }];
 }
 
@@ -282,6 +283,7 @@
     [PFCloud callFunctionInBackground:@"createCustomer"
                        withParameters:@{@"email": email,
                                         @"name": fullName,
+                                        @"stripeToken": token,
                                         @"objectId":objectId}
                                 block:^(id object, NSError *error) {
                                     
@@ -289,7 +291,7 @@
                                     if (!error) {
                                         NSLog(@"Create Customer success!!!");
                                     } else {
-                                        NSLog(@"Create Customer faild!!!");
+                                        NSLog(@"Create Customer faild  ======   \n %@", error.localizedDescription);
                                     }
                                     handler(object,error);
                                 }];

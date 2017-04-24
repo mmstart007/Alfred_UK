@@ -54,7 +54,6 @@
 		867CDA821C51212800BAF6A1 /* 37x-Checkmark@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 867CDA801C51212800BAF6A1 /* 37x-Checkmark@2x.png */; };
 		868A50861C79066F00E2F0E0 /* WithdrawalViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 868A50851C79066F00E2F0E0 /* WithdrawalViewController.m */; };
 		868A5FDB1C52E6CC00DE2BD5 /* LoadingView.m in Sources */ = {isa = PBXBuildFile; fileRef = 868A5FDA1C52E6CC00DE2BD5 /* LoadingView.m */; };
-		868ED4B11BEE620B005A016D /* Sad-100.png in Resources */ = {isa = PBXBuildFile; fileRef = 868ED4B01BEE620A005A016D /* Sad-100.png */; };
 		8690BD321BA6012B00568FF0 /* PushUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 8690BD311BA6012B00568FF0 /* PushUtils.m */; };
 		8694AA6B1B655485006B0CFB /* MissingDataViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8694AA6A1B655485006B0CFB /* MissingDataViewController.m */; };
 		86A368711BCB4EEE00346831 /* KLCPopup.m in Sources */ = {isa = PBXBuildFile; fileRef = 86A368701BCB4EEE00346831 /* KLCPopup.m */; };
@@ -857,7 +856,6 @@
 		868A50851C79066F00E2F0E0 /* WithdrawalViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WithdrawalViewController.m; sourceTree = "<group>"; };
 		868A5FD91C52E6CC00DE2BD5 /* LoadingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LoadingView.h; path = Loading/LoadingView.h; sourceTree = "<group>"; };
 		868A5FDA1C52E6CC00DE2BD5 /* LoadingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LoadingView.m; path = Loading/LoadingView.m; sourceTree = "<group>"; };
-		868ED4B01BEE620A005A016D /* Sad-100.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Sad-100.png"; sourceTree = "<group>"; };
 		8690BD301BA6012B00568FF0 /* PushUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PushUtils.h; sourceTree = "<group>"; };
 		8690BD311BA6012B00568FF0 /* PushUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PushUtils.m; sourceTree = "<group>"; };
 		8694AA691B655485006B0CFB /* MissingDataViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MissingDataViewController.h; sourceTree = "<group>"; };
@@ -2501,14 +2499,14 @@
 		DC11CA421AC498CB008F0005 /* Message Board */ = {
 			isa = PBXGroup;
 			children = (
-				86A5EA741C721A6D00D22D95 /* NewDriverMessageViewController.h */,
-				86A5EA751C721A6D00D22D95 /* NewDriverMessageViewController.m */,
 				DC11CA4A1AC4A6AD008F0005 /* Main Board */,
 				DCF9E0801AC5DDB700BA3BBB /* Personal Messages */,
 				DC11CA6E1AC4E403008F0005 /* New Message */,
 				DCF9E0811AC5E0B900BA3BBB /* Board Messages */,
 				DCF9E0751AC5DA3E00BA3BBB /* Edit Post */,
 				DC9B3BD01ACF07D200FE312D /* Pickup */,
+				86A5EA741C721A6D00D22D95 /* NewDriverMessageViewController.h */,
+				86A5EA751C721A6D00D22D95 /* NewDriverMessageViewController.m */,
 				861AB0571C7B74FB00563465 /* SecondTabViewController.h */,
 				861AB0581C7B74FB00563465 /* SecondTabViewController.m */,
 				863AF2071C83E0F0004555F2 /* FirstTabViewController.h */,
@@ -2631,7 +2629,6 @@
 			children = (
 				8629ED131C4163EE00AD7CD3 /* Alfred-Bridging-Header.h */,
 				8629ED111C4163BB00AD7CD3 /* Logger.swift */,
-				868ED4B01BEE620A005A016D /* Sad-100.png */,
 				86E556121BD3EE6800F68511 /* Resources */,
 				86E556041BD3EE5700F68511 /* Classes */,
 				DC72425A1A6C66950060161D /* Alfred */,
@@ -2756,11 +2753,11 @@
 		DC74F0F71A76B88700E5D808 /* Profile */ = {
 			isa = PBXGroup;
 			children = (
+				DC74F1011A76C19100E5D808 /* Rides History */,
 				DC74F0E01A769CAB00E5D808 /* ProfileTableViewController.h */,
 				DC74F0E11A769CAB00E5D808 /* ProfileTableViewController.m */,
 				861606E31BEA95A500890C13 /* EditProfileTableViewController.h */,
 				861606E41BEA95A500890C13 /* EditProfileTableViewController.m */,
-				DC74F1011A76C19100E5D808 /* Rides History */,
 			);
 			name = Profile;
 			sourceTree = "<group>";
@@ -3872,7 +3869,6 @@
 				86E5587E1BD3EE6C00F68511 /* CG@2x.png in Resources */,
 				86E5594C1BD3EE6D00F68511 /* MK@2x.png in Resources */,
 				86E559C81BD3EE6D00F68511 /* SR.png in Resources */,
-				868ED4B11BEE620B005A016D /* Sad-100.png in Resources */,
 				865426D51BC8BA1E0008B9DF /* AlfredListTableViewCell.xib in Resources */,
 				86E558E61BD3EE6D00F68511 /* GW@2x.png in Resources */,
 				86E558291BD3EE6C00F68511 /* AQ.png in Resources */,
@@ -4473,7 +4469,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.alfredridesharing.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "9b7e96ca-96a4-4579-8838-0d4f7045c089";
+				PROVISIONING_PROFILE = "8732c328-41dc-4b10-8e0b-192ddfabb498";
 				PROVISIONING_PROFILE_SPECIFIER = "Piao Alfred Dev";
 				SWIFT_OBJC_BRIDGING_HEADER = "Alfred/Alfred-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -4510,7 +4506,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.alfredridesharing.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "9b7e96ca-96a4-4579-8838-0d4f7045c089";
+				PROVISIONING_PROFILE = "8732c328-41dc-4b10-8e0b-192ddfabb498";
 				PROVISIONING_PROFILE_SPECIFIER = "Piao Alfred Dev";
 				SWIFT_OBJC_BRIDGING_HEADER = "Alfred/Alfred-Bridging-Header.h";
 				SWIFT_VERSION = 3.0;

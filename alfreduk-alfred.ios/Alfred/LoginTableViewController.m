@@ -51,10 +51,6 @@
     [super viewDidLoad];
     
     self.progressIndicator.hidden = YES;
-    
-    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForRegistration:) name:@"didRequestForRegistration" object:nil];
-    
-    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForPassword:) name:@"didRequestForPassword" object:nil];
     self.mailField.delegate = self;
     self.passwordField.delegate =self;
 
@@ -170,7 +166,6 @@
             
             user[@"UserMode"] = @YES;
             user[@"EnabledAsDriver"] = @NO;
-            user[@"Rating"] = @0.0;
             user[@"Balance"] = @0.0;
             
             user[@"location"] = [PFGeoPoint geoPointWithLatitude:0 longitude:0];

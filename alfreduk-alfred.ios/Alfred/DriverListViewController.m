@@ -30,7 +30,6 @@
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     
-    
     if (driverList.count == 0){
         
         //there are no driver, so show back label 
@@ -103,8 +102,18 @@
 }
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    [self showDriverCallout: (int)indexPath.row];
-
+    
+    bool ladiesOnly = [driverList[indexPath.row][@"ladiesOnly"] boolValue];
+    bool isFemale = [[PFUser currentUser][@"Female"] boolValue];
+    if (!isFemale) {
+        if (!ladiesOnly) {
+            [self showDriverCallout: (int)indexPath.row];
+        } else {
+            [[[UIAlertView alloc] initWithTitle:@"Oops" message:@"Ladies only require." delegate:nil cancelButtonTitle:@"Accept" otherButtonTitles:nil] show];
+        }
+    } else {
+        [self showDriverCallout: (int)indexPath.row];
+    }
 }
 
 -(void)showDriverCallout:(int)driverIndex {
@@ -122,6 +131,7 @@
         
     }
 }
+
 -(void)didRequestForActiveDriverChosenForRide:(NSNotification *)notification {
     
     [self.navigationController popViewControllerAnimated:YES];

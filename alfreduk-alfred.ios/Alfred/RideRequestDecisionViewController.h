@@ -7,8 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <MessageUI/MessageUI.h>
 
-@interface RideRequestDecisionViewController : UIViewController
+@interface RideRequestDecisionViewController : UIViewController <MFMailComposeViewControllerDelegate>
 @property BOOL isAccepted;
 @property BOOL openRatingView;
 

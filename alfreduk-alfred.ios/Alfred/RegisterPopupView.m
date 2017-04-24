@@ -114,7 +114,6 @@
     user[@"PromoCode"] = @1234;
     user[@"UserMode"] = @YES;
     user[@"EnabledAsDriver"] = @NO;
-    user[@"Rating"] = @0.0;
     user[@"Balance"] = @0.0;
     user[@"email"] = self.emailField.text;
     user[@"location"] = [PFGeoPoint geoPointWithLatitude:0 longitude:0];

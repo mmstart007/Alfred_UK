@@ -15,8 +15,8 @@
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (weak, nonatomic) IBOutlet UIButton *messagesFilterButton;
 @property (strong, nonatomic) CLLocationManager *locationManager;
-- (IBAction)changeMessagesFilter:(id)sender;
 
+- (IBAction)changeMessagesFilter:(id)sender;
 - (IBAction)postANewMessage:(id)sender;
 
 @property (weak, nonatomic) IBOutlet UISegmentedControl *segmentFilterControl;

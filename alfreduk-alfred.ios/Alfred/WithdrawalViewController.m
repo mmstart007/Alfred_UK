@@ -44,7 +44,7 @@
     
     MDButton *floatingButton = [[MDButton alloc] initWithFrame:CGRectMake(frame.size.width - 20 - width, frame.size.height - 100 - height, height, height) type:MDButtonTypeFloatingAction rippleColor:[UIColor clearColor]];
     
-    floatingButton.backgroundColor =  [UIColor colorWithRed:56.0f/255 green:169.0f/255 blue:180.0f/255 alpha:1.0];
+    floatingButton.backgroundColor =  [UIColor colorWithRed:80.0f/255 green:180.0f/255 blue:190.0f/255 alpha:1.0];
     [floatingButton setImage:[UIImage imageNamed:@"withdrawal"] forState:UIControlStateNormal];
     [floatingButton addTarget:self action:@selector(requestWithdrawal:) forControlEvents:UIControlEventTouchUpInside];
       [self.view addSubview:floatingButton];
@@ -96,10 +96,10 @@
     return cell;
 
 }
+
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
 
     return _withdrawalsList.count;
-            
 }
 
 - (IBAction)requestWithdrawal:(id)sender {
@@ -108,7 +108,7 @@
     PFObject *bankInfo = [PFUser currentUser][@"BankInfo"];
     if(bankInfo == nil){
         //the user have not bank info so he cant withdrawal
-        [[  [UIAlertView alloc] initWithTitle:@"Oops!" message:@"You need to enter your bank details in order to withdrawal money from your Alfred wallet.\nThis can be added in your profile.\nThe withdrawals request are processed once per week." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
+        [[[UIAlertView alloc] initWithTitle:@"Oops!" message:@"You need to enter your bank details in order to withdrawal money from your Alfred wallet.\nThis can be added in your profile.\nThe withdrawals request are processed once per week." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
     
         return;
     }

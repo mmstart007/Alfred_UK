@@ -10,6 +10,6 @@
 #define Alfred_Constants_h
 
 static NSString * const CurrentLocationDidChangeNotification = @"CurrentLocationDidChangeNotification";
-static NSString *const StripePublicTestKey = @"pk_test_qtgO2s3z8AYzRdBYdgVyXmPd";
+static NSString *const StripePublicTestKey = @"pk_test_4Tqbf4pCpIlnN7JOIx5Llp9W"; //@"pk_test_qtgO2s3z8AYzRdBYdgVyXmPd";
 
 #endif

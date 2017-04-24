@@ -51,32 +51,17 @@
     [super viewDidLoad];
     
     _currentUser = [PFUser currentUser];
-    
     storyboardType = @"Main";
-    
-    
-    
     name = [PFUser currentUser][@"FullName"];
     profilePic =[PFUser currentUser][@"ProfilePicUrl"];
-    
-    
-    
-    //self.tableView.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"menu bg"]];
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    
-    
+
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForDriverMode:) name:@"didRequestForDriverMode" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didBecomeEnabledAsDriver) name:@"didBecomeEnabledAsDriver" object:nil];
-    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didBecomeDisabledAsDriver) name:@"didBecomeDisabledAsDriver" object:nil];
-    
-    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeUserProfile:) name:@"didChangedUserImage" object:nil];
     
     self.tableView.delegate = self;
-    
-    
-    
 }
 
 -(void)didBecomeEnabledAsDriver{
@@ -84,8 +69,6 @@
     [[PFUser currentUser] fetchInBackgroundWithBlock:^(PFObject * _Nullable object, NSError * _Nullable error) {
         [self.tableView reloadData];
     }];
-    
-    
 }
 
 -(void)didBecomeDisabledAsDriver{
@@ -95,8 +78,6 @@
         [self driverSwitch:nil];
         
     }];
-    
-    
 }
 
 
@@ -115,20 +96,15 @@
                 [self presentViewController:loginViewController animated:YES completion:nil];
                 
             }
-            
         }
-        
-        
     }];
 }
+
 -(void)didChangeUserProfile:(id)object{
-    
     
     name = [PFUser currentUser][@"FullName"];
     profilePic = [PFUser currentUser][@"ProfilePicUrl"];
     [self.tableView reloadData];
-    
-    
 }
 
 

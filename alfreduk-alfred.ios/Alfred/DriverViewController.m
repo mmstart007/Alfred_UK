@@ -131,20 +131,6 @@ const int RIDE_CANCEL_EXPIRATION_TIME = 5*60; // in seconds
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForRideAcceptedForDriver:) name:@"didRequestForRideAcceptedForDriver" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didEndedRating:) name:@"didEndedRating" object:nil];
     
-//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForRideRequest:) name:@"didRequestForStartTheMessageBoardRide" object:nil];
-//    
-//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForRideAcceptedByAnotherDriver:) name:@"didRequestForRideAcceptedByAnotherDriver" object:nil];
-//    
-//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForRideDecisionCloseView:) name:@"didRequestForRideDecisionCloseView" object:nil];
-//    
-//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForMessageBoardStartRide:) name:@"didRequestForMessageBoardStartRide" object:nil];
-//    
-//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForMessageBoardStartAccepted:) name:@"didRequestForMessageBoardStartAccepted" object:nil];
-//    
-//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForUserSelected:) name:@"didRequestForUserSelected" object:nil];
-//    
-//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForMessageBoardRideEnded:) name:@"didRequestForMessageBoardRideEnded" object:nil];
-    
 }
 
 #pragma mark - Local Notification
@@ -278,15 +264,15 @@ const int RIDE_CANCEL_EXPIRATION_TIME = 5*60; // in seconds
 
 -(void)processRideRequest:(PFObject *) rideRequest{
     
+    NSLog(@"RideRequest Object ==================\n %@", rideRequest);
+    
     rideID = rideRequest.objectId;
     _lastRideInfo = rideRequest;
-    NSLog(@"request id ====== %@", rideID);
-    int seats =[rideRequest[@"seats"] intValue];
     passenger = rideRequest[@"passenger"]; // user
-    NSAssert(passenger!= nil, @"User that requested the ride can't be nil");
-    NSString* riderName = passenger[@"FullName"];
     userPhone = passenger[@"Phone"];
+    NSString* riderName = passenger[@"FullName"];
     NSString* userPic =passenger[@"ProfilePicUrl"];
+    int seats =[rideRequest[@"seats"] intValue];
 
     PFQuery *query = [PFQuery queryWithClassName:@"UserRating"];
     [query whereKey:@"user" equalTo:passenger];

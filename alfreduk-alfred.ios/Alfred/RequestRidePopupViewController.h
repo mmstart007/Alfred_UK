@@ -23,28 +23,25 @@
 @property(strong,nonatomic)NSString* userId;
 @property(strong,nonatomic)NSString* requestId;
 @property(strong,nonatomic)NSString* riderName;
-@property(nonatomic,strong)NSString* requestRideId;
-@property PFObject * rideRequest;
-@property(nonatomic,strong)NSDictionary* rideRequestDict;
-@property (nonatomic)int seats;
 @property(strong,nonatomic)NSString* userPic;
-
-@property (weak, nonatomic) IBOutlet UILabel *seatsLabel;
-
-
-@property (weak, nonatomic) IBOutlet UILabel *totalPrice;
-
-@property (weak, nonatomic) IBOutlet UIView *popUpView;
-
-@property (weak, nonatomic) IBOutlet UILabel *pickupLabel;
-@property (weak, nonatomic) IBOutlet UILabel *dropoffLabel;
-
-@property (weak, nonatomic) IBOutlet UILabel *nameLabel;
-@property (weak, nonatomic) IBOutlet UILabel *mobileLabel;
+@property(nonatomic,strong)NSString* requestRideId;
+@property(nonatomic,strong)NSDictionary* rideRequestDict;
+@property(nonatomic)int seats;
+@property PFObject * rideRequest;
 @property double pricePerSeat;
 
+@property (weak, nonatomic) IBOutlet UILabel *seatsLabel;
+@property (weak, nonatomic) IBOutlet UILabel *totalPrice;
+@property (weak, nonatomic) IBOutlet UIView *popUpView;
+@property (weak, nonatomic) IBOutlet UILabel *pickupLabel;
+@property (weak, nonatomic) IBOutlet UILabel *dropoffLabel;
+@property (weak, nonatomic) IBOutlet UILabel *nameLabel;
+@property (weak, nonatomic) IBOutlet UILabel *mobileLabel;
 @property (weak, nonatomic) IBOutlet UIImageView *profileImageView;
+
 - (IBAction)declineRequest:(id)sender;
 - (IBAction)acceptRequest:(id)sender;
+- (IBAction)pickupButtonTap:(id)sender;
+- (IBAction)dropOffButtonTap:(id)sender;
 
 @end

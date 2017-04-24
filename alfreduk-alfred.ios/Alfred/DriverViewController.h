@@ -22,10 +22,9 @@
 @interface DriverViewController : UIViewController<UIGestureRecognizerDelegate,MKMapViewDelegate,CLLocationManagerDelegate,UIActionSheetDelegate>
 {
     BOOL mapChangedFromUserInteraction;
+    BOOL isItRetrieval;
     double latitude;
     double driverLong;
-    BOOL isItRetrieval;
-
 }
 
 @property (weak, nonatomic) IBOutlet HCSStarRatingView *ratingView;
