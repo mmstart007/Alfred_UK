@@ -237,7 +237,7 @@
         UILabel * cardNumberLabel = (UILabel*) [cell viewWithTag:1];
         UILabel * cardExpiryLabel = (UILabel*)[cell viewWithTag:2];
         [cardNumberLabel setText:[NSString stringWithFormat:@"Card: XXXX-XXXX-XXXX-%@",card[@"LastFour"]]];
-        [ cardExpiryLabel setText:[NSString stringWithFormat:@"EXPIRY: %@", card[@"Expiry"]]];
+        [cardExpiryLabel setText:[NSString stringWithFormat:@"EXPIRY: %@", card[@"Expiry"]]];
         if(cardIndex == defaultCardIndex){
             cell.accessoryType = UITableViewCellAccessoryCheckmark;
             
@@ -249,7 +249,7 @@
     }
     else if(indexPath.section == 3){
         // withdrawal section here
-        const NSString* reuseIdentifier = @"PlainCell";
+        static NSString* reuseIdentifier = @"PlainCell";
         
         UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:reuseIdentifier];
         if(cell ==  nil){

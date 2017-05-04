@@ -18,12 +18,10 @@
 }
 */
 
-- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-    for (UIView * txt in self.subviews){
-        if ([txt isKindOfClass:[UITextField class]] && [txt isFirstResponder]) {
-            [txt resignFirstResponder];
-        }
-    }
+-(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+    
+    [self endEditing:YES];
+    
 }
 
 - (void) shake {

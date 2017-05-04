@@ -390,20 +390,13 @@
     [controller setSubject:@"Have an issue? Contact us , we are Happy to help 😄"];
     
     if (controller){
-        [self presentModalViewController:controller animated:YES];
-        
+        //[self presentModalViewController:controller animated:YES];
+        [self presentViewController:controller animated:YES completion:nil];
     }
-    
-    
-    
-    
-    
-    
 }
 
 -(void)sendFeedbackButtonTouchUpInside{
     NSLog(@"Send feedback button touched");
-#warning Incomplete method implementation
 }
 
 -(void)aboutButtonTouchUpInside{
@@ -574,23 +567,18 @@
     UIViewController *frontViewController = revealController.frontViewController;
     UINavigationController *frontNavigationController =nil;
     
-    if ( [frontViewController isKindOfClass:[UINavigationController class]] )
+    if ( [frontViewController isKindOfClass:[UINavigationController class]] ) {
         frontNavigationController = (id)frontViewController;
+    }
     
-    
-    if ( ![frontNavigationController.topViewController isKindOfClass:[AlfredMessageBoardViewController class]] )
-        
-    {
+    if ( ![frontNavigationController.topViewController isKindOfClass:[AlfredMessageBoardViewController class]] ) {
         UIStoryboard *storyboard = [UIStoryboard storyboardWithName:storyboardType bundle:nil];
-        
-        //        MessageBoardTableViewController *frontViewController = (MessageBoardTableViewController *)[storyboard instantiateViewControllerWithIdentifier:@"MessageBoardID"];
         
         //show the message board created by me
         AlfredMessageBoardViewController *frontViewController = (AlfredMessageBoardViewController *)[storyboard instantiateViewControllerWithIdentifier:@"AlfredMessageBoardID"];
         UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:frontViewController];
         [revealController pushFrontViewController:navigationController animated:YES];
-    }
-    else{
+    } else {
         [revealController revealToggleAnimated:YES];
         
     }

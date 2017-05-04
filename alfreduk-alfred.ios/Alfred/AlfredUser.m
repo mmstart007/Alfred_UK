@@ -12,7 +12,7 @@
 
 
 @implementation AlfredUser
-@dynamic  userMode, firstName, lastName, email, phone, password;
+@dynamic  userMode, firstName, lastName, email, phone, password, driverMode, rating, enabledAsDriver;
 
 
 + (void)load {

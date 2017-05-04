@@ -12,6 +12,7 @@
 
 @interface PickLocationViewController : UIViewController<MKMapViewDelegate,CLLocationManagerDelegate>
 @property (weak, nonatomic) IBOutlet MKMapView *mapView;
+@property (weak, nonatomic) IBOutlet UIButton *setLocationButton;
 @property (strong, nonatomic) CLLocationManager *locationManager;
 /*!
  @abstract true is the view controler will be used for select a pickup location,

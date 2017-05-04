@@ -498,12 +498,10 @@
     return 95;
 }
 
--(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
-    for (UIView * txt in self.view.subviews){
-        if ([txt isKindOfClass:[UITextField class]] && [txt isFirstResponder]) {
-            [txt resignFirstResponder];
-        }
-    }
+-(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+    
+    [self.view endEditing:YES];
+    
 }
 
 -(BOOL)textFieldShouldEndEditing:(UITextField *)textField{

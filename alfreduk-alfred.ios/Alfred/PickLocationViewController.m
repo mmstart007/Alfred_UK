@@ -9,6 +9,7 @@
 #import "PickLocationViewController.h"
 
 #import "SearchViewController.h"
+#import "HUD.h"
 
 
 @interface PickLocationViewController () <AlfredSearchControllerDelegate>
@@ -82,13 +83,6 @@
 -(void)searchViewController:(id)controller didFinishedSearchWithPlacemark:(CLPlacemark *)placemark{
     
     [(SearchViewController*)controller dismissViewControllerAnimated:YES completion:nil];
-    
-    
-    // the search was called with placemark
-    
-    
-    
-    
     address = [[placemark.addressDictionary valueForKey:@"FormattedAddressLines"] componentsJoinedByString:@", "];
     city = [placemark locality];
     
@@ -101,36 +95,31 @@
     else{
         [locationArray addObject:@"Unknown City"];
     }
-    
     [locationArray addObject:address];
-    //post notification with pickup data
-    
     [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForLocation" object:locationArray];
-    
-    
     [self.navigationController popViewControllerAnimated:YES];
-    
-
 }
 
 
 - (IBAction)cancel:(id)sender {
     
-    
     [self.navigationController popViewControllerAnimated:YES];
-    
 }
+
 - (IBAction)setLocation:(id)sender {
     CLGeocoder *locator = [[CLGeocoder alloc]init];
     
     CLLocationCoordinate2D centre = [mapView centerCoordinate];
-     myLat = centre.latitude;
-     myLong = centre.longitude;
+    myLat = centre.latitude;
+    myLong = centre.longitude;
     
+    self.setLocationButton.hidden = YES;
+    [HUD showUIBlockingIndicator];
     CLLocation *location = [[CLLocation alloc]initWithLatitude:myLat longitude:myLong];
     [locator reverseGeocodeLocation:location completionHandler:^(NSArray *placemarks, NSError *error) {
         
-        if(!error){
+        [HUD hideUIBlockingIndicator];
+        if(!error) {
             
             CLPlacemark *placemark = [placemarks firstObject];
 
@@ -142,9 +131,8 @@
             [locationArray addObject:[NSNumber numberWithDouble:myLong]];
             if(city){
                 [locationArray addObject:city];
-            }
-            else{
-                    [locationArray addObject:@"Unknown City"];
+            } else {
+                [locationArray addObject:@"Unknown City"];
             }
             [locationArray addObject:address];
             //post notification with pickup data
@@ -156,12 +144,12 @@
             
         }else{
            
+            self.setLocationButton.hidden = NO;
             NSLog(@"%@", [NSString stringWithFormat:@"setLocation error: %@", error ]);
             UIAlertView * locationErrorAlertView = [[UIAlertView alloc] initWithTitle:@"Location Error" message:@"Failed to set location" delegate:nil cancelButtonTitle:@"Try later" otherButtonTitles: nil, nil];
             [locationErrorAlertView show];
             
-            
-            [self dismissViewControllerAnimated:YES completion:nil];
+            //[self dismissViewControllerAnimated:YES completion:nil];
         }
         
     }];

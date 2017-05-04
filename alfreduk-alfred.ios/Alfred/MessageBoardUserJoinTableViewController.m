@@ -9,7 +9,6 @@
 #import "MessageBoardUserJoinTableViewController.h"
 #import "SWRevealViewController.h"
 #import "MessageBoardDriverDetailHeadTableViewCell.h"
-#import "MessageBoardNewMapTableViewCell.h"
 #import "MessageBoardDriverJoinSeatsTableViewCell.h"
 #import "MessageBoardDriverJoinBottomTableViewCell.h"
 

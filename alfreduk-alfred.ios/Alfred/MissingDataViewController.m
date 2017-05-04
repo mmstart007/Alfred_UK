@@ -27,14 +27,10 @@
     self.phoneTextField.delegate = self;
     
 }
--(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
-    for (UIView * txt in self.view.subviews){
-        if ([txt isKindOfClass:[UITextField class]] && [txt isFirstResponder]) {
-            [txt resignFirstResponder];
-        }
-    }
+-(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
     
-
+    [self.view endEditing:YES];
+    
 }
 
 -(void)textFieldDidEndEditing:(UITextField *)textField{

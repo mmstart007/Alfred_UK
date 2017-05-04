@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 
 @protocol MessageBoardNewPostDelegate <NSObject>
+
 -(void) messageSuccessPostProcess;
 
 @end

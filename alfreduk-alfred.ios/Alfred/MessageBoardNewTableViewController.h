@@ -26,29 +26,13 @@
 
 }
 
-
 @property(strong,nonatomic)NSString* dateString;
-//@property(strong,nonatomic)NSString* title;
-
 @property (weak, nonatomic)  UIButton *pickupButton;
 @property (weak, nonatomic)  UIButton *dropoffButton;
-
 @property(strong,nonatomic)PickLocationViewController *pickLocationViewController;
-
 @property(strong,nonatomic) NSString* pickupAddress,*dropoffAddress;
-
-
-
-
 @property (retain, nonatomic) NSMutableArray *textFieldData;
-
-
-
-
-
-
 @property(strong,nonatomic)NSString* city;
-
 @property double pickLat,pickLong,dropLat,dropLong;
 @property (weak) id< MessageBoardNewPostDelegate> messageBoardNewPostDelegate;
 

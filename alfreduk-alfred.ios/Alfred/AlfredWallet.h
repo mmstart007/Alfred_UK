@@ -12,6 +12,6 @@
 @interface AlfredWallet : PFObject
 
 -(id) init;
--(NSArray*)getCards;
--(void)addCard:(AlfredCreditCard*)newCard;
+//-(NSArray*)getCards;
+//-(void)addCard:(AlfredCreditCard*)newCard;
 @end

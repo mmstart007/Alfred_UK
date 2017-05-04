@@ -10,13 +10,12 @@
 #import <CoreLocation/CoreLocation.h>
 
 
-@interface AlfredMessageBoardViewController : UIViewController <UITableViewDelegate, UITableViewDataSource>
+@interface AlfredMessageBoardViewController : UIViewController
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (weak, nonatomic) IBOutlet UIButton *messagesFilterButton;
 @property (strong, nonatomic) CLLocationManager *locationManager;
 
-- (IBAction)changeMessagesFilter:(id)sender;
 - (IBAction)postANewMessage:(id)sender;
 
 @property (weak, nonatomic) IBOutlet UISegmentedControl *segmentFilterControl;

@@ -9,7 +9,6 @@
 #import "MessageBoardDriverJoinTableViewController.h"
 #import "SWRevealViewController.h"
 #import "MessageBoardDriverDetailHeadTableViewCell.h"
-#import "MessageBoardNewMapTableViewCell.h"
 #import "MessageBoardDriverJoinSeatsTableViewCell.h"
 #import "MessageBoardDriverJoinBottomTableViewCell.h"
 
@@ -26,44 +25,21 @@
     
     isPickupChecked = false;
     isDropoffChecked = false;
-    
     pickupAddress = @"Pickup Location";
     dropoffAddress = @"Dropoff Location";
-
     id desiredColor = [UIColor whiteColor];
     
     self.tableView.backgroundColor = desiredColor;
     self.tableView.backgroundView.backgroundColor = desiredColor;
-    
-    //  self.tableView.backgroundView=[[UIImageView alloc] initWithImage:
-    //                              [UIImage imageNamed:@"message_bg"]];
-    
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForLocation:) name:@"didRequestForLocation" object:nil];
 
-    
-    //UIImage *drawerImage = [[UIImage imageNamed:@"menu"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-    
-//    UIBarButtonItem *revealButtonItem = [[UIBarButtonItem alloc] initWithImage:drawerImage
-//                                                                         style:UIBarButtonItemStylePlain target:self action:@selector(revealToggle:)];
-//    
-//    UIBarButtonItem* rightButton = [[UIBarButtonItem alloc] initWithTitle:@"BACK" style:UIBarButtonItemStylePlain target:self action:@selector(backView:)];
-    
     SWRevealViewController *revealViewController = self.revealViewController;
 
     self.navigationItem.rightBarButtonItem = nil;
-    
-    
-
-    
-    
-
-
     [self.navigationController.navigationBar setBackgroundImage:[[UIImage alloc] init] forBarMetrics:UIBarMetricsDefault];
     self.navigationController.navigationBar.shadowImage = [[UIImage alloc] init];
-   
-    
     
     if ( revealViewController ){
         [self.view addGestureRecognizer:revealViewController.panGestureRecognizer];
@@ -79,24 +55,15 @@
     {
         [textFieldData addObject:@""];
     }
-    
 }
-
 
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
 
-    //int index  = buttonIndex;
     [self.navigationController popViewControllerAnimated:YES];
-    
-
 }
 - (void)dealloc
 {
-    
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"didRequestForLocation" object:nil];
-    
-    
-    
 }
 
 -(void)didRequestForLocation:(NSNotification *)notification{
@@ -111,14 +78,12 @@
         [pickupButton setTitle:pickupAddress forState:UIControlStateNormal];
         isPickupChecked = YES;
         
-    }
-    else{
+    } else {
         dropLat = [locationArray[0] doubleValue];
         dropLong = [locationArray[1] doubleValue];
         dropoffAddress = locationArray[3];
         [dropoffButton setTitle:dropoffAddress forState:UIControlStateNormal];
         isDropoffChecked = YES;
-        
     }
 }
 
@@ -127,11 +92,9 @@
     // Dispose of any resources that can be recreated.
 }
 
-
 -(void)backView:(id)sender{
     [self.navigationController popViewControllerAnimated:YES];
 }
-
 
 #pragma mark - Table view data source
 
@@ -158,11 +121,9 @@
     return 0;
 }
 
-
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *simpleTableIdentifier = @"MessageBoardDriverDetailHeadTableViewCell";
     MessageBoardDriverDetailHeadTableViewCell *cell = (MessageBoardDriverDetailHeadTableViewCell *)[tableView dequeueReusableCellWithIdentifier:simpleTableIdentifier];
-    
     
     if (cell == nil)
     {
@@ -173,7 +134,7 @@
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     [cell.driverLabel setText:@"JOIN ALFRED"];
     
-    if ([indexPath section]==1) {
+    /*if ([indexPath section]==1) {
         static NSString *simpleTableIdentifier = @"MessageBoardNewMapTableViewCell";
         MessageBoardNewMapTableViewCell *cell = (MessageBoardNewMapTableViewCell *)[tableView dequeueReusableCellWithIdentifier:simpleTableIdentifier];
         
@@ -238,7 +199,7 @@
 
         
         return cell;
-    }
+    } */
     
     return cell;
 }
@@ -267,16 +228,10 @@
         [self presentViewController:alertController animated:YES completion:nil];
 
         
-    }
-    else{
+    } else {
         
         [HUD showUIBlockingIndicatorWithText:@"Requesting..."];
-        
-        
-#warning what should happen here,  I dont know
-                    int seats = [seatsTextField.text intValue];
-        
-        //
+        int seats = [seatsTextField.text intValue];
         PFObject *rideJoinRequest  = [PFObject objectWithClassName:@"JoinRideRequest"];
         rideJoinRequest[@"boardMessage"] = self.message;
         rideJoinRequest[@"pickLat"] = [NSNumber numberWithDouble:pickLat];
@@ -293,69 +248,35 @@
                  [HUD hideUIBlockingIndicator];
             if(succeeded){
                 [[[UIAlertView alloc] initWithTitle:@"Request saved sucessfully!" message:@"Your request to join this ride has been sucefully posted, you will be notified when the Alfred responds to it." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil] show];
-                
-                //send push to Alfred
-                
-                
-            }
-            else{
+            } else {
                 [[[UIAlertView alloc] initWithTitle:@"Error posting request" message:@"Can post your request right now, please try again later" delegate:nil cancelButtonTitle:@"Accept" otherButtonTitles:nil] show];
             }
-            
-            
         }];
-
-        
-        
-       
-        
     }
 }
 
 -(void)dropoffButton:(id)sender{
-
-  
     
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-    
-    
     pickLocationViewController = [storyboard instantiateViewControllerWithIdentifier:@"PickLocationView"];
-    
-    
     pickLocationViewController.isPickup = NO;
-    
-    //    pickLocationViewController.isPickup = NO;
     isItPick = NO;
     
     [self.navigationController pushViewController:pickLocationViewController animated:YES];
-    
-
-    
-    
 }
 
 -(void)pickupButton:(id)sender{
     
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-    
-    
     pickLocationViewController = [storyboard instantiateViewControllerWithIdentifier:@"PickLocationView"];
-    
-    
     pickLocationViewController.isPickup = YES;
-    
-    //    pickLocationViewController.isPickup = NO;
     isItPick = YES;
     
     [self.navigationController pushViewController:pickLocationViewController animated:YES];
-    
-
-    
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    
     if ([indexPath section]==0) {
         return 105;
     }
@@ -368,7 +289,6 @@
     if ([indexPath section]==3) {
         return 60;
     }
-    
     else
         return 0;
 }

@@ -83,7 +83,6 @@
 
 -(IBAction)login:(id)sender{
 
-    [self touchesBegan:nil withEvent:nil];// hide keyboard
     NSString *email = self.mailField.text;
     NSString *pass= self.passwordField.text;
     
@@ -249,14 +248,11 @@
     return YES;
 }
 
-- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-    for (UIView * txt in self.view.subviews){
-        if ([txt isKindOfClass:[UITextField class]] && [txt isFirstResponder]) {
-            [txt resignFirstResponder];
-        }
-    }
+-(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+    
+    [self.view endEditing:YES];
+    
 }
-
 
 - (void)_loadData {
     // If the user is already logged in, display any previously cached values before we get the latest from Facebook.
