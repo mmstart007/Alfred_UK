@@ -354,7 +354,6 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 5*60; // in seconds
 
 #pragma mark - Adding the Annotations manually for Pickup and Dropoff
 
-
 -(void) addDropoffAnnotation{
     
     if(dropOffAnnotation){
@@ -418,7 +417,6 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 5*60; // in seconds
     // for debugging
     withinCountry =  YES;
     if (withinCountry) {
-        
         
         if (!ifDrop) {
             
@@ -703,7 +701,6 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 5*60; // in seconds
 
     self.driverName.text = driver[@"FullName"];
     self.driverMobile.text = driver[@"Phone"];
-    //PFObject *ratingData = driver[@"driverRating"];
     NSString *driverProfilePic = driver[@"ProfilePicUrl"];
     
     if (![driverProfilePic isKindOfClass:[NSNull class]]) {
@@ -1126,7 +1123,7 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 5*60; // in seconds
                 MKRoute *route = [[response routes] objectAtIndex:0];
                 //route.distance  = The distance
                 //route.expectedTravelTime = The ETA
-                [ driverAnnotation setETA: [NSString stringWithFormat:@"%2.1f mins", route.expectedTravelTime/60  ]];
+                [driverAnnotation setETA: [NSString stringWithFormat:@"%2.1f mins", route.expectedTravelTime/60  ]];
             }
         }];
         

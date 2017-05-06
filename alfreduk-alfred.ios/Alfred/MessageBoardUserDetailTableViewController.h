@@ -12,10 +12,10 @@
 #import "MessageBoardDriverDetailTableViewController.h"
 #import "MessageBoardReviewTableViewCell.h"
 
-@interface MessageBoardUserDetailTableViewController : UITableViewController
+@interface MessageBoardUserDetailTableViewController : UITableViewController <MKMapViewDelegate>
 
 @property(strong,nonatomic)PFObject* selectedMessage;
-@property(strong,nonatomic)NSArray* userMessageRequests;
+@property(strong,nonatomic)NSArray* arrUserReview;
 
 @property (weak, nonatomic) IBOutlet UILabel *nameLabel;
 @property (weak, nonatomic) IBOutlet UILabel *cellLabel;

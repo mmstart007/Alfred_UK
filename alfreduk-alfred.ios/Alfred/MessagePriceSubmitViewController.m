@@ -7,6 +7,7 @@
 //
 
 #import "MessagePriceSubmitViewController.h"
+#import "HUD.h"
 
 @interface MessagePriceSubmitViewController ()
 {
@@ -83,6 +84,21 @@
 
 - (IBAction)submitMessageAction:(id)sender {
     
+    [HUD showUIBlockingIndicatorWithText:@"Submitting..."];
+    [PFCloud callFunctionInBackground:@"RequestToBoardMessage"
+                       withParameters:@{@"boardMessageId": self.selectedMessage.objectId,
+                                        @"price": [NSNumber numberWithInt:_travelPrice],
+                                        @"reason": @"request"}
+                                block:^(NSString *success, NSError *error) {
+                                    [HUD hideUIBlockingIndicator];
+                                    if (!error) {
+                                        NSLog(@"Message posted sucessfully");
+                                        [self.navigationController popViewControllerAnimated:YES];
+                                    } else {
+                                        NSLog(@"Failed to post new message");
+                                        [[[UIAlertView alloc] initWithTitle:@"Message post failed" message:@"Check your network connection and try again." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
+                                    }
+                                }];
 }
 
 /*

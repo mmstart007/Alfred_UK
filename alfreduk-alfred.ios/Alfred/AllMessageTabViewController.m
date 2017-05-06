@@ -25,7 +25,7 @@
 #import "MessagePriceSubmitViewController.h"
 
 @interface AllMessageTabViewController (){
-    NSArray *messageData;
+    NSMutableArray *messageData;
     bool inDriverMode;
     
     BOOL myMessages;
@@ -42,10 +42,11 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    messageData = [[NSMutableArray alloc] init];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForCreateBoardMessage:) name:@"didRequestForCreateBoardMessage" object:nil];
+
     self.tableView.backgroundColor = [UIColor groupTableViewBackgroundColor];
-    self.refreshControl = [[UIRefreshControl alloc] init];
-    [self.refreshControl addTarget:self action:@selector(loadCityMessages:) forControlEvents:UIControlEventValueChanged];
-    [self loadCityMessages:city];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -53,22 +54,45 @@
     // Dispose of any resources that can be recreated.
 }
 
--(void)loadCityMessages:(NSString*)city{
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
+    self.refreshControl = [[UIRefreshControl alloc] init];
+    [self.refreshControl addTarget:self action:@selector(loadAllMessages) forControlEvents:UIControlEventValueChanged];
+    
+    [self loadAllMessages];
+}
+
+-(void)didRequestForCreateBoardMessage:(NSNotification *)notification {
+    
+    NSString *requestMessageId = [notification object];
+    
+    [PFCloud callFunctionInBackground:@"GetNewMessage"
+                       withParameters:@{@"messageId": requestMessageId}
+                                block:^(PFObject *object, NSError *error) {
+                                    [HUD hideUIBlockingIndicator];
+                                    if (!error) {
+                                        NSLog(@"get created new message sucessfully");
+                                        [messageData insertObject:object atIndex:0];
+                                        [self.tableView reloadData];
+                                    } else {
+                                        NSLog(@"Failed created new message");
+                                        [[[UIAlertView alloc] initWithTitle:@"Getting request message failed" message:@"Check your network connection and try again." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
+                                    }
+                                }];
+}
+
+-(void)loadAllMessages {
+    
     PFQuery *query = [PFQuery queryWithClassName:@"BoardMessage"];
     [query includeKey:@"author"]; //load user data also
-    [query includeKey:@"author.userRating"];
-    [query includeKey:@"author.driverRating"];
-    
-    //if user mode load driver messages
-    [HUD showUIBlockingIndicator];
-    
+    [query orderByDescending:@"createdAt"];
     [query  findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
         if(self.refreshControl.isRefreshing){
             [self.refreshControl endRefreshing];
         }
-        [HUD hideUIBlockingIndicator];
         if(!error){
-            messageData = objects;
+            messageData = [objects mutableCopy];
             
             if(objects.count == 0){
                 self.tableView.hidden = YES;

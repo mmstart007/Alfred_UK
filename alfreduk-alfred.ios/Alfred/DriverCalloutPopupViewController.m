@@ -42,7 +42,6 @@
     [super viewDidLoad];
     
     PFObject *user = driverLocation[@"driver"];
-    PFObject *driRating = user[@"driverRating"];
     self.seatsSelectView.maximumValue = [driverLocation[@"availableSeats"] doubleValue];;
     self.seatsSelectView.minimumValue = 1;
     self.ladiesOnlyLabel.hidden = ![driverLocation[@"ladiesOnly"] boolValue];
@@ -52,7 +51,7 @@
     self.pricePerSeatLabel.text = [NSString stringWithFormat:@"%3.1lf" , [driverLocation[@"pricePerSeat"]doubleValue] / 100];
 
     self.ratingView.userInteractionEnabled = NO;
-    [self.ratingView setValue: [driRating[@"rating"] doubleValue]];
+    [self.ratingView setValue: [user[@"driverRating"] doubleValue]];
     
     if (![profilePic isKindOfClass:[NSNull class]]) {
         [profilePic sd_setImageWithURL:[NSURL URLWithString:user[@"ProfilePicUrl"]] placeholderImage:[UIImage imageNamed:@"blank profile"]];
@@ -185,7 +184,6 @@
     
     [self dismissViewControllerAnimated:YES completion:nil];
 }
-
 
 -(MKOverlayRenderer *)mapView:(MKMapView *)mapView rendererForOverlay:(id<MKOverlay>)overlay {
     MKPolylineRenderer  * routeLineRenderer = [[MKPolylineRenderer alloc] initWithPolyline:routeDetails.polyline];

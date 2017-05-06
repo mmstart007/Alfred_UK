@@ -1,19 +1,20 @@
 //
-//  MessageBoardMessageTableViewCell.h
+//  RequestMessageTableViewCell.h
 //  Alfred
 //
-//  Created by Arjun Busani on 26/03/15.
-//  Copyright (c) 2015 A Ascendanet Sun. All rights reserved.
+//  Created by Maxim on 5/6/17.
+//  Copyright © 2017 A Ascendanet Sun. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
 #import <Parse/Parse.h>
+
+#import "MGSwipeTableCell/MGSwipeTableCell.h"
 #import <SDWebImage/UIImageView+WebCache.h>
 #import <TWMessageBarManager/TWMessageBarManager.h>
 
-#import "MGSwipeTableCell/MGSwipeTableCell.h"
 
-@interface MessageBoardMessageTableViewCell : UITableViewCell
+@interface RequestMessageTableViewCell : MGSwipeTableCell
 
 @property (weak, nonatomic) IBOutlet UIView *cellBackgroundView;
 @property (weak, nonatomic) IBOutlet UILabel *dateLabel;
@@ -28,6 +29,6 @@
 @property (weak, nonatomic) IBOutlet UILabel *priceLabel;
 @property (weak, nonatomic) IBOutlet UILabel *ladiesOnlyLabel;
 
-- (void) configureMessageCell:(PFObject *)messageData;
+- (void) configureRequestMessageCell:(PFObject *)messageData;
 
 @end

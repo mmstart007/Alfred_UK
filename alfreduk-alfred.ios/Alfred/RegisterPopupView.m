@@ -117,42 +117,20 @@
     user[@"Balance"] = @0.0;
     user[@"email"] = self.emailField.text;
     user[@"location"] = [PFGeoPoint geoPointWithLatitude:0 longitude:0];
-    user[@"locationAddress"] = @"Undetermined";
-    
+    user[@"driverRating"] = @0.0;
+    user[@"driverRideCount"] = @0;
+    user[@"driverCancelRideCount"] = @0;
+    user[@"passengerRating"] = @0.0;
+    user[@"passengerRideCount"] = @0;
+    user[@"passengerCancelRideCount"] = @0;
     
     [user signUpInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
         if (!error) {   // Hooray! Let them use the app now.
             //generate wallet
             
-            PFObject *userRating  = [PFObject objectWithClassName:@"UserRating"];
-            userRating[@"rating"]= @0.0;
-            userRating[@"rideCount"] = @0;
-            userRating[@"user"]= user;
-            [userRating saveInBackgroundWithBlock:^(BOOL succeeded, NSError * _Nullable error) {
-                if(succeeded){
-                    user[@"userRating"] = userRating;
-                    [user saveEventually];
-                }
-            }];
-            PFObject *driverRating  = [PFObject objectWithClassName:@"DriverRating"];
-            driverRating[@"rating"]= @0.0;
-            driverRating[@"rideCount"] = @0;
-            driverRating[@"user"]= user;
-            [driverRating saveInBackgroundWithBlock:^(BOOL succeeded, NSError * _Nullable error) {
-                if(succeeded){
-                    user[@"driverRating"] = driverRating;
-                    [user saveEventually];
-                }
-            }];
-            
-            
-            
-            
             PFInstallation *installation = [PFInstallation currentInstallation];
             installation[@"user"] = [PFUser currentUser];
-            
             [installation saveInBackground];
-            
             
             [self.delegate registrationSucessfullWithId:self.emailField.text];
             

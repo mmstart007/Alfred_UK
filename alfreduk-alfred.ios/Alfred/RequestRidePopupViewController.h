@@ -19,7 +19,6 @@
 @property(strong,nonatomic)NSString* pickupAddress;
 @property(strong,nonatomic)NSString* dropoffAddress;
 @property(strong,nonatomic)NSString* mobile;
-@property(strong,nonatomic)NSNumber* rating;
 @property(strong,nonatomic)NSString* userId;
 @property(strong,nonatomic)NSString* requestId;
 @property(strong,nonatomic)NSString* riderName;
@@ -27,6 +26,7 @@
 @property(nonatomic,strong)NSString* requestRideId;
 @property(nonatomic,strong)NSDictionary* rideRequestDict;
 @property(nonatomic)int seats;
+@property(nonatomic)double rating;
 @property PFObject * rideRequest;
 @property double pricePerSeat;
 

@@ -35,6 +35,12 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    
+    [super viewWillAppear:animated];
+    
     self.refreshControl = [[UIRefreshControl alloc] init];
     [self.refreshControl addTarget:self action:@selector(loadCityMessages:) forControlEvents:UIControlEventValueChanged];
     
@@ -65,7 +71,7 @@
     static NSString * cellIdentifier = @"RideOfferCell";
     MessageBoardMessageTableViewCell *cell = (MessageBoardMessageTableViewCell *)[tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     
-    [cell configureMessageCell: message];
+    [cell configureMessageCell:message];
 
     return cell;
 }
@@ -82,16 +88,12 @@
     
     [query includeKey:@"author"]; //load user data also
     [query whereKey:@"author" equalTo:[PFUser currentUser]];
-    [query includeKey:@"author.userRating"];
-    [query includeKey:@"author.driverRating"];
-    // if user mode load driver messages
-    [HUD showUIBlockingIndicator];
-    
+
     [query  findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
         if(self.refreshControl.isRefreshing){
             [self.refreshControl endRefreshing];
         }
-        [HUD hideUIBlockingIndicator];
+
         if(!error) {
             messageData = objects;
             

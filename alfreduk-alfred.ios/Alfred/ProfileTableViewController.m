@@ -43,14 +43,12 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:nil action:nil];
- 
-    [self.mailLabel setText: [PFUser currentUser][@"email"]];
-    [ self.phoneNumberLabel setText: [PFUser currentUser][@"Phone"] ];
-    [self.nameLabel setText:[PFUser currentUser][@"FullName"]];
     
+    [self.mailLabel setText: [PFUser currentUser][@"email"]];
+    [self.phoneNumberLabel setText: [PFUser currentUser][@"Phone"]];
+    [self.nameLabel setText:[PFUser currentUser][@"FullName"]];
+
     PFQuery *userQuery = [PFUser query];
-    [userQuery includeKey:@"userRating"];
-    [userQuery includeKey:@"driverRating"];
     [HUD showUIBlockingIndicatorWithText:@"Loading.."];
     [userQuery getObjectInBackgroundWithId:[PFUser currentUser].objectId block:^(PFObject * _Nullable object, NSError * _Nullable error) {
         [HUD hideUIBlockingIndicator];
@@ -59,14 +57,13 @@
         } else {
             currentUser = (PFUser *)object;
             NSLog(@"%@", currentUser);
-            userRatingObj = currentUser[@"userRating"];
-            driverRatingObj = currentUser[@"driverRating"];
-            if([currentUser[@"UserMode"] boolValue] == YES) {
-                _rideCount = [userRatingObj[@"rideCount"] intValue];
-                self.ratingView.value = [userRatingObj[@"rating"] doubleValue];
+            
+            if([currentUser[@"UserMode"] boolValue] == NO) {
+                _rideCount = [currentUser[@"driverRideCount"] intValue];
+                self.ratingView.value = [currentUser[@"driverRating"] doubleValue];
             }else{
-                _rideCount = [driverRatingObj[@"rideCount"] intValue];
-                self.ratingView.value = [driverRatingObj[@"rating"] doubleValue];
+                _rideCount = [currentUser[@"passengerRideCount"] intValue];
+                self.ratingView.value = [currentUser[@"passengerRating"] doubleValue];
             }
             _ridePriceInCents = [currentUser[@"Balance"] intValue] / 100;
             self.ridesAmountLabel.text = [NSString stringWithFormat:@"%3d", _rideCount];
@@ -74,7 +71,7 @@
             [self.ratingView setNeedsDisplay];
         }
     }];
-
+    
     self.tableView.delegate = self;
     
     UIImage *drawerImage = [[UIImage imageNamed:@"menu"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
@@ -88,7 +85,9 @@
     }];
     self.profilePicImageView.layer.cornerRadius = self.profilePicImageView.layer.frame.size.width/2;
     self.profilePicImageView.layer.masksToBounds=YES;
+    
     self.navigationItem.backBarButtonItem.title = @"";
+    
     SWRevealViewController *revealViewController = self.revealViewController;
     self.navigationItem.leftBarButtonItem = revealButtonItem;
     //set edit button
@@ -217,8 +216,6 @@
             UIStoryboard *main = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
             RidesHistoryTableViewController * controller = [main instantiateViewControllerWithIdentifier:@"RidesHistoryId"];
             controller.currentUser = currentUser;
-            controller.driverRideData = driverRatingObj;
-            controller.userRideData = userRatingObj;
             [self.navigationController pushViewController:controller animated:YES];
             return;
         }

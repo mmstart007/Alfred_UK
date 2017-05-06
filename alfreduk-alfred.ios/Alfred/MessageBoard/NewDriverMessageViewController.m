@@ -190,37 +190,34 @@
     }
 
     [HUD showUIBlockingIndicatorWithText:@"Please wait.."];
+    
+    [PFCloud callFunctionInBackground:@"CreateBoardMessage"
+                       withParameters:@{@"driverMessage": @YES,
+                                        @"status": @"",
+                                        @"seats": [NSNumber numberWithInt:[ self.seatsLabel.text intValue]],
+                                        @"pricePerSeat": [NSNumber numberWithDouble:_travelPrice],
+                                        @"pickupLat": [NSNumber numberWithDouble:pickLat],
+                                        @"pickupLong": [NSNumber numberWithDouble:pickLong],
+                                        @"dropoffLat": [NSNumber numberWithDouble:dropLat],
+                                        @"dropoffLong": [NSNumber numberWithDouble:dropLong],
+                                        @"pickupAddress": pickupAddress,
+                                        @"dropoffAddress": dropoffAddress,
+                                        @"title": self.titleTextField.text,
+                                        @"desc": self.notesTextView.text,
+                                        @"city": city,
+                                        @"date": _travelDate,
+                                        @"femaleOnly": [NSNumber numberWithBool:self.femaleOnlySwitch.on]}
+                                block:^(NSString *success, NSError *error) {
+                                    [HUD hideUIBlockingIndicator];
+                                    if (!error) {
+                                        NSLog(@"Message posted sucessfully");
+                                        [self backView:self];
+                                    } else {
+                                        NSLog(@"Failed to post new message");
+                                        [[[UIAlertView alloc] initWithTitle:@"Message post failed" message:@"Check your network connection and try again." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
+                                    }
+                                }];
 
-    PFObject *boardMessage = [PFObject objectWithClassName:@"BoardMessage"];
-    boardMessage[@"pickupAddress"] = pickupAddress;
-    boardMessage[@"dropoffAddress"] = dropoffAddress;
-    boardMessage[@"title"]   = self.titleTextField.text;
-    boardMessage[@"desc"] = self.notesTextView.text;
-    boardMessage[@"seats" ] =  [NSNumber numberWithInt:[ self.seatsLabel.text intValue]];
-    boardMessage[@"femaleOnly"] = [NSNumber numberWithBool:self.femaleOnlySwitch.on];
-    boardMessage[@"city"] = city;
-    //TODO: adjust the message properly
-    boardMessage[@"driverMessage"] = @YES;
-    boardMessage[@"pricePerSeat"] = [NSNumber numberWithDouble:_travelPrice];
-    boardMessage[@"pickupLat"]  = [NSNumber numberWithDouble:pickLat] ;
-    boardMessage[@"pickupLong"]  = [NSNumber numberWithDouble:pickLong] ;
-    boardMessage[@"dropoffLat"]= [NSNumber numberWithDouble:dropLat] ;
-    boardMessage[@"dropoffLong"]= [NSNumber numberWithDouble:dropLong] ;
-    boardMessage[@"date"] = _travelDate;
-    boardMessage[@"author"] = [PFUser currentUser];
-    [boardMessage saveInBackgroundWithBlock:^(BOOL succeeded, NSError* error){
-        if(error){
-            NSLog(@"Failed to post new message");
-            [[[UIAlertView alloc] initWithTitle:@"Message post failed" message:@"Check your network connection and try again." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
-        }else{
-            
-            NSLog(@"Message posted sucessfully");
-            [self backView:self];
-            
-        }
-        
-        [HUD hideUIBlockingIndicator];
-    }];
 }
 
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {

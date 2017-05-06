@@ -260,14 +260,21 @@
             [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForRideEnd" object:rideId];
         }
         
+        /* BoarMessage_REQUEST */
         
-        
-        
-        if ([keyAlert isEqualToString:@"RIDE_ACCEPTED_BY_ANOTHER_DRIVER"]) {
-            NSString* rideId =mainAlert[@"rideId"];
-            NSArray* rideRequestArray = [[NSArray alloc] initWithObjects:rideId, nil];
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForRideAcceptedByAnotherDriver" object:rideRequestArray];
+        if ([keyAlert isEqualToString:@"CREATE_BOARDMESSAGE"]) {
+            NSString* requestMessageId = userInfo[@"rid"];
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForCreateBoardMessage" object:requestMessageId];
         }
+        if ([keyAlert isEqualToString:@"REQUEST_PRICE_BOARDMESSAGE"]) {
+            NSString* requestMessageId = userInfo[@"rid"];
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForRequestPriceBoardMessage" object:requestMessageId];
+        }
+        
+        
+        
+        
+        
         if ([keyAlert isEqualToString:@"REQUEST_BOARD_RIDE_STARTED"]) {
             
             NSString* rideId =mainAlert[@"rideId"];

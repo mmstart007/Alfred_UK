@@ -79,44 +79,39 @@
 
 - (IBAction)rateAction:(id)sender {
     
-    bool isUser = [[PFUser currentUser][@"UserMode"] boolValue];
     PFObject *user;
-    PFObject* ratingData;
-    assert(rideRequest!= nil);
+    NSNumber *isDriver;
+    bool isUser = [[PFUser currentUser][@"UserMode"] boolValue];
+    double computeRate = [self computeRating];
+    
     if(isUser) {
-        //rate the driver
-        user= rideRequest[@"driver"];
-        ratingData = user[@"driverRating"];
+        // The passenger scored to the driver.
+        user = rideRequest[@"driver"];
+        isDriver = [NSNumber numberWithBool:NO];
     }else{
+        // The driver scored to the passenger.
         user = rideRequest[@"passenger"];
-        ratingData = user[@"userRating"];
+        isDriver = [NSNumber numberWithBool:YES];
     }
-    
-    assert(ratingData!= nil);
-    
+
     [HUD showUIBlockingIndicatorWithText:@"Rating ..."];
-    [ratingData fetchIfNeededInBackgroundWithBlock:^(PFObject * _Nullable object, NSError * _Nullable error) {
-        
-        double currentRating = [ratingData[@"rating"] doubleValue];
-        int rideCount = [ratingData[@"rideCount"] intValue];
-        
-        double computeRate = [self computeRating];
-        
-        currentRating = currentRating * rideCount + computeRate;
-        rideCount++;
-        currentRating = currentRating / rideCount;
-        ratingData[@"rideCount"] = [NSNumber numberWithInt:rideCount];
-        ratingData[@"rating"] = [NSNumber numberWithDouble:currentRating];
-        
-        [ratingData saveInBackgroundWithBlock:^(BOOL succeeded, NSError * _Nullable error) {
-            if(error){
-                NSLog(@"Rating save failed =========================== \n %@", error.localizedDescription);
-            }else{
-                [[NSNotificationCenter defaultCenter] postNotificationName:@"didEndedRating" object:nil];
-                [self dismissViewControllerAnimated:YES completion:nil];
-            }
-        }]; //ratingData saved
-    }];
+
+    [PFCloud callFunctionInBackground:@"CreateRating"
+                       withParameters:@{@"to": user.objectId,
+                                        @"isDriver": isDriver,
+                                        @"rating": [NSNumber numberWithDouble:computeRate]}
+                                block:^(NSString *success, NSError *error) {
+                                    
+                                    [HUD hideUIBlockingIndicator];
+                                    
+                                    if(error){
+                                        NSLog(@"Rating save failed =========================== \n %@", error.localizedDescription);
+                                    }else{
+                                        [[NSNotificationCenter defaultCenter] postNotificationName:@"didEndedRating" object:nil];
+                                        [self dismissViewControllerAnimated:YES completion:nil];
+                                    }
+                                }];
+
 }
 
 - (IBAction)backAction:(id)sender {

@@ -44,7 +44,7 @@ const int RIDE_CANCEL_EXPIRATION_TIME = 5*60; // in seconds
     KLCPopup *popup;
     NSTimer *_mapCenterTimer ;
     UIBarButtonItem *_revealButtonItem;
-    NSNumber *ratingData;
+    double ratingData;
     
 }
 
@@ -119,7 +119,7 @@ const int RIDE_CANCEL_EXPIRATION_TIME = 5*60; // in seconds
 
 #pragma mark - Register all Notifications
 
--(void)watchForNotifications{
+-(void)watchForNotifications {
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForStoppingAllMappingServices:) name:@"didRequestForStoppingAllMappingServices" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForSearchResult:) name:@"didRequestForSearchResult" object:nil];
@@ -269,49 +269,40 @@ const int RIDE_CANCEL_EXPIRATION_TIME = 5*60; // in seconds
     rideID = rideRequest.objectId;
     _lastRideInfo = rideRequest;
     passenger = rideRequest[@"passenger"]; // user
+    ratingData = [passenger[@"passengerRating"] doubleValue];
     userPhone = passenger[@"Phone"];
     NSString* riderName = passenger[@"FullName"];
     NSString* userPic =passenger[@"ProfilePicUrl"];
     int seats =[rideRequest[@"seats"] intValue];
 
-    PFQuery *query = [PFQuery queryWithClassName:@"UserRating"];
-    [query whereKey:@"user" equalTo:passenger];
-    [query getFirstObjectInBackgroundWithBlock:^(PFObject * _Nullable object, NSError * _Nullable error) {
-        if(!error){
-            NSLog(@"Rating: %lf",[object[@"rating"] doubleValue] );
-            ratingData = object[@"rating"];
-            
-            requestRidePopupViewController = [[RequestRidePopupViewController alloc] initWithNibName:@"RequestRidePopupViewController" bundle:nil];
-            requestRidePopupViewController.rideRequest = rideRequest;
-            requestRidePopupViewController.pricePerSeat = [_currentDriverPath[@"pricePerSeat"] doubleValue] / 100;
-            requestRidePopupViewController.pickupAddress = rideRequest[@"pickupAddress"];
-            requestRidePopupViewController.dropoffAddress = rideRequest[@"dropoffAddress"];
-            requestRidePopupViewController.rating = ratingData;
-            requestRidePopupViewController.requestId = rideRequest.objectId;
-            requestRidePopupViewController.userId = passenger.objectId;
-            requestRidePopupViewController.requestRideId = rideID;
-            requestRidePopupViewController.riderName = riderName;
-            requestRidePopupViewController.mobile = userPhone;
-            requestRidePopupViewController.userPic = userPic;
-            requestRidePopupViewController.seats = seats;
-            
-            // Set all info to the UserView
-            userName.text = riderName;
-            userMobile.text = userPhone;
-            ratingView.value = [ratingData doubleValue];
-            if (![userPic isKindOfClass:[NSNull class]]) {
-                [userProfilePic sd_setImageWithURL:[NSURL URLWithString:userPic] placeholderImage:[UIImage imageNamed:@"blank profile"]];
-                userProfilePic.layer.cornerRadius = userProfilePic.frame.size.height / 2;
-                userProfilePic.layer.masksToBounds = YES;
-                userProfilePic.layer.borderWidth = 0;
-            }
-            [requestRidePopupViewController setModalPresentationStyle:UIModalPresentationOverCurrentContext];
-            self.navigationController.modalPresentationStyle = UIModalPresentationCurrentContext;
-            [self presentViewController:requestRidePopupViewController animated:YES completion:nil];
-        }else{
-            NSLog(@"Failed to get user rating");
-        }
-    }];
+    requestRidePopupViewController = [[RequestRidePopupViewController alloc] initWithNibName:@"RequestRidePopupViewController" bundle:nil];
+    requestRidePopupViewController.rideRequest = rideRequest;
+    requestRidePopupViewController.pricePerSeat = [_currentDriverPath[@"pricePerSeat"] doubleValue] / 100;
+    requestRidePopupViewController.pickupAddress = rideRequest[@"pickupAddress"];
+    requestRidePopupViewController.dropoffAddress = rideRequest[@"dropoffAddress"];
+    requestRidePopupViewController.rating = ratingData;
+    requestRidePopupViewController.requestId = rideRequest.objectId;
+    requestRidePopupViewController.userId = passenger.objectId;
+    requestRidePopupViewController.requestRideId = rideID;
+    requestRidePopupViewController.riderName = riderName;
+    requestRidePopupViewController.mobile = userPhone;
+    requestRidePopupViewController.userPic = userPic;
+    requestRidePopupViewController.seats = seats;
+    
+    // Set all info to the UserView
+    userName.text = riderName;
+    userMobile.text = userPhone;
+    ratingView.value = ratingData;
+    if (![userPic isKindOfClass:[NSNull class]]) {
+        [userProfilePic sd_setImageWithURL:[NSURL URLWithString:userPic] placeholderImage:[UIImage imageNamed:@"blank profile"]];
+        userProfilePic.layer.cornerRadius = userProfilePic.frame.size.height / 2;
+        userProfilePic.layer.masksToBounds = YES;
+        userProfilePic.layer.borderWidth = 0;
+    }
+    [requestRidePopupViewController setModalPresentationStyle:UIModalPresentationOverCurrentContext];
+    self.navigationController.modalPresentationStyle = UIModalPresentationCurrentContext;
+    [self presentViewController:requestRidePopupViewController animated:YES completion:nil];
+
 }
 
 #pragma mark - Ride Accepted or Rejected and Others(Not in use)

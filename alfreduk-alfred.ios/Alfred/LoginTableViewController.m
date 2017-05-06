@@ -142,12 +142,6 @@
                                         }
                                         self.progressIndicator.hidden = YES;
                                     }];
-    
-    
-    
-
-    
-    
 }
 
 #pragma  mark - social logins
@@ -166,33 +160,17 @@
             user[@"UserMode"] = @YES;
             user[@"EnabledAsDriver"] = @NO;
             user[@"Balance"] = @0.0;
-            
             user[@"location"] = [PFGeoPoint geoPointWithLatitude:0 longitude:0];
             user[@"locationAddress"] = @"Undetermined";
+            user[@"driverRating"] = @0.0;
+            user[@"driverRideCount"] = @0;
+            user[@"driverCancelRideCount"] = @0;
+            user[@"passengerRating"] = @0.0;
+            user[@"passengerRideCount"] = @0;
+            user[@"passengerCancelRideCount"] = @0;
             
             [user saveInBackground];
             [self _loadData];
-
-            PFObject *userRating  = [PFObject objectWithClassName:@"UserRating"];
-            userRating[@"rating"]= @0.0;
-            userRating[@"rideCount"] = @0;
-            userRating[@"user"]= user;
-            [userRating saveInBackgroundWithBlock:^(BOOL succeeded, NSError * _Nullable error) {
-                if(succeeded){
-                    user[@"userRating"] = userRating;
-                    [user saveEventually];
-                }
-            }];
-            PFObject *driverRating  = [PFObject objectWithClassName:@"DriverRating"];
-            driverRating[@"rating"]= @0.0;
-            driverRating[@"rideCount"] = @0;
-            driverRating[@"user"]= user;
-            [driverRating saveInBackgroundWithBlock:^(BOOL succeeded, NSError * _Nullable error) {
-                if(succeeded){
-                    user[@"driverRating"] = driverRating;
-                    [user saveEventually];
-                }
-            }];
 
             PFInstallation *inst = [PFInstallation currentInstallation];
             //PFUser* current = [PFUser currentUser];
@@ -200,6 +178,7 @@
             [inst saveInBackground];
             
         } else {
+            
             NSLog(@"User logged in through Facebook!");
             
             user[@"location"] = [PFGeoPoint geoPointWithLatitude:0 longitude:0];

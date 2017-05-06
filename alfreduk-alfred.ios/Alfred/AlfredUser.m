@@ -20,16 +20,6 @@
 }
 
 
-//-(id)init{
-//    self = [super initWithClassName:@"User"];
-//    if(self){
-//        [self setValue:@YES forKey:@"UserMode"];
-//        [self setValue:@NO forKey:@"EnabledAsDriver"];
-//        [self setValue:@0.0 forKey:@"Rating"];
-//    }
-//    return self;
-//}
-
 -(NSString*)getFullName{
     return [NSString stringWithFormat:@"%@ %@", self.firstName  , self.lastName];
 

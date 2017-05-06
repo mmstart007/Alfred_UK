@@ -26,6 +26,9 @@
 #import "SWRevealViewController.h"
 
 @interface AlfredMessageBoardViewController () <UITabBarDelegate, UIActionSheetDelegate, MDTabBarViewControllerDelegate> {
+    
+    MDTabBarViewController *tabBarViewController;
+    
     NSArray *messageData;
     bool inDriverMode;
     BOOL myMessages;
@@ -45,23 +48,14 @@
 
     [super viewDidLoad];
     
-    MDTabBarViewController *tabBarViewController = [[MDTabBarViewController alloc] initWithDelegate:self];
+    tabBarViewController = [[MDTabBarViewController alloc] initWithDelegate:self];
     NSArray *names = @[@"All messages",@"Requests", @"Boooked rides"];
-
+    
     [tabBarViewController setItems:names];
     tabBarViewController.tabBar.backgroundColor = [UIColor colorWithRed:80.0f/255 green:180.0f/255 blue:190.0f/255 alpha:1.0f];
     
     [self addChildViewController:tabBarViewController];
     [self.view addSubview:tabBarViewController.view];
-    [tabBarViewController didMoveToParentViewController:self];
-    
-    UIView *controllerView = tabBarViewController.view;
-    
-    id<UILayoutSupport> rootTopLayoutGuide = self.topLayoutGuide;
-    id<UILayoutSupport> rootBottomLayoutGuide = self.bottomLayoutGuide;
-    NSDictionary *viewsDictionary = NSDictionaryOfVariableBindings(rootTopLayoutGuide, rootBottomLayoutGuide, controllerView);
-    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[rootTopLayoutGuide]["@"controllerView][" @"rootBottomLayoutGuide]" options:0 metrics:nil views:viewsDictionary]];
-    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[controllerView]|" options:0 metrics:nil views:viewsDictionary]];
     
     // Do any additional setup after loading the view.
     messageData = [[NSArray alloc] init];
@@ -72,6 +66,16 @@
 }
 
 -(void)viewWillAppear:(BOOL)animated{
+
+    [tabBarViewController didMoveToParentViewController:self];
+    
+    UIView *controllerView = tabBarViewController.view;
+    
+    id<UILayoutSupport> rootTopLayoutGuide = self.topLayoutGuide;
+    id<UILayoutSupport> rootBottomLayoutGuide = self.bottomLayoutGuide;
+    NSDictionary *viewsDictionary = NSDictionaryOfVariableBindings(rootTopLayoutGuide, rootBottomLayoutGuide, controllerView);
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[rootTopLayoutGuide]["@"controllerView][" @"rootBottomLayoutGuide]" options:0 metrics:nil views:viewsDictionary]];
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[controllerView]|" options:0 metrics:nil views:viewsDictionary]];
 
     UIImage *drawerImage = [[UIImage imageNamed:@"menu"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
     UIBarButtonItem *revealButtonItem = [[UIBarButtonItem alloc] initWithImage:drawerImage
@@ -116,7 +120,7 @@
 - (UIViewController *)tabBarViewController:(MDTabBarViewController *)viewController viewControllerAtIndex:(NSUInteger)index{
     
     UIStoryboard * main = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-    if(index == 0){
+    if(index == 0) {
         AllMessageTabViewController *controller = [main instantiateViewControllerWithIdentifier:@"AllMessageTabViewController"];
         return controller;
     } else if(index == 1) {
@@ -128,13 +132,13 @@
     }
 }
 
-//- (void)setScrollEnabled:(BOOL)enabled onPageViewController:(UIPageViewController *)pvc {
-//    for (UIScrollView *view in pvc.view.subviews) {
-//        if ([view isKindOfClass:[UIScrollView self]]) {
-//            view.scrollEnabled = enabled;
-//        }
-//    }
-//}
+- (void)setScrollEnabled:(BOOL)enabled onPageViewController:(UIPageViewController *)pvc {
+    for (UIScrollView *view in pvc.view.subviews) {
+        if ([view isKindOfClass:[UIScrollView self]]) {
+            view.scrollEnabled = enabled;
+        }
+    }
+}
 
 - (IBAction)postANewMessage:(id)sender {
     

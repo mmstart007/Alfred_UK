@@ -17,7 +17,7 @@
  @summary This is the View controller for displaying the data that a passenger shall see when a message is posted from a driver
  */
 
-@interface MessageBoardDriverDetailTableViewController : UITableViewController
+@interface MessageBoardDriverDetailTableViewController : UITableViewController <MKMapViewDelegate>
 
 @property(strong,nonatomic)PFObject* selectedMessage;
 @property(strong,nonatomic)NSArray* driverMessageRequests;

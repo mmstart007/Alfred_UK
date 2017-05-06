@@ -20,7 +20,6 @@
 -(void)updateData{
     
     PFUser * user = driverLocation[@"driver"];
-    PFObject *ratingObject = user[@"driverRating"];
     NSAssert(user!=nil, @"User in cell cant be nil");
     NSString *driverName = user[@"FullName"];
     NSAssert(driverName!=nil, @"Driver name can't be nil");
@@ -38,7 +37,7 @@
     self.profilePicImageView.layer.cornerRadius = self.profilePicImageView.layer.bounds.size.width/2;
     self.profilePicImageView.layer.masksToBounds = YES;
     
-    NSString *ratingValue = [NSString stringWithFormat:@"%2.1lf",[ratingObject[@"rating"] doubleValue]];
+    NSString *ratingValue = [NSString stringWithFormat:@"%2.1lf",[user[@"driverRating"] doubleValue]];
     self.ratingView.userInteractionEnabled = NO;
     self.ratingView.value = [ratingValue doubleValue];
     [self.ratingLabel setText:ratingValue];

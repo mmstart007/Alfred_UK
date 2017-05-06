@@ -1,14 +1,14 @@
 //
-//  MessageBoardMessageTableViewCell.m
+//  RequestMessageTableViewCell.m
 //  Alfred
 //
-//  Created by Arjun Busani on 26/03/15.
-//  Copyright (c) 2015 A Ascendanet Sun. All rights reserved.
+//  Created by Maxim on 5/6/17.
+//  Copyright © 2017 A Ascendanet Sun. All rights reserved.
 //
 
-#import "MessageBoardMessageTableViewCell.h"
+#import "RequestMessageTableViewCell.h"
 
-@implementation MessageBoardMessageTableViewCell
+@implementation RequestMessageTableViewCell
 
 - (void)awakeFromNib {
     [super awakeFromNib];
@@ -21,24 +21,25 @@
     // Configure the view for the selected state
 }
 
-- (void) configureMessageCell:(PFObject *)message {
+- (void) configureRequestMessageCell:(PFObject *)message {
     
-    PFUser *user = message[@"author"];
-
-    int seats = [message[@"seats"] intValue];
-    NSString* dropAddress = message[@"dropoffAddress"];
-    NSString* originAddress = message[@"pickupAddress"];
-    double pricePerSeat = [message[@"pricePerSeat"] doubleValue];
-    NSString* title = message[@"title"];
-    NSDate *date = message[@"date"];
-    bool femaleOnly = [message[@"femaleOnly"] boolValue];
+    PFUser *user = message[@"from"];
+    PFObject *rideMessage = message[@"rideMessage"];
+    
+    int seats = [rideMessage[@"seats"] intValue];
+    NSString* dropAddress = rideMessage[@"dropoffAddress"];
+    NSString* originAddress = rideMessage[@"pickupAddress"];
+    double pricePerSeat = [message[@"price"] doubleValue];
+    NSString* title = rideMessage[@"title"];
+    NSDate *date = rideMessage[@"date"];
+    bool femaleOnly = [rideMessage[@"femaleOnly"] boolValue];
     NSString *pic = user[@"ProfilePicUrl"];
     NSString *firstName  = user[@"FirstName"];
     NSString *lastName = user[@"LastName"];
     NSString *userName = [NSString stringWithFormat:@"%@ %c.",firstName, [lastName characterAtIndex:0]];
     NSDateFormatter * formatter = [[NSDateFormatter alloc]init];
     [formatter setDateFormat:@"MMM dd, HH:mm"];
-
+    
     self.dateLabel.text = [formatter stringFromDate:date];
     self.nameLabel.text = userName;
     self.titleLabel.text = title;
@@ -50,17 +51,14 @@
     self.cellBackgroundView.layer.cornerRadius = 15;
     self.cellBackgroundView.layer.masksToBounds = YES;
     self.cellBackgroundView.layer.borderWidth = 0;
-
-    if([message[@"driverMessage"] boolValue] == YES){
+    self.seatsLabel.text = [NSString stringWithFormat:@"%2d SEAT,",seats];
+    self.priceLabel.text = [NSString stringWithFormat:@"£%5.2lf",pricePerSeat];
+    self.ratingLabel.text = [NSString stringWithFormat:@"%2.1lf", [user[@"driverRating"] doubleValue]];
+    
+    if([rideMessage[@"driverMessage"] boolValue] == YES){
         self.alfredIconImageView.hidden = NO;
-        self.seatsLabel.text = [NSString stringWithFormat:@"%2d SEAT,",seats];
-        self.priceLabel.text = [NSString stringWithFormat:@"£%5.2lf",pricePerSeat];
-        self.ratingLabel.text = [NSString stringWithFormat:@"%2.1lf", [user[@"driverRating"] doubleValue]];
     } else {
         self.alfredIconImageView.hidden = YES;
-        self.seatsLabel.text = [NSString stringWithFormat:@"%2d SEAT",seats];
-        self.priceLabel.text = @"";
-        self.ratingLabel.text = [NSString stringWithFormat:@"%2.1lf", [user[@"passengerRating"] doubleValue]];
     }
     if(femaleOnly) {
         self.ladiesOnlyLabel.hidden = NO;
@@ -71,6 +69,7 @@
         [self.profilePicImageView sd_setImageWithURL:[NSURL URLWithString:pic] placeholderImage:[UIImage imageNamed:@"blank profile"]];
     }
 }
+
 
 
 

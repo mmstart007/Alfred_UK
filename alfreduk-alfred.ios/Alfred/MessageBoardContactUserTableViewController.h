@@ -14,7 +14,7 @@
 #import "AlfredMessage.h"
 #import "MessageBoardDriverDetailTableViewController.h"
 
-@interface MessageBoardContactUserTableViewController : UITableViewController
+@interface MessageBoardContactUserTableViewController : UITableViewController <MKMapViewDelegate>
 
 @property(strong,nonatomic)PFObject* selectedMessage;
 @property(strong,nonatomic)NSArray* driverMessageRequests;

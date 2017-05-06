@@ -66,7 +66,7 @@ userPic;
     mobileLabel.text = mobile;
     nameLabel.text = riderName;
     self.ratingView.userInteractionEnabled = NO;
-    self.ratingView.value = [rating doubleValue];
+    self.ratingView.value = rating;
     
     [self.seatsLabel setText:[NSString stringWithFormat:@"%d",seats] ];
     double price = seats * pricePerSeat;

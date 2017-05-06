@@ -28,6 +28,16 @@
     self.cellBackgroundView.layer.cornerRadius = 15;
     self.cellBackgroundView.layer.masksToBounds = YES;
     self.cellBackgroundView.layer.borderWidth = 1;
+    
+    // cell
+    PFUser *fromUser = reviewData[@"from"];
+    NSString *name = [NSString stringWithFormat:@"%@", fromUser[@"FullName"]];
+    double ratingValue = [reviewData[@"rating"] doubleValue];
+    NSString *rating = [NSString stringWithFormat:@"%2.1lf", ratingValue];
+    
+    self.userName.text = name;
+    self.ratingLabel.text = rating;
+    self.ratingView.value = ratingValue;
 }
 
 @end

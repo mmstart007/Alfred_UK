@@ -37,7 +37,7 @@
 @implementation RidesHistoryTableViewController
 
 @synthesize rideRequestsLabel,finishedRidesLabel,canceledRidesLabel,driverRidesDoneLabel,driverRidesCanceledLabel;
-@synthesize userRideData,driverRideData,profilePic;
+@synthesize currentUser, profilePic;
 @synthesize name;
 
 - (void)hideNavigationController {
@@ -50,12 +50,14 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
     self.title = @"Ride History";
-    finishedRides = [userRideData[@"rideCount"] intValue];
-    canceledRides = [userRideData[@"canceledRide"] intValue];
+    
+    finishedRides = [currentUser[@"passengerRideCount"] intValue];
+    canceledRides = [currentUser[@"passengerCancelRideCount"] intValue];
     rideRequests = finishedRides + canceledRides;
-    driverRidesDone = [driverRideData[@"rideCount"] intValue];
-    driverRidesCancelled = [driverRideData[@"canceledRide"] intValue];
+    driverRidesDone = [currentUser[@"driverRideCount"] intValue];
+    driverRidesCancelled = [currentUser[@"driverCancelRideCount"] intValue];
     driverRideRequests = driverRidesDone + driverRidesCancelled;
     
     rideRequestsLabel.text = [NSString stringWithFormat:@"%3d", rideRequests];
