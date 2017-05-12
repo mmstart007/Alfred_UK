@@ -7,6 +7,9 @@
 
 @interface RideRatingViewController ()<UITableViewDataSource>{
     PFUser *ratedUser;
+    double price;
+    BOOL isDriver;
+    BOOL isDriverMessage;
 }
 
 
@@ -19,26 +22,55 @@
 @implementation RideRatingViewController
 
 
-@synthesize rideRequest;
+@synthesize rideRequest, rideMessage;
+@synthesize isBoardMessage;
 
 - (void)viewDidLoad {
 
     [super viewDidLoad];
 
-    if([[PFUser currentUser][@"UserMode"] boolValue]){
-    
-        //show driver info
-        ratedUser = rideRequest[@"driver"];
+    if (isBoardMessage) {
+        PFUser *from, *to;
+        from = rideMessage[@"from"];
+        to = rideMessage[@"to"];
+        PFObject *requestMessageObj = rideMessage[@"rideMessage"];
+        isDriverMessage = [requestMessageObj[@"driverMessage"] boolValue];
         
-    } else {
-        //show user info
-        ratedUser = rideRequest[@"passenger"];
+        if ([from.objectId isEqualToString:[[PFUser currentUser] objectId]]) {
+            ratedUser = to;
+            if(isDriverMessage) {
+                isDriver = YES;
+            } else {
+                isDriver = NO;
+            }
+        } else {
+            ratedUser = from;
+            if(isDriverMessage) {
+                isDriver = NO;
+            } else {
+                isDriver = YES;
+            }
+        }
+        price = [self.rideMessage[@"price"] doubleValue];
 
-    };
-    assert(ratedUser!= nil);
-    double price = [self.rideRequest[@"price"] doubleValue] /100;
-    self.priceLabel.text = [NSString stringWithFormat:@"£%5.2lf",price];
+    } else {
+        if([[PFUser currentUser][@"UserMode"] boolValue]){
+            
+            //show driver info
+            ratedUser = rideRequest[@"driver"];
+            isDriver = YES;
+            
+        } else {
+            //show user info
+            ratedUser = rideRequest[@"passenger"];
+            isDriver = NO;
+        };
+        assert(ratedUser!= nil);
+        price = [self.rideRequest[@"price"] doubleValue] /100;
+    }
     
+    self.priceLabel.text = [NSString stringWithFormat:@"£%5.2lf",price];
+
     [ratedUser fetchIfNeededInBackgroundWithBlock:^(PFObject * _Nullable object, NSError * _Nullable error) {
         
         [self.ratingTableView reloadData];
@@ -47,11 +79,10 @@
         
         self.nameLabel.text  = [NSString stringWithFormat:@"%@ %@",firstName, lastName];
         
-        //set profile pic
-        
         self.rideCostLabel.text = [NSString stringWithFormat:@"Ride cost: £%4.2lf",[self.rideRequest[@"ridePrice"] doubleValue]/100];
         NSString *profilePicUrl = ratedUser[@"ProfilePicUrl"];
         
+        //set profile pic
         self.profilePicImageView.layer.cornerRadius = self.profilePicImageView.frame.size.width *0.5;
         self.profilePicImageView.layer.masksToBounds = YES;
         self.profilePicImageView.layer.borderWidth = 2.0f;
@@ -68,10 +99,6 @@
     }];
 }
 
-- (void)didChangeValue:(HCSStarRatingView *)sender {
-    rating = sender.value;
-}
-
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
@@ -79,26 +106,13 @@
 
 - (IBAction)rateAction:(id)sender {
     
-    PFObject *user;
-    NSNumber *isDriver;
-    bool isUser = [[PFUser currentUser][@"UserMode"] boolValue];
     double computeRate = [self computeRating];
-    
-    if(isUser) {
-        // The passenger scored to the driver.
-        user = rideRequest[@"driver"];
-        isDriver = [NSNumber numberWithBool:NO];
-    }else{
-        // The driver scored to the passenger.
-        user = rideRequest[@"passenger"];
-        isDriver = [NSNumber numberWithBool:YES];
-    }
 
     [HUD showUIBlockingIndicatorWithText:@"Rating ..."];
 
     [PFCloud callFunctionInBackground:@"CreateRating"
-                       withParameters:@{@"to": user.objectId,
-                                        @"isDriver": isDriver,
+                       withParameters:@{@"to": ratedUser.objectId,
+                                        @"isDriver": [NSNumber numberWithBool:isDriver],
                                         @"rating": [NSNumber numberWithDouble:computeRate]}
                                 block:^(NSString *success, NSError *error) {
                                     
@@ -106,7 +120,7 @@
                                     
                                     if(error){
                                         NSLog(@"Rating save failed =========================== \n %@", error.localizedDescription);
-                                    }else{
+                                    } else {
                                         [[NSNotificationCenter defaultCenter] postNotificationName:@"didEndedRating" object:nil];
                                         [self dismissViewControllerAnimated:YES completion:nil];
                                     }
@@ -130,7 +144,7 @@
     UILabel *subtitleLabel = (UILabel*)[cell viewWithTag:2];
     HCSStarRatingView *ratingView = (HCSStarRatingView*)[cell viewWithTag:3];
     
-    if([[PFUser currentUser][@"UserMode"] boolValue]){
+    if(![[PFUser currentUser][@"UserMode"] boolValue]) {
         //it is user
         switch (indexPath.row) {
             case 0:
@@ -181,6 +195,10 @@
     
 }
 
+- (void)didChangeValue:(HCSStarRatingView *)sender {
+    rating = sender.value;
+}
+
 -(double)computeRating {
     
     double rating1 = self.rate1View.value;
@@ -190,6 +208,7 @@
     return (rating1 + rating2 + rating3)/3;
 
 }
+
 
 
 /*

@@ -88,7 +88,7 @@
     self.navigationItem.leftBarButtonItem = leftButtonItem;
     self.navigationItem.rightBarButtonItem = rightButtonItem;
     self.title = @"New message";
-
+    
     //self.tableView.backgroundColor = [UIColor groupTableViewBackgroundColor];
     self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
     

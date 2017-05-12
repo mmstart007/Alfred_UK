@@ -14,5 +14,6 @@ target 'Alfred' do
     pod 'TWMessageBarManager'
     pod 'MaterialControls', '~> 1.2.2'
     pod 'Instabug'
+    pod 'NSDate+TimeAgo'
 
 end

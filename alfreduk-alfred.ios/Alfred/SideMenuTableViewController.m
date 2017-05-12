@@ -127,7 +127,7 @@
     
     
     [self.driverSwitch setOn:YES animated:NO];
-    [prefs setBool:NO forKey:@"UserMode"];
+    [prefs setBool:YES forKey:@"UserMode"];
     
     [[NSUserDefaults standardUserDefaults] synchronize];
     [self homeButton:self];
@@ -173,7 +173,6 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *simpleTableIdentifier = @"SideLogoTableViewCell";
     SideLogoTableViewCell *cell = (SideLogoTableViewCell *)[tableView dequeueReusableCellWithIdentifier:simpleTableIdentifier];
-    
     
     if (cell == nil)
     {
@@ -324,7 +323,7 @@
             [driverSwitch setEnabled: enabledAsDriver];
             
             BOOL isUser = [[PFUser currentUser][@"UserMode"] boolValue];
-            [driverSwitch setOn: !isUser];
+            [driverSwitch setOn: isUser];
             
             
             return cell;
@@ -449,7 +448,7 @@
 
     if (self.driverSwitch.on) {
         
-        _currentUser[@"UserMode"] = @NO;
+        _currentUser[@"UserMode"] = @YES;
         
         NSNotificationCenter *notificationCenter =[NSNotificationCenter defaultCenter];
         
@@ -464,7 +463,7 @@
             } else {
                 
                 self.driverSwitch.on = NO;
-                _currentUser[@"UserMode"] = @YES;
+                _currentUser[@"UserMode"] = @NO;
                 [self.revealViewController revealToggleAnimated:YES];
                 MDSnackbar *snackbar = [[MDSnackbar alloc] initWithText: @"Failed to turn on driver mode" actionTitle:@""];
                 snackbar.multiline = YES;
@@ -474,7 +473,7 @@
         
     } else {
 
-        _currentUser[@"UserMode"] = @YES;
+        _currentUser[@"UserMode"] = @NO;
         
         [HUD showUIBlockingIndicatorWithText:@"Turning off..."];
         [_currentUser saveInBackgroundWithBlock:^(BOOL suceed, NSError *error){
@@ -486,7 +485,7 @@
             } else {
                 
                 self.driverSwitch.on = YES;
-                _currentUser[@"UserMode"] = @NO;
+                _currentUser[@"UserMode"] = @YES;
                 [self.revealViewController revealToggleAnimated:YES];
                 MDSnackbar *snackbar = [[MDSnackbar alloc] initWithText: @"Failed to turn off driver mode" actionTitle:@""];
                 snackbar.multiline = YES;
@@ -505,7 +504,7 @@
     
     BOOL userMode = [_currentUser[@"UserMode"] boolValue];
     
-    if (userMode) {
+    if (!userMode) {
         // user mode
         
         SWRevealViewController *revealController = [self revealViewController];

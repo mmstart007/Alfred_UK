@@ -384,6 +384,7 @@
                         <segue destination="mRj-uP-VrY" kind="push" identifier="MessageBoardPersonalUserDetailSegueID" id="TrT-7r-ca5"/>
                         <segue destination="Aa5-4x-z4B" kind="push" identifier="MessageBoardPersonalDriverDetailSegueID" id="p40-i0-ts4"/>
                         <segue destination="kMW-q1-5Uc" kind="modal" identifier="NewDriverMessageSegue" id="Urr-hr-j8S"/>
+                        <segue destination="P91-r6-k6w" kind="modal" identifier="rateUser" id="gXa-SW-gpI"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Dgm-oC-OwN" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -2984,6 +2985,8 @@
                                                         <userDefinedRuntimeAttribute type="number" keyPath="maximumValue">
                                                             <integer key="value" value="3"/>
                                                         </userDefinedRuntimeAttribute>
+                                                        <userDefinedRuntimeAttribute type="boolean" keyPath="continuous" value="NO"/>
+                                                        <userDefinedRuntimeAttribute type="boolean" keyPath="accurateHalfStars" value="YES"/>
                                                     </userDefinedRuntimeAttributes>
                                                 </view>
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="joinAlfred" translatesAutoresizingMaskIntoConstraints="NO" id="miT-1N-39a">
@@ -4409,10 +4412,10 @@
                                                 </userDefinedRuntimeAttribute>
                                             </userDefinedRuntimeAttributes>
                                         </view>
-                                        <label opaque="NO" userInteractionEnabled="NO" tag="5" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="3.0" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VWN-8u-0fI">
-                                            <rect key="frame" x="104" y="75" width="24" height="21"/>
+                                        <label opaque="NO" userInteractionEnabled="NO" tag="5" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="3.95" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VWN-8u-0fI">
+                                            <rect key="frame" x="101" y="75" width="40" height="21"/>
                                             <constraints>
-                                                <constraint firstAttribute="width" constant="24" id="S9h-EN-KKI"/>
+                                                <constraint firstAttribute="width" constant="40" id="S9h-EN-KKI"/>
                                                 <constraint firstAttribute="height" constant="21" id="s7K-e2-sMS"/>
                                             </constraints>
                                             <fontDescription key="fontDescription" type="system" pointSize="15"/>
@@ -4516,7 +4519,7 @@
                                         <constraint firstItem="BSK-3J-G5O" firstAttribute="bottom" secondItem="hXG-ft-mwg" secondAttribute="bottom" constant="20" id="SPT-UJ-r35"/>
                                         <constraint firstItem="fQE-Zn-1yg" firstAttribute="trailing" secondItem="5XQ-Me-QAp" secondAttribute="trailing" constant="28" id="TaV-Rf-gBS"/>
                                         <constraint firstItem="NzM-9h-VMM" firstAttribute="centerY" secondItem="2Mn-pU-zgd" secondAttribute="centerY" id="WQo-7L-WAf"/>
-                                        <constraint firstItem="VWN-8u-0fI" firstAttribute="trailing" secondItem="fQE-Zn-1yg" secondAttribute="trailing" constant="32" id="X3i-mN-bK8"/>
+                                        <constraint firstItem="VWN-8u-0fI" firstAttribute="trailing" secondItem="fQE-Zn-1yg" secondAttribute="trailing" constant="45" id="X3i-mN-bK8"/>
                                         <constraint firstItem="y3G-xm-eRJ" firstAttribute="centerY" secondItem="sB8-bB-4mX" secondAttribute="centerY" id="XdQ-5y-LwP"/>
                                         <constraint firstItem="IuU-Jb-mg8" firstAttribute="leading" secondItem="wa7-v3-WAN" secondAttribute="leading" id="Yzn-as-hFZ"/>
                                         <constraint firstAttribute="trailingMargin" secondItem="4xI-NL-0x6" secondAttribute="trailing" id="bnW-t6-g6X"/>
@@ -4581,7 +4584,7 @@
                         <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                         <color key="sectionIndexBackgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="RideOfferCell" rowHeight="210" id="ckG-vv-3Wo" customClass="MessageBoardMessageTableViewCell">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="AcceptRideCell" rowHeight="210" id="ckG-vv-3Wo" customClass="AcceptMessageTableViewCell">
                                 <rect key="frame" x="0.0" y="28" width="320" height="210"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="ckG-vv-3Wo" id="8Ny-vM-eIp">
@@ -4683,11 +4686,11 @@
                                                 </userDefinedRuntimeAttribute>
                                             </userDefinedRuntimeAttributes>
                                         </view>
-                                        <label opaque="NO" userInteractionEnabled="NO" tag="5" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="3.0" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AiY-JX-3Be">
-                                            <rect key="frame" x="104" y="75" width="24" height="21"/>
+                                        <label opaque="NO" userInteractionEnabled="NO" tag="5" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="3.0" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AiY-JX-3Be">
+                                            <rect key="frame" x="101" y="75" width="40" height="21"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="21" id="7JX-h9-vv3"/>
-                                                <constraint firstAttribute="width" constant="24" id="8gD-NP-Fwp"/>
+                                                <constraint firstAttribute="width" constant="40" id="8gD-NP-Fwp"/>
                                             </constraints>
                                             <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -4809,7 +4812,7 @@
                                         <constraint firstItem="6gV-a8-pcu" firstAttribute="leading" secondItem="j1g-Tk-Xlc" secondAttribute="leading" id="ogK-GT-1gQ"/>
                                         <constraint firstItem="MWZ-Ns-Zqh" firstAttribute="leading" secondItem="j1g-Tk-Xlc" secondAttribute="leading" id="ojH-sd-FWE"/>
                                         <constraint firstItem="b8n-ni-2xY" firstAttribute="leading" secondItem="zL3-8e-Cwv" secondAttribute="trailing" constant="6" id="rGb-QI-4GG"/>
-                                        <constraint firstItem="AiY-JX-3Be" firstAttribute="trailing" secondItem="w8B-X5-MD0" secondAttribute="trailing" constant="32" id="sl5-II-fSO"/>
+                                        <constraint firstItem="AiY-JX-3Be" firstAttribute="trailing" secondItem="w8B-X5-MD0" secondAttribute="trailing" constant="45" id="sl5-II-fSO"/>
                                         <constraint firstItem="Gtv-QQ-frv" firstAttribute="height" secondItem="TFM-CU-zfw" secondAttribute="height" id="uYh-Py-IYO"/>
                                         <constraint firstItem="8ES-ee-okR" firstAttribute="centerY" secondItem="WRu-kp-Ixj" secondAttribute="centerY" id="zzo-mk-zif"/>
                                     </constraints>
@@ -5592,7 +5595,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="qoh-FC-Mt0" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1071" y="3351"/>
+            <point key="canvasLocation" x="1089" y="3437"/>
         </scene>
         <!--Ride Rating View Controller-->
         <scene sceneID="9eu-dT-I1p">
@@ -6867,11 +6870,11 @@
                                                 </userDefinedRuntimeAttribute>
                                             </userDefinedRuntimeAttributes>
                                         </view>
-                                        <label opaque="NO" userInteractionEnabled="NO" tag="5" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="3.0" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MtZ-6Y-vq5">
-                                            <rect key="frame" x="104" y="75" width="24" height="21"/>
+                                        <label opaque="NO" userInteractionEnabled="NO" tag="5" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="3.0" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MtZ-6Y-vq5">
+                                            <rect key="frame" x="101" y="75" width="40" height="21"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="21" id="b6w-gX-kib"/>
-                                                <constraint firstAttribute="width" constant="24" id="fNj-4V-Z67"/>
+                                                <constraint firstAttribute="width" constant="40" id="fNj-4V-Z67"/>
                                             </constraints>
                                             <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -6964,7 +6967,7 @@
                                         <constraint firstItem="kcq-1h-8FG" firstAttribute="centerY" secondItem="BpB-29-x3C" secondAttribute="centerY" id="8KP-Ak-s2k"/>
                                         <constraint firstItem="z36-ZG-woe" firstAttribute="centerY" secondItem="Ffg-Kt-aAV" secondAttribute="centerY" id="8bG-ke-LgV"/>
                                         <constraint firstAttribute="leadingMargin" secondItem="92L-KQ-VYr" secondAttribute="leading" id="8k6-Ip-mDO"/>
-                                        <constraint firstItem="MtZ-6Y-vq5" firstAttribute="trailing" secondItem="XLt-KI-gZ2" secondAttribute="trailing" constant="32" id="9vi-9g-e1C"/>
+                                        <constraint firstItem="MtZ-6Y-vq5" firstAttribute="trailing" secondItem="XLt-KI-gZ2" secondAttribute="trailing" constant="45" id="9vi-9g-e1C"/>
                                         <constraint firstAttribute="trailingMargin" secondItem="kcq-1h-8FG" secondAttribute="trailing" constant="5" id="A10-cb-esv"/>
                                         <constraint firstItem="KFT-e2-QLt" firstAttribute="leading" secondItem="OmP-SX-zfY" secondAttribute="trailing" constant="6" id="Asg-9K-n0c"/>
                                         <constraint firstItem="u6Q-3g-f0n" firstAttribute="width" secondItem="rQ2-OJ-Uqw" secondAttribute="width" id="G3q-2A-pLo"/>
@@ -8036,6 +8039,9 @@
                                                     <state key="normal" title="Cancel the Journey">
                                                         <color key="titleColor" red="0.82745098039999998" green="0.30588235289999999" blue="0.2901960784" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     </state>
+                                                    <connections>
+                                                        <action selector="cancelJourneyAction:" destination="mFo-SC-MDY" eventType="touchUpInside" id="FlK-24-aaC"/>
+                                                    </connections>
                                                 </button>
                                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Laz-ah-nmG">
                                                     <rect key="frame" x="0.0" y="307" width="304" height="1"/>
@@ -8366,13 +8372,13 @@
         <simulatedScreenMetrics key="destination" type="retina4_0.fullscreen"/>
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
-        <segue reference="Nea-sN-1YY"/>
         <segue reference="xU6-vG-5Qi"/>
-        <segue reference="qWj-Pw-4Oe"/>
-        <segue reference="hW5-wP-s0a"/>
         <segue reference="5hJ-ED-TD5"/>
+        <segue reference="hW5-wP-s0a"/>
         <segue reference="FIe-Jh-emK"/>
         <segue reference="Jiv-lD-IYM"/>
+        <segue reference="gXa-SW-gpI"/>
+        <segue reference="Nea-sN-1YY"/>
     </inferredMetricsTieBreakers>
     <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
 </document>

@@ -51,41 +51,59 @@
     // Dispose of any resources that can be recreated.
 }
 
+#pragma mark - Get new request message from push notification
 -(void)didRequestForRequestPriceBoardMessage:(NSNotification *)notification {
     
-    NSString *requestMessageId = [notification object];
-    
-    [PFCloud callFunctionInBackground:@"GetNewRequestMessage"
-                       withParameters:@{@"requestMessageId": requestMessageId}
-                                block:^(PFObject *object, NSError *error) {
-                                    [HUD hideUIBlockingIndicator];
-                                    if (!error) {
-                                        NSLog(@"get request board message sucessfully");
-                                        [_arrRideJoinRequest insertObject:object atIndex:0];
-                                        [self.tableView reloadData];
-                                    } else {
-                                        NSLog(@"Getting request message failed");
-                                        [[[UIAlertView alloc] initWithTitle:@"Getting request message failed" message:@"Check your network connection and try again." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
-                                    }
-                                }];
+    [self loadRequestMessages];
 }
 
-/* load the data to fill the table view*/
+#pragma mark - Load all request messages
 -(void)loadRequestMessages {
     
     [PFCloud callFunctionInBackground:@"GetAllMessages"
-                       withParameters:nil
+                       withParameters:@{@"isRequest": @YES}
                                 block:^(NSArray *object, NSError *error) {
+                                    
                                     [HUD hideUIBlockingIndicator];
                                     if(self.refreshControl.isRefreshing){
                                         [self.refreshControl endRefreshing];
                                     }
                                     if (!error) {
-                                        NSLog(@"get request board message sucessfully");
+                                        
+                                        NSLog(@"get all request board message sucessfully");
+                                        
                                         _arrRideJoinRequest = [object mutableCopy];
                                         [self.tableView reloadData];
+                                        
                                     } else {
+                                        
                                         NSLog(@"Getting request message failed");
+                                        
+                                        [[[UIAlertView alloc] initWithTitle:@"Getting request message failed" message:@"Check your network connection and try again." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
+                                    }
+                                }];
+}
+
+#pragma mark - Delete request message
+- (void)deleteRequestMessage:(NSString *)deleteMessageObjId indexPathForDelete:(NSIndexPath *)indexPath {
+    [HUD showUIBlockingIndicatorWithText:@"Deleting..."];
+    [PFCloud callFunctionInBackground:@"DeleteRideMessage"
+                       withParameters:@{@"deleteMessageObjId": deleteMessageObjId,
+                                        @"reason": @"DELETE_RIDE_MESSAGE"}
+                                block:^(NSString *success, NSError *error) {
+                                    [HUD hideUIBlockingIndicator];
+                                    if (!error) {
+                                        
+                                        NSLog(@"delete request board message sucessfully");
+                                        
+                                        [_arrRideJoinRequest removeObjectAtIndex:indexPath.row];
+                                        [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+                                        [self.tableView reloadData];
+                                        
+                                    } else {
+                                        
+                                        NSLog(@"Getting request message failed");
+                                        
                                         [[[UIAlertView alloc] initWithTitle:@"Getting request message failed" message:@"Check your network connection and try again." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
                                     }
                                 }];
@@ -107,16 +125,21 @@
     
     static NSString * cellIdentifier = @"RequestRideCell";
     RequestMessageTableViewCell *cell = (RequestMessageTableViewCell *)[tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+    
+    /* Delete button */
     cell.rightButtons = @[[MGSwipeButton buttonWithTitle:@"" icon:[UIImage imageNamed:@"delete"] backgroundColor:[UIColor redColor]  callback:^BOOL(MGSwipeTableCell *sender) {
         
         NSLog(@"Convenience callback for swipe buttons!");
         
-        [_arrRideJoinRequest removeObjectAtIndex:indexPath.row];
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+        PFObject *deleteMessage = _arrRideJoinRequest[indexPath.row];
+        NSString *messageObjectId = deleteMessage.objectId;
+        
+        [self deleteRequestMessage:messageObjectId indexPathForDelete:indexPath];
         
         return true;
         
     }]];
+    
     cell.rightSwipeSettings.transition = MGSwipeTransition3D;
     
     [cell configureRequestMessageCell:rideJoinRequest];

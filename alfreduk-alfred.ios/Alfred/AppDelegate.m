@@ -110,14 +110,13 @@
         SideMenuTableViewController *menu = (SideMenuTableViewController*)[mainStoryboard instantiateViewControllerWithIdentifier:@"MenuViewController"];
         
         if([[PFUser currentUser][@"UserMode"] boolValue]){
-            RiderViewController *riderViewController = (RiderViewController*)[mainStoryboard instantiateViewControllerWithIdentifier:@"MainPageId"];
-            UINavigationController *controller = [[UINavigationController alloc]initWithRootViewController:riderViewController];
-            revealViewController = [revealViewController initWithRearViewController:menu frontViewController:controller];
-            self.window.rootViewController = revealViewController;
-            
-        } else {
             DriverViewController *driverViewController = (DriverViewController*)[mainStoryboard instantiateViewControllerWithIdentifier:@"DriverMainID"];
             UINavigationController *controller = [[UINavigationController alloc]initWithRootViewController:driverViewController];
+            revealViewController = [revealViewController initWithRearViewController:menu frontViewController:controller];
+            self.window.rootViewController = revealViewController;
+        } else {
+            RiderViewController *riderViewController = (RiderViewController*)[mainStoryboard instantiateViewControllerWithIdentifier:@"MainPageId"];
+            UINavigationController *controller = [[UINavigationController alloc]initWithRootViewController:riderViewController];
             revealViewController = [revealViewController initWithRearViewController:menu frontViewController:controller];
             self.window.rootViewController = revealViewController;
         }
@@ -263,43 +262,30 @@
         /* BoarMessage_REQUEST */
         
         if ([keyAlert isEqualToString:@"CREATE_BOARDMESSAGE"]) {
-            NSString* requestMessageId = userInfo[@"rid"];
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForCreateBoardMessage" object:requestMessageId];
+            NSString* alertMessage = mainAlert[@"alert"];
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForCreateBoardMessage" object:alertMessage];
         }
         if ([keyAlert isEqualToString:@"REQUEST_PRICE_BOARDMESSAGE"]) {
-            NSString* requestMessageId = userInfo[@"rid"];
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForRequestPriceBoardMessage" object:requestMessageId];
+            NSString* alertMessage = mainAlert[@"alert"];
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForRequestPriceBoardMessage" object:alertMessage];
         }
-        
-        
-        
-        
-        
-        if ([keyAlert isEqualToString:@"REQUEST_BOARD_RIDE_STARTED"]) {
-            
-            NSString* rideId =mainAlert[@"rideId"];
-            NSArray* rideRequestArray = [[NSArray alloc] initWithObjects:rideId, nil];
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForMessageBoardRideStarted" object:rideRequestArray];
+        if ([keyAlert isEqualToString:@"ACCEPT_BOARDMESSAGE"]) {
+            NSString* alertMessage = mainAlert[@"alert"];
+            NSString* rideId = userInfo[@"rid"];
+            NSArray* arrObject = @[alertMessage, rideId];
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForAcceptBoardMessage" object:arrObject];
         }
-        if ([keyAlert isEqualToString:@"RIDE_STARTED"]) {
-            
-            NSString* rideId =mainAlert[@"rideId"];
-            NSArray* rideRequestArray = [[NSArray alloc] initWithObjects:rideId, nil];
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForMessageBoardRidePickedUp" object:rideRequestArray];
+        if ([keyAlert isEqualToString:@"DELETE_RIDE_MESSAGE"]) {
+            NSString* alertMessage = mainAlert[@"alert"];
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForDeleteBoardMessage" object:alertMessage];
         }
-        if ([keyAlert isEqualToString:@"REQUEST_BOARD_RIDE_ENDED"]) {
-            
-            NSString* rideId =mainAlert[@"rideId"];
-            NSArray* rideRequestArray = [[NSArray alloc] initWithObjects:rideId, nil];
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForMessageBoardRideEnded" object:rideRequestArray];
+        if ([keyAlert isEqualToString:@"END_RIDE_MESSAGE"]) {
+            NSString* alertMessage = mainAlert[@"alert"];
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForEndBoardMessage" object:alertMessage];
         }
-        if([keyAlert isEqualToString:@"DRIVER_ENABLED"]){
-            
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"didBecomeEnabledAsDriver" object:nil];
-        }
-        if([keyAlert isEqualToString:@"DRIVER_DISABLED"]){
-            
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"didBecomeDisabledAsDriver" object:nil];
+        if ([keyAlert isEqualToString:@"AUTO_DECLINE_BOARDMESSAGE"]) {
+            NSString* alertMessage = mainAlert[@"alert"];
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForAutoDeclineBoardMessage" object:alertMessage];
         }
     }
 
@@ -357,43 +343,41 @@
             [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForRideEnd" object:rideId];
         }
         
+        /* BoarMessage_REQUEST */
         
-        
-        
-        if ([keyAlert isEqualToString:@"RIDE_ACCEPTED_BY_ANOTHER_DRIVER"]) {
-            NSString* rideId =mainAlert[@"rideId"];
-            NSArray* rideRequestArray = [[NSArray alloc] initWithObjects:rideId, nil];
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForRideAcceptedByAnotherDriver" object:rideRequestArray];
+        if ([keyAlert isEqualToString:@"CREATE_BOARDMESSAGE"]) {
+            NSString* alertMessage = mainAlert[@"alert"];
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForCreateBoardMessage" object:alertMessage];
         }
-        if ([keyAlert isEqualToString:@"REQUEST_BOARD_RIDE_STARTED"]) {
-            
-            NSString* rideId =mainAlert[@"rideId"];
-            NSArray* rideRequestArray = [[NSArray alloc] initWithObjects:rideId, nil];
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForMessageBoardRideStarted" object:rideRequestArray];
+        if ([keyAlert isEqualToString:@"REQUEST_PRICE_BOARDMESSAGE"]) {
+            NSString* alertMessage = mainAlert[@"alert"];
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForRequestPriceBoardMessage" object:alertMessage];
         }
-        if ([keyAlert isEqualToString:@"RIDE_STARTED"]) {
-            
-            NSString* rideId =mainAlert[@"rideId"];
-            NSArray* rideRequestArray = [[NSArray alloc] initWithObjects:rideId, nil];
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForMessageBoardRidePickedUp" object:rideRequestArray];
+        if ([keyAlert isEqualToString:@"ACCEPT_BOARDMESSAGE"]) {
+            NSString* alertMessage = mainAlert[@"alert"];
+            NSString* rideId = userInfo[@"rid"];
+            NSArray* arrObject = @[alertMessage, rideId];
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForAcceptBoardMessage" object:arrObject];
         }
-        if ([keyAlert isEqualToString:@"REQUEST_BOARD_RIDE_ENDED"]) {
-            
-            NSString* rideId =mainAlert[@"rideId"];
-            NSArray* rideRequestArray = [[NSArray alloc] initWithObjects:rideId, nil];
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForMessageBoardRideEnded" object:rideRequestArray];
+        if ([keyAlert isEqualToString:@"DELETE_RIDE_MESSAGE"]) {
+            NSString* alertMessage = mainAlert[@"alert"];
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForDeleteBoardMessage" object:alertMessage];
         }
-        if([keyAlert isEqualToString:@"DRIVER_ENABLED"]){
-            
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"didBecomeEnabledAsDriver" object:nil];
+        if ([keyAlert isEqualToString:@"END_RIDE_MESSAGE"]) {
+            NSString* alertMessage = mainAlert[@"alert"];
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForEndBoardMessage" object:alertMessage];
         }
-        if([keyAlert isEqualToString:@"DRIVER_DISABLED"]){
-            
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"didBecomeDisabledAsDriver" object:nil];
+        if ([keyAlert isEqualToString:@"AUTO_DECLINE_BOARDMESSAGE"]) {
+            NSString* alertMessage = mainAlert[@"alert"];
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForAutoDeclineBoardMessage" object:alertMessage];
         }
     }
     
     application.applicationIconBadgeNumber = 0;
+    PFInstallation *currentInstallation = [PFInstallation currentInstallation];
+    currentInstallation.badge = 0;
+    [currentInstallation saveEventually];
+   
 }
 
 
@@ -414,9 +398,11 @@
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
     
-    
     [FBAppCall handleDidBecomeActiveWithSession:[PFFacebookUtils session]];
-    //  [[PFFacebookUtils session] handleDidBecomeActive];
+    
+    PFInstallation *currentInstallation = [PFInstallation currentInstallation];
+    currentInstallation.badge = 0;
+    [currentInstallation saveEventually];
     
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
 }

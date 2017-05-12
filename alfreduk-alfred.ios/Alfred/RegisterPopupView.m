@@ -112,7 +112,7 @@
     // other fields can be set just like with PFObject
     user[@"Phone"] = @"+44 - ";
     user[@"PromoCode"] = @1234;
-    user[@"UserMode"] = @YES;
+    user[@"UserMode"] = @NO;
     user[@"EnabledAsDriver"] = @NO;
     user[@"Balance"] = @0.0;
     user[@"email"] = self.emailField.text;

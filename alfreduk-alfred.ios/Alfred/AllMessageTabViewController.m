@@ -64,28 +64,15 @@
 }
 
 -(void)didRequestForCreateBoardMessage:(NSNotification *)notification {
-    
-    NSString *requestMessageId = [notification object];
-    
-    [PFCloud callFunctionInBackground:@"GetNewMessage"
-                       withParameters:@{@"messageId": requestMessageId}
-                                block:^(PFObject *object, NSError *error) {
-                                    [HUD hideUIBlockingIndicator];
-                                    if (!error) {
-                                        NSLog(@"get created new message sucessfully");
-                                        [messageData insertObject:object atIndex:0];
-                                        [self.tableView reloadData];
-                                    } else {
-                                        NSLog(@"Failed created new message");
-                                        [[[UIAlertView alloc] initWithTitle:@"Getting request message failed" message:@"Check your network connection and try again." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
-                                    }
-                                }];
+
+    [self loadAllMessages];
 }
 
 -(void)loadAllMessages {
     
     PFQuery *query = [PFQuery queryWithClassName:@"BoardMessage"];
     [query includeKey:@"author"]; //load user data also
+    [query whereKey:@"status" notEqualTo:@"accept"];
     [query orderByDescending:@"createdAt"];
     [query  findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
         if(self.refreshControl.isRefreshing){
@@ -110,9 +97,11 @@
             self.tableView.hidden = YES;
             messageData = nil;
             
-            [[TWMessageBarManager sharedInstance] showMessageWithTitle:@"Ooops! "
-                                                           description:@"Can't get messages right now."
-                                                                  type:TWMessageBarMessageTypeError];
+            [[[UIAlertView alloc] initWithTitle:@"Getting all message failed" message:@"Check your network connection and try again." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
+
+//            [[TWMessageBarManager sharedInstance] showMessageWithTitle:@"Ooops! "
+//                                                           description:@"Can't get messages right now."
+//                                                                  type:TWMessageBarMessageTypeError];
             
             NSLog(@"Failed to get city messages");
         }

@@ -181,7 +181,7 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 5*60; // in seconds
                                                           repeats: YES];
 
 
-    if([[PFUser currentUser][@"UserMode"] boolValue] == NO){
+    if([[PFUser currentUser][@"UserMode"] boolValue]){
         
         UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
         DriverViewController *frontViewController = (DriverViewController *)[storyboard instantiateViewControllerWithIdentifier:@"DriverMainID"];
@@ -1660,8 +1660,7 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 5*60; // in seconds
         driverMobile = userData[@"Phone"];
         NSString* usermobile = [NSString stringWithFormat:@"Cell: %@",driverMobile];
 
-        PFObject *ratingObject = userData[@"driverRating"];
-        driverRating =[NSString stringWithFormat:@"Rating: %3.2lf", [ratingObject[@"rating"] doubleValue]];
+        driverRating = [NSString stringWithFormat:@"Rating: %3.2lf", [userData[@"driverRating"] doubleValue]];
         
         driverProfilePic = userData[@"ProfilePicUrl"];
         NSString *numOfSeats = driverData[@"availableSeats"];
@@ -1726,6 +1725,7 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 5*60; // in seconds
         NSAssert(_lastRideInfo != nil, @"Ride request can't be null");
         NSLog(@"Rate to the Driver =================== /n %@ /n ======================= %@", _lastRideInfo, _selectedDriver);
         vc.rideRequest = _lastRideInfo;
+        vc.isBoardMessage = NO;
     }
 }
 

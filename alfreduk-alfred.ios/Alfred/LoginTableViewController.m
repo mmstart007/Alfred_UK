@@ -157,7 +157,7 @@
             
             NSLog(@"User signed up and logged in through Facebook!");
             
-            user[@"UserMode"] = @YES;
+            user[@"UserMode"] = @NO;
             user[@"EnabledAsDriver"] = @NO;
             user[@"Balance"] = @0.0;
             user[@"location"] = [PFGeoPoint geoPointWithLatitude:0 longitude:0];

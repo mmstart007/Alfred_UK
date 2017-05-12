@@ -8,15 +8,15 @@
 
 #import <UIKit/UIKit.h>
 #import <CoreLocation/CoreLocation.h>
+#import "RideRequestDecisionViewController.h"
 
 
 @interface AlfredMessageBoardViewController : UIViewController
 
-@property (weak, nonatomic) IBOutlet UITableView *tableView;
-@property (weak, nonatomic) IBOutlet UIButton *messagesFilterButton;
-@property (strong, nonatomic) CLLocationManager *locationManager;
+@property(strong,nonatomic) RideRequestDecisionViewController *requestRideDecisionPopupViewController;
+
 
 - (IBAction)postANewMessage:(id)sender;
 
-@property (weak, nonatomic) IBOutlet UISegmentedControl *segmentFilterControl;
+
 @end

@@ -16,6 +16,7 @@
 #import "MessageBoardUserDetailTableViewController.h"
 #import "MessageBoardPersonalUserTableViewController.h"
 #import "MessageBoardPersonalDriverTableViewController.h"
+#import "RideRatingViewController.h"
 #import "AlfredMessage.h"
 #import "MDButton.h"
 #import "MDConstants.h"
@@ -25,28 +26,32 @@
 #import "MDTabBarViewController.h"
 #import "SWRevealViewController.h"
 
+const int RIDE_END_EXPIRATION_TIME = 1*60; // in seconds
+
 @interface AlfredMessageBoardViewController () <UITabBarDelegate, UIActionSheetDelegate, MDTabBarViewControllerDelegate> {
     
     MDTabBarViewController *tabBarViewController;
     
     NSArray *messageData;
-    bool inDriverMode;
-    BOOL myMessages;
-    AlfredMessage  * selectedMessageDict;
-    NSString * city;
-    NSArray *_rideJoinRequests;
-    NSArray *_userBoardMessages;
+    NSTimer *endRideTimer;
+    NSString *endRideId;
+    PFObject *selectedMessage;
+    NSString *coast;
+    NSUserDefaults *userDefault;
 }
 
 @end
 
 @implementation AlfredMessageBoardViewController
 
-@synthesize locationManager;
+@synthesize requestRideDecisionPopupViewController;
+
 
 - (void)viewDidLoad {
 
     [super viewDidLoad];
+    
+    userDefault = [NSUserDefaults standardUserDefaults];
     
     tabBarViewController = [[MDTabBarViewController alloc] initWithDelegate:self];
     NSArray *names = @[@"All messages",@"Requests", @"Boooked rides"];
@@ -57,12 +62,15 @@
     [self addChildViewController:tabBarViewController];
     [self.view addSubview:tabBarViewController.view];
     
-    // Do any additional setup after loading the view.
-    messageData = [[NSArray alloc] init];
-    //global messages
-    myMessages = NO;
-    //get from preferences
-    inDriverMode = ![[PFUser currentUser][ @"UserMode"] boolValue];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForCreateBoardMessage:) name:@"didRequestForCreateBoardMessage" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForRequestPriceBoardMessage:) name:@"didRequestForRequestPriceBoardMessage" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForAcceptBoardMessage:) name:@"didRequestForAcceptBoardMessage" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForDeleteBoardMessage:) name:@"didRequestForDeleteBoardMessage" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForAutoDeclineBoardMessage:) name:@"didRequestForAutoDeclineBoardMessage" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForEndBoardMessage:) name:@"didRequestForEndBoardMessage" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForOpenRatingView:) name:@"didRequestForOpenRatingView" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForGetSelectedMessageObject:) name:@"didRequestForGetSelectedMessageObject" object:nil];
+    
 }
 
 -(void)viewWillAppear:(BOOL)animated{
@@ -98,6 +106,122 @@
     // Dispose of any resources that can be recreated.
 }
 
+#pragma mark - Push Notifications.
+-(void)didRequestForCreateBoardMessage:(NSNotification *)notification {
+    NSString *pushMessage = [notification object];
+    
+    [self showPushView:pushMessage acceptedStatus:NO ratingView:NO];
+}
+
+-(void)didRequestForRequestPriceBoardMessage:(NSNotification *)notification {
+    NSString *pushMessage = [notification object];
+
+    [self showPushView:pushMessage acceptedStatus:NO ratingView:NO];
+}
+
+- (void)didRequestForAcceptBoardMessage:(NSNotification *)notification {
+    
+    NSArray *arrObject = [notification object];
+    NSString *pushMessage = [arrObject firstObject];
+    endRideId = arrObject[1];
+
+    [self showPushView:pushMessage acceptedStatus:YES ratingView:NO];
+    
+    PFQuery *requestMessageQuery = [PFQuery queryWithClassName:@"RequestMessage"];
+    [requestMessageQuery includeKey:@"from"];
+    [requestMessageQuery includeKey:@"to"];
+    [requestMessageQuery includeKey:@"rideMessage"];
+    [requestMessageQuery whereKey:@"objectId" equalTo:endRideId];
+    [requestMessageQuery findObjectsInBackgroundWithBlock:^(NSArray * _Nullable objects, NSError * _Nullable error) {
+        if (!error) {
+            selectedMessage = objects.firstObject;
+            coast = [NSString stringWithFormat:@"Ride Cost: £%.1f", [selectedMessage[@"price"] doubleValue]];;
+        } else {
+            [[[UIAlertView alloc] initWithTitle:@"Ooops!" message:@"Can't get the message right now." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
+        }
+    }];
+    
+    
+    [endRideTimer invalidate];
+    endRideTimer = [NSTimer scheduledTimerWithTimeInterval: RIDE_END_EXPIRATION_TIME
+                                                    target: self
+                                                  selector: @selector(didEndRide:)
+                                                  userInfo: nil
+                                                   repeats: NO];
+
+}
+
+- (void)didRequestForDeleteBoardMessage:(NSNotification *)notification {
+    [endRideTimer invalidate];
+    NSString *pushMessage = [notification object];
+
+    [self showPushView:pushMessage acceptedStatus:NO ratingView:NO];
+}
+
+- (void)didRequestForEndBoardMessage:(NSNotification *)notification {
+
+    [self showPushView:coast acceptedStatus:NO ratingView:YES];
+}
+
+- (void)didRequestForAutoDeclineBoardMessage:(NSNotification *)notification {
+    NSString *pushMessage = [notification object];
+
+    [self showPushView:pushMessage acceptedStatus:NO ratingView:NO];
+}
+
+- (void)didRequestForGetSelectedMessageObject:(NSNotification *)notification {
+    
+    NSDictionary *dict = notification.userInfo;
+    selectedMessage = [dict valueForKey:@"messageInfo"];
+    double price = [selectedMessage[@"price"] doubleValue];
+    coast = [NSString stringWithFormat:@"Ride Cost: £%.1f", price];
+}
+
+- (void)showPushView:(NSString *)description acceptedStatus:(BOOL)isAccepted ratingView:(BOOL)openRatingView {
+    
+    requestRideDecisionPopupViewController = [[RideRequestDecisionViewController alloc] initWithNibName:@"RideRequestDecisionViewController" bundle:nil];
+    requestRideDecisionPopupViewController.decision = description;
+    requestRideDecisionPopupViewController.isAccepted = isAccepted;
+    requestRideDecisionPopupViewController.openRatingView = openRatingView;
+    [requestRideDecisionPopupViewController setModalPresentationStyle:UIModalPresentationOverCurrentContext];
+    self.navigationController.modalPresentationStyle = UIModalPresentationCurrentContext;
+    [self presentViewController:requestRideDecisionPopupViewController animated:YES completion:nil];
+}
+
+-(void)didRequestForOpenRatingView:(NSNotification *)notification {
+    [NSTimer scheduledTimerWithTimeInterval: 0.5 target: self
+                                   selector: @selector(openRatingView:) userInfo: nil repeats: NO];
+}
+
+-(void)openRatingView:(id)sender {
+    
+    [self performSegueWithIdentifier:@"rateUser" sender:nil];
+}
+
+- (void)didEndRide:(id)sender {
+    
+    [HUD showUIBlockingIndicatorWithText:@"Endining..."];
+    [PFCloud callFunctionInBackground:@"DeleteRideMessage"
+                       withParameters:@{@"deleteMessageObjId": endRideId,
+                                        @"reason": @"END_RIDE_MESSAGE"}
+                                block:^(NSString *success, NSError *error) {
+                                    [HUD hideUIBlockingIndicator];
+                                    if (!error) {
+                                        
+                                        NSLog(@"total coast for rating with local ========= %@", coast);
+                                        [self showPushView:coast acceptedStatus:NO ratingView:YES];
+                                        
+                                        NSLog(@"delete request board message sucessfully");
+                                        
+                                    } else {
+                                        
+                                        NSLog(@"Getting request message failed");
+                                        
+                                        [[[UIAlertView alloc] initWithTitle:@"Ooops!" message:@"Can't delete the messages right now." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
+                                    }
+                                }];
+}
+
 #pragma mark - UIActionSheet Delegate.
 -(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex{
 
@@ -105,7 +229,14 @@
     
     switch (buttonIndex) {
         case 0:{//post as driver
-            [self performSegueWithIdentifier:@"NewDriverMessageSegue" sender:self];
+            if ([[PFUser currentUser][@"EnabledAsDriver"] boolValue]) {
+                [self performSegueWithIdentifier:@"NewDriverMessageSegue" sender:self];
+            } else {
+                [[TWMessageBarManager sharedInstance] showMessageWithTitle:@"Alfred"
+                                                               description:@"You should register as driver."
+                                                                      type:TWMessageBarMessageTypeError
+                                                                  duration:3.0];
+            }
             break;
         }
         case 1:{//post as passenger
@@ -146,6 +277,19 @@
     [sheet showInView:self.view];
 }
 
+#pragma mark - Navigation
+
+-(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
+    if([segue.identifier isEqualToString: @"rateUser"]) {
+        
+        RideRatingViewController *vc =(RideRatingViewController*)[segue destinationViewController];
+        
+        //rate only last user, this is wrong
+        //NSLog(@"Rate to the Passenger =================== /n %@ /n ======================= %@", _lastRideInfo, passenger);
+        vc.rideMessage = selectedMessage;
+        vc.isBoardMessage = YES;
+    }
+}
 
 
 

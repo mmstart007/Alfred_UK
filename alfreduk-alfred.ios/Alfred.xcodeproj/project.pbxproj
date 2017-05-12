@@ -601,6 +601,7 @@
 		948780811EB13E800025D0CA /* MessagePriceSubmitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 948780801EB13E800025D0CA /* MessagePriceSubmitViewController.m */; };
 		94AF0F4B1EB33E2700CC0D30 /* MessageBoardContactUserTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 94AF0F4A1EB33E2700CC0D30 /* MessageBoardContactUserTableViewController.m */; };
 		94B9374E1EBD289100F7F7B4 /* RequestMessageTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 94B9374D1EBD289100F7F7B4 /* RequestMessageTableViewCell.m */; };
+		94F93D181EC2BF8B00A05AC1 /* AcceptMessageTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 94F93D171EC2BF8B00A05AC1 /* AcceptMessageTableViewCell.m */; };
 		DC0FB5DE1AD74BB800E3FD4E /* DriverCalloutPopupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DC0FB5DC1AD74BB800E3FD4E /* DriverCalloutPopupViewController.m */; };
 		DC0FB5E41AD75C1000E3FD4E /* DriverCalloutNotActiveViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DC0FB5E21AD75C1000E3FD4E /* DriverCalloutNotActiveViewController.m */; };
 		DC0FB5E51AD75C1000E3FD4E /* DriverCalloutNotActiveViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = DC0FB5E31AD75C1000E3FD4E /* DriverCalloutNotActiveViewController.xib */; };
@@ -1422,6 +1423,8 @@
 		94AF0F4A1EB33E2700CC0D30 /* MessageBoardContactUserTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MessageBoardContactUserTableViewController.m; sourceTree = "<group>"; };
 		94B9374C1EBD289100F7F7B4 /* RequestMessageTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RequestMessageTableViewCell.h; sourceTree = "<group>"; };
 		94B9374D1EBD289100F7F7B4 /* RequestMessageTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RequestMessageTableViewCell.m; sourceTree = "<group>"; };
+		94F93D161EC2BF8B00A05AC1 /* AcceptMessageTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AcceptMessageTableViewCell.h; sourceTree = "<group>"; };
+		94F93D171EC2BF8B00A05AC1 /* AcceptMessageTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AcceptMessageTableViewCell.m; sourceTree = "<group>"; };
 		B9683DC93E2CA14DB007FC17 /* Pods_Alfred.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Alfred.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DC0FB5DB1AD74BB800E3FD4E /* DriverCalloutPopupViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DriverCalloutPopupViewController.h; sourceTree = "<group>"; };
 		DC0FB5DC1AD74BB800E3FD4E /* DriverCalloutPopupViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DriverCalloutPopupViewController.m; sourceTree = "<group>"; };
@@ -2502,6 +2505,8 @@
 				DC11CA391AC47DE5008F0005 /* MessageBoardMessageTableViewCell.m */,
 				94B9374C1EBD289100F7F7B4 /* RequestMessageTableViewCell.h */,
 				94B9374D1EBD289100F7F7B4 /* RequestMessageTableViewCell.m */,
+				94F93D161EC2BF8B00A05AC1 /* AcceptMessageTableViewCell.h */,
+				94F93D171EC2BF8B00A05AC1 /* AcceptMessageTableViewCell.m */,
 			);
 			name = "Message Board Cells";
 			sourceTree = "<group>";
@@ -4138,6 +4143,7 @@
 				94B9374E1EBD289100F7F7B4 /* RequestMessageTableViewCell.m in Sources */,
 				DCF9E0551AC5C8A200BA3BBB /* MessageBoardUserDetailTableViewController.m in Sources */,
 				DC74F17D1A77E30000E5D808 /* PickupAnnotation.m in Sources */,
+				94F93D181EC2BF8B00A05AC1 /* AcceptMessageTableViewCell.m in Sources */,
 				DCF9E0591AC5C91F00BA3BBB /* MessageBoardUserPostTableViewCell.m in Sources */,
 				86F9923C1B60822600DF7A49 /* AlfredCreditCard.m in Sources */,
 				8679F95B1B56432700AEEC77 /* AlfredMessageBoardViewController.m in Sources */,

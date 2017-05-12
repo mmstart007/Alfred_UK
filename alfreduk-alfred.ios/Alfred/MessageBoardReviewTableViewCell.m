@@ -7,6 +7,8 @@
 //
 
 #import "MessageBoardReviewTableViewCell.h"
+#import "NSDate+TimeAgo.h"
+
 
 @implementation MessageBoardReviewTableViewCell
 
@@ -34,10 +36,12 @@
     NSString *name = [NSString stringWithFormat:@"%@", fromUser[@"FullName"]];
     double ratingValue = [reviewData[@"rating"] doubleValue];
     NSString *rating = [NSString stringWithFormat:@"%2.1lf", ratingValue];
+    NSDate *reviewDate = [reviewData createdAt];
     
     self.userName.text = name;
     self.ratingLabel.text = rating;
     self.ratingView.value = ratingValue;
+    self.timeLabel.text = [reviewDate timeAgo];
 }
 
 @end

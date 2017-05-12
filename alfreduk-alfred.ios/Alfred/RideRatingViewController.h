@@ -1,14 +1,15 @@
 
 
 #import <UIKit/UIKit.h>
+#import <Parse/Parse.h>
+
 #import "HCSStarRatingView.h"
 #import "AFHTTPRequestOperationManager.h"
 #import "AFHTTPRequestOperation.h"
-#import <Parse/Parse.h>
+#import "MessageBoardUserDetailTableViewController.h"
 
 
-
-@interface RideRatingViewController : UIViewController{
+@interface RideRatingViewController : UIViewController {
     float rating;
 }
 
@@ -18,6 +19,7 @@
 - (IBAction)backAction:(id)sender;
 
 @property(strong,nonatomic)PFObject *rideRequest;
+@property(strong,nonatomic)PFObject *rideMessage;
 
 @property (weak, nonatomic) IBOutlet UIImageView *profilePicImageView;
 @property (weak, nonatomic) IBOutlet UIImageView *profileBackgroundImageView;
@@ -25,6 +27,8 @@
 @property (weak, nonatomic) IBOutlet HCSStarRatingView *rate2View;
 @property (weak, nonatomic) IBOutlet HCSStarRatingView *rate3View;
 @property (weak, nonatomic) IBOutlet UILabel *nameLabel;
+
+@property (nonatomic) BOOL isBoardMessage;
 
 
 @end

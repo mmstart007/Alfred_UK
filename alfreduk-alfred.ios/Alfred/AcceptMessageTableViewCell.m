@@ -1,14 +1,14 @@
 //
-//  RequestMessageTableViewCell.m
+//  AcceptMessageTableViewCell.m
 //  Alfred
 //
-//  Created by Maxim on 5/6/17.
+//  Created by Maxim on 5/10/17.
 //  Copyright © 2017 A Ascendanet Sun. All rights reserved.
 //
 
-#import "RequestMessageTableViewCell.h"
+#import "AcceptMessageTableViewCell.h"
 
-@implementation RequestMessageTableViewCell
+@implementation AcceptMessageTableViewCell
 
 - (void)awakeFromNib {
     [super awakeFromNib];
@@ -21,25 +21,30 @@
     // Configure the view for the selected state
 }
 
+
 - (void) configureRequestMessageCell:(PFObject *)message {
     
     PFUser *user;
     PFObject *rideMessage = message[@"rideMessage"];
     BOOL isDriverMessage = [rideMessage[@"driverMessage"] boolValue];
     
-    if(isDriverMessage) {
-        self.alfredIconImageView.hidden = NO;
-    } else {
-        self.alfredIconImageView.hidden = YES;
-    }
-    
     PFUser *from, *to;
     from = message[@"from"];
     to = message[@"to"];
     if ([from.objectId isEqualToString:[[PFUser currentUser] objectId]]) {
         user = to;
+        if(isDriverMessage) {
+            self.ratingLabel.text = [NSString stringWithFormat:@"%.1f", [user[@"driverRating"] doubleValue]];
+        } else {
+            self.ratingLabel.text = [NSString stringWithFormat:@"%.1f", [user[@"passengerRating"] doubleValue]];
+        }
     } else {
         user = from;
+        if(isDriverMessage) {
+            self.ratingLabel.text = [NSString stringWithFormat:@"%.1f", [user[@"passengerRating"] doubleValue]];
+        } else {
+            self.ratingLabel.text = [NSString stringWithFormat:@"%.1f", [user[@"driverRating"] doubleValue]];
+        }
     }
     
     int seats = [message[@"seats"] intValue];
@@ -55,7 +60,6 @@
     NSString *userName = [NSString stringWithFormat:@"%@ %c.",firstName, [lastName characterAtIndex:0]];
     NSDateFormatter * formatter = [[NSDateFormatter alloc]init];
     [formatter setDateFormat:@"MMM dd, HH:mm"];
-    NSString *reason = message[@"status"];
     
     self.dateLabel.text = [formatter stringFromDate:date];
     self.nameLabel.text = userName;
@@ -71,10 +75,10 @@
     self.seatsLabel.text = [NSString stringWithFormat:@"%2d SEAT,",seats];
     self.priceLabel.text = [NSString stringWithFormat:@"£%5.2lf",pricePerSeat];
     
-    if ([reason isEqualToString:@"request"]) {
-        self.ratingLabel.text = [NSString stringWithFormat:@"%.1f", [user[@"driverRating"] doubleValue]];
+    if(isDriverMessage) {
+        self.alfredIconImageView.hidden = NO;
     } else {
-        self.ratingLabel.text = [NSString stringWithFormat:@"%.1f", [user[@"passengerRating"] doubleValue]];
+        self.alfredIconImageView.hidden = YES;
     }
     if(femaleOnly) {
         self.ladiesOnlyLabel.hidden = NO;
@@ -85,7 +89,6 @@
         [self.profilePicImageView sd_setImageWithURL:[NSURL URLWithString:pic] placeholderImage:[UIImage imageNamed:@"blank profile"]];
     }
 }
-
 
 
 

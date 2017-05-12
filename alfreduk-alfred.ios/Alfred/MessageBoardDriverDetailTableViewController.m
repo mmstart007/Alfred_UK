@@ -32,6 +32,8 @@
     double rating;
     BOOL isDriverMessage;
     double pricePerSeat;
+    int availableSeats;
+    int seat;
 }
 
 @end
@@ -45,8 +47,6 @@
     [self initialView];
     
     driverMessageRequests = [[NSArray alloc] init];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForJoinAlfred:) name:@"didRequestForJoinAlfred" object:nil];
     
     self.navigationItem.title = @"Profile";
 }
@@ -67,6 +67,8 @@
 
 - (void)initialView {
     
+    [self.seatsSelectView addTarget:self action:@selector(didChangeValue:) forControlEvents:UIControlEventValueChanged];
+    seat = 1;
     //user data
     PFUser * user= selectedMessage[@"author"];
     
@@ -74,7 +76,7 @@
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     [formatter setDateFormat:@"hh:mm MMM dd, yyyy"];
     NSString* rideTime = [formatter stringFromDate:date];
-    int seats = [ selectedMessage[@"seats"] intValue];
+    availableSeats = [selectedMessage[@"seats"] intValue];
     NSString* dropAddress = selectedMessage[@"dropoffAddress"];
     NSString* originAddress = selectedMessage[@"pickupAddress"];
     pricePerSeat = [selectedMessage[@"pricePerSeat"] doubleValue];
@@ -105,13 +107,13 @@
     [self.dropoffLabel setText:dropAddress];
     [self.timeLabel setText:rideTime];
     [self.messagesTextView setText:message];
-    [self.priceLabel setText:[NSString stringWithFormat:@"Price: £%3.2lf per seat", pricePerSeat]];
+    [self.priceLabel setText:[NSString stringWithFormat:@"Price: £%3.2f per seat", pricePerSeat]];
     self.picImageView.layer.cornerRadius = self.picImageView.frame.size.height /2;
     self.picImageView.layer.masksToBounds = YES;
     self.picImageView.layer.borderWidth = 0;
-    self.seatsLabel.text = [NSString stringWithFormat:@"Seats available: %2d",seats];
-    self.seatsSelectView.value = [selectedMessage[@"seats"] doubleValue];
-    [self.seatsSelectView setNeedsDisplay];
+    self.seatsLabel.text = [NSString stringWithFormat:@"Seats available: %2d",availableSeats];
+    //self.seatsSelectView.value = [selectedMessage[@"seats"] doubleValue];
+    //[self.seatsSelectView setNeedsDisplay];
     
     if (femaleOnly) {
         [self.ladiesOnlyLabel setHidden:NO];
@@ -141,7 +143,7 @@
     [HUD showUIBlockingIndicatorWithText:@"Loading..."];
     [PFCloud callFunctionInBackground:@"GetUserReview"
                        withParameters:@{@"to": userID,
-                                        @"isDriver": [NSNumber numberWithBool:isDriver]}
+                                        @"isDriver": @YES}
                                 block:^(NSArray *result, NSError *error) {
                                     [HUD hideUIBlockingIndicator];
                                     if (!error) {
@@ -150,7 +152,7 @@
                                         [self.tableView reloadData];
                                     } else {
                                         NSLog(@"Failed to post new message");
-                                        [[[UIAlertView alloc] initWithTitle:@"Getting user review failed" message:@"Check your network connection and try again." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
+                                        [[[UIAlertView alloc] initWithTitle:@"Ooops!" message:@"Can't get messages right now." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
                                     }
                                 }];
 }
@@ -197,11 +199,14 @@
 #pragma mark - UIButton Action.
 - (IBAction)joinAlfredAction:(id)sender {
     
+    int price = (int)pricePerSeat * seat;
     [HUD showUIBlockingIndicatorWithText:@"Joining..."];
     [PFCloud callFunctionInBackground:@"RequestToBoardMessage"
                        withParameters:@{@"boardMessageId": self.selectedMessage.objectId,
-                                        @"price": [NSNumber numberWithInt:pricePerSeat],
-                                        @"reason": @"request"}
+                                        @"price": [NSNumber numberWithInt:price],
+                                        @"seats": [NSNumber numberWithInt:seat],
+                                        @"reason": @"join",
+                                        @"isJoin": @YES}
                                 block:^(NSString *success, NSError *error) {
                                     [HUD hideUIBlockingIndicator];
                                     if (!error) {
@@ -209,9 +214,13 @@
                                         [self.navigationController popViewControllerAnimated:YES];
                                     } else {
                                         NSLog(@"Join request failed");
-                                        [[[UIAlertView alloc] initWithTitle:@"Join request failed" message:@"Check your network connection and try again." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
+                                        [[[UIAlertView alloc] initWithTitle:@"Ooops!" message:@"Can't get messages right now." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
                                     }
                                 }];
+}
+
+- (void)didChangeValue:(HCSStarRatingView *)sender {
+    seat = sender.value;
 }
 
 #pragma mark - MKMapView.

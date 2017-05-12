@@ -10,6 +10,7 @@
 #import "MessageBoardReviewTableViewCell.h"
 #import "PickupAnnotation.h"
 #import "DropoffAnnotation.h"
+#import "HUD.h"
 
 #import <SDWebImage/UIImageView+WebCache.h>
 
@@ -19,6 +20,7 @@
     CLLocationCoordinate2D dropoffCoord;
     MKRoute *routeDetails;
     double rating;
+    BOOL isJoin;
 }
 
 
@@ -47,25 +49,43 @@
 
 - (void)initialView {
     
-    NSDate *date = selectedMessage[@"date"];
+    //user data
+    PFUser * user;
+    PFObject *rideMessage = selectedMessage[@"rideMessage"];
+    
+    PFUser *from, *to;
+    from = selectedMessage[@"from"];
+    to = selectedMessage[@"to"];
+    if ([from.objectId isEqualToString:[[PFUser currentUser] objectId]]) {
+        user = to;
+        if([rideMessage[@"driverMessage"] boolValue]) {
+            rating = [user[@"driverRating"] doubleValue];
+            isJoin = YES;
+        } else {
+            rating = [user[@"passengerRating"] doubleValue];
+            isJoin = NO;
+        }
+    } else {
+        user = from;
+        if([rideMessage[@"driverMessage"] boolValue]) {
+            rating = [user[@"passengerRating"] doubleValue];
+            isJoin = NO;
+        } else {
+            rating = [user[@"driverRating"] doubleValue];
+            isJoin = YES;
+        }
+    }
+    NSDate *date = rideMessage[@"date"];
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     [formatter setDateFormat:@"hh:mm MMM dd, yyyy"];
     NSString* rideTime = [formatter stringFromDate:date];
-    int seats = [ selectedMessage[@"seats"] intValue];
-    NSString* dropAddress = selectedMessage[@"dropoffAddress"];
-    NSString* originAddress = selectedMessage[@"pickupAddress"];
-    double pricePerSeat = [selectedMessage[@"pricePerSeat"] doubleValue];
-    NSString* message = selectedMessage[@"desc"];
-    BOOL femaleOnly = [selectedMessage[@"femaleOnly"] boolValue];
-    //user data
-    PFUser * user= selectedMessage[@"author"];
+    int seats = [rideMessage[@"seats"] intValue];
+    NSString* dropAddress = rideMessage[@"dropoffAddress"];
+    NSString* originAddress = rideMessage[@"pickupAddress"];
+    double pricePerSeat = [rideMessage[@"pricePerSeat"] doubleValue];
+    NSString* message = rideMessage[@"desc"];
+    BOOL femaleOnly = [rideMessage[@"femaleOnly"] boolValue];
     NSString *cell = user[@"Phone"];
-
-    if([selectedMessage[@"driverMessage"] boolValue] == YES) {
-        rating = [user[@"driverRating"] doubleValue];
-    } else {
-        rating = [user[@"passengerRating"] doubleValue];
-    }
     
     NSString* userName = [NSString stringWithFormat:@"%@ %c.",
                           user[@"FirstName"],
@@ -88,7 +108,7 @@
     self.picImageView.layer.masksToBounds = YES;
     self.picImageView.layer.borderWidth = 0;
     self.seatsLabel.text = [NSString stringWithFormat:@"Seats available: %2d",seats];
-    self.seatsSelectView.value = [selectedMessage[@"seats"] doubleValue];
+    self.seatsSelectView.value = [rideMessage[@"seats"] doubleValue];
     [self.seatsSelectView setNeedsDisplay];
     
     if (femaleOnly) {
@@ -96,12 +116,12 @@
     } else {
         [self.ladiesOnlyLabel setHidden:YES];
     }
-
+    
     self.alfredMapView.delegate = self;
-    pickupCoord.latitude = (CLLocationDegrees)[selectedMessage[@"pickupLat"] doubleValue];
-    pickupCoord.longitude = (CLLocationDegrees)[selectedMessage[@"pickupLong"] doubleValue];
-    dropoffCoord.latitude = (CLLocationDegrees)[selectedMessage[@"dropoffLat"] doubleValue];
-    dropoffCoord.longitude = (CLLocationDegrees)[selectedMessage[@"dropoffLong"] doubleValue];
+    pickupCoord.latitude = (CLLocationDegrees)[rideMessage[@"pickupLat"] doubleValue];
+    pickupCoord.longitude = (CLLocationDegrees)[rideMessage[@"pickupLong"] doubleValue];
+    dropoffCoord.latitude = (CLLocationDegrees)[rideMessage[@"dropoffLat"] doubleValue];
+    dropoffCoord.longitude = (CLLocationDegrees)[rideMessage[@"dropoffLong"] doubleValue];
     
     [self.alfredMapView setShowsUserLocation:YES];
     CLLocationCoordinate2D coord = self.alfredMapView.userLocation.location.coordinate;
@@ -109,11 +129,56 @@
     [self.alfredMapView setRegion:initialRegion animated:YES];
     
     [self loadMapWithPickup:pickupCoord dropOff:dropoffCoord];
+    
+    // get user review
+    [self getUserReview:user.objectId isDriverMessage:isJoin];
+}
+
+- (void)getUserReview:(NSString *)userID isDriverMessage:(BOOL)isDriver {
+    
+    [HUD showUIBlockingIndicatorWithText:@"Loading..."];
+    [PFCloud callFunctionInBackground:@"GetUserReview"
+                       withParameters:@{@"to": userID,
+                                        @"isDriver": [NSNumber numberWithBool:isDriver]}
+                                block:^(NSArray *result, NSError *error) {
+                                    [HUD hideUIBlockingIndicator];
+                                    if (!error) {
+                                        NSLog(@"get user review sucessfully");
+                                        driverMessageRequests = result;
+                                        [self.tableView reloadData];
+                                    } else {
+                                        NSLog(@"Failed to post new message");
+                                        [[[UIAlertView alloc] initWithTitle:@"Ooops!" message:@"Can't get messages right now." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
+                                    }
+                                }];
+}
+
+#pragma mark - UIButton Action.
+- (IBAction)cancelJourneyAction:(id)sender {
+
+    [HUD showUIBlockingIndicatorWithText:@"Canceling..."];
+    [PFCloud callFunctionInBackground:@"DeleteRideMessage"
+                       withParameters:@{@"deleteMessageObjId": selectedMessage.objectId,
+                                        @"reason": @"CANCEL_RIDE_MESSAGE"}
+                                block:^(NSString *success, NSError *error) {
+                                    [HUD hideUIBlockingIndicator];
+                                    if (!error) {
+                                        
+                                        NSLog(@"delete request board message sucessfully");
+                                        
+                                        [self.navigationController popViewControllerAnimated:YES];
+                                    } else {
+                                        
+                                        NSLog(@"Getting request message failed");
+                                        
+                                        [[[UIAlertView alloc] initWithTitle:@"Ooops!" message:@"Can't get messages right now." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
+                                    }
+                                }];
 }
 
 #pragma mark - UITableView Data Source.
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return 3;
+    return driverMessageRequests.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -121,7 +186,9 @@
     static NSString * cellIdentifier = @"AlfredReviewCell";
     MessageBoardReviewTableViewCell *cell = (MessageBoardReviewTableViewCell *)[tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     
-    [cell configureCell:selectedMessage];
+    PFObject *review = driverMessageRequests[indexPath.row];
+    
+    [cell configureCell:review];
     
     return cell;
 }
@@ -221,5 +288,8 @@
     // Pass the selected object to the new view controller.
 }
 */
+
+
+
 
 @end

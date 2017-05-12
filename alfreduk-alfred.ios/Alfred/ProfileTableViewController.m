@@ -58,7 +58,7 @@
             currentUser = (PFUser *)object;
             NSLog(@"%@", currentUser);
             
-            if([currentUser[@"UserMode"] boolValue] == NO) {
+            if([currentUser[@"UserMode"] boolValue]) {
                 _rideCount = [currentUser[@"driverRideCount"] intValue];
                 self.ratingView.value = [currentUser[@"driverRating"] doubleValue];
             }else{

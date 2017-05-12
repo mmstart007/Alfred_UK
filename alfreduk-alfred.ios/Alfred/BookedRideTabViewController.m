@@ -12,6 +12,8 @@
 
 #import "BookedRideTabViewController.h"
 #import "MessageBoardMessageTableViewCell.h"
+#import "RequestMessageTableViewCell.h"
+#import "AcceptMessageTableViewCell.h"
 #import "MessageBoardContactUserTableViewController.h"
 #import "AlfredMessage.h"
 #import "HUD.h"
@@ -19,13 +21,12 @@
 
 @interface BookedRideTabViewController (){
 
-    NSArray *messageData;
+    NSMutableArray *messageData;
     bool inDriverMode;
     BOOL myMessages;
     AlfredMessage  * selectedMessageDict;
     NSString * city;
-    NSArray *_rideJoinRequests;
-    NSArray *_userBoardMessages;
+    
 }
 
 @end
@@ -35,6 +36,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForAcceptBoardMessage:) name:@"didRequestForAcceptBoardMessage" object:nil];
+
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -42,14 +45,44 @@
     [super viewWillAppear:animated];
     
     self.refreshControl = [[UIRefreshControl alloc] init];
-    [self.refreshControl addTarget:self action:@selector(loadCityMessages:) forControlEvents:UIControlEventValueChanged];
+    [self.refreshControl addTarget:self action:@selector(loadAcceptedMessages) forControlEvents:UIControlEventValueChanged];
     
-    [self loadCityMessages:city];
+    [self loadAcceptedMessages];
+}
+
+- (void)didRequestForAcceptBoardMessage:(NSNotification *)notification {
+    [self loadAcceptedMessages];
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+-(void)loadAcceptedMessages {
+    
+    [PFCloud callFunctionInBackground:@"GetAllMessages"
+                       withParameters:@{@"isRequest": @NO}
+                                block:^(NSArray *object, NSError *error) {
+                                    
+                                    [HUD hideUIBlockingIndicator];
+                                    if(self.refreshControl.isRefreshing){
+                                        [self.refreshControl endRefreshing];
+                                    }
+                                    if (!error) {
+                                        
+                                        NSLog(@"get all request board message sucessfully");
+                                        
+                                        messageData = [object mutableCopy];
+                                        [self.tableView reloadData];
+                                        
+                                    } else {
+                                        
+                                        NSLog(@"Getting request message failed");
+                                        
+                                        [[[UIAlertView alloc] initWithTitle:@"Ooops!" message:@"Can't get messages right now." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
+                                    }
+                                }];
 }
 
 #pragma mark - Table view data source
@@ -68,11 +101,11 @@
     
     PFObject *message = messageData[indexPath.row];
 
-    static NSString * cellIdentifier = @"RideOfferCell";
-    MessageBoardMessageTableViewCell *cell = (MessageBoardMessageTableViewCell *)[tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+    static NSString * cellIdentifier = @"AcceptRideCell";
+    AcceptMessageTableViewCell *cell = (AcceptMessageTableViewCell *)[tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     
-    [cell configureMessageCell:message];
-
+    [cell configureRequestMessageCell:message];
+    
     return cell;
 }
 
@@ -82,44 +115,6 @@
     [self performSegueWithIdentifier:@"BookedRideSegueID" sender:self];
 }
 
--(void)loadCityMessages:(NSString*)city {
-    
-    PFQuery *query = [PFQuery queryWithClassName:@"BoardMessage"];
-    
-    [query includeKey:@"author"]; //load user data also
-    [query whereKey:@"author" equalTo:[PFUser currentUser]];
-
-    [query  findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
-        if(self.refreshControl.isRefreshing){
-            [self.refreshControl endRefreshing];
-        }
-
-        if(!error) {
-            messageData = objects;
-            
-            if(objects.count == 0) {
-                self.tableView.hidden = YES;
-                return ;
-            } else {
-                self.tableView.hidden = NO;
-                [self.tableView reloadData];
-            }
-        } else {
-            if(error.code == 209){
-                //TODO: Login user again
-            }
-            self.tableView.hidden = YES;
-            messageData = nil;
-            
-            [[TWMessageBarManager sharedInstance] showMessageWithTitle:@"Ooops! "
-                                                           description:@"Can't get messages right now."
-                                                                  type:TWMessageBarMessageTypeError];
-            
-            NSLog(@"Failed to get city messages");
-        }
-    }];
-}
-
 -(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
     
     if ([[segue identifier] isEqualToString:@"BookedRideSegueID"]){
@@ -127,6 +122,7 @@
         vc.selectedMessage = selectedMessageDict;
     }
 }
+
 
 
 @end

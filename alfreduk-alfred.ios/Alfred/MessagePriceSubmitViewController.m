@@ -88,7 +88,9 @@
     [PFCloud callFunctionInBackground:@"RequestToBoardMessage"
                        withParameters:@{@"boardMessageId": self.selectedMessage.objectId,
                                         @"price": [NSNumber numberWithInt:_travelPrice],
-                                        @"reason": @"request"}
+                                        @"seats": [NSNumber numberWithInt:seats],
+                                        @"reason": @"request",
+                                        @"isJoin": @NO}
                                 block:^(NSString *success, NSError *error) {
                                     [HUD hideUIBlockingIndicator];
                                     if (!error) {
@@ -96,7 +98,7 @@
                                         [self.navigationController popViewControllerAnimated:YES];
                                     } else {
                                         NSLog(@"Failed to post new message");
-                                        [[[UIAlertView alloc] initWithTitle:@"Message post failed" message:@"Check your network connection and try again." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
+                                        [[[UIAlertView alloc] initWithTitle:@"Ooops!" message:@"Can't get messages right now." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
                                     }
                                 }];
 }

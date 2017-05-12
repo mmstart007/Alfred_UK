@@ -13,6 +13,7 @@
 #import "MessageBoardUserDetailDriverTableViewCell.h"
 #import "MessageBoardBlankTableViewCell.h"
 #import "MessageBoardUserJoinTableViewController.h"
+#import "RideRatingViewController.h"
 #import "PickupAnnotation.h"
 #import "DropoffAnnotation.h"
 
@@ -25,6 +26,7 @@
     CLLocationCoordinate2D dropoffCoord;
     MKRoute *routeDetails;
     double rating;
+    BOOL isJoin;
 }
 
 
@@ -55,8 +57,17 @@
 - (void)initialView {
     
     //user data
-    PFUser * user= selectedMessage[@"from"];
+    PFUser * user;
     PFObject *rideMessage = selectedMessage[@"rideMessage"];
+    
+    PFUser *from, *to;
+    from = selectedMessage[@"from"];
+    to = selectedMessage[@"to"];
+    if ([from.objectId isEqualToString:[[PFUser currentUser] objectId]]) {
+        user = to;
+    } else {
+        user = from;
+    }
     
     NSDate *date = rideMessage[@"date"];
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
@@ -65,15 +76,17 @@
     int seats = [rideMessage[@"seats"] intValue];
     NSString* dropAddress = rideMessage[@"dropoffAddress"];
     NSString* originAddress = rideMessage[@"pickupAddress"];
-    double pricePerSeat = [selectedMessage[@"price"] doubleValue];
+    double pricePerSeat = [rideMessage[@"pricePerSeat"] doubleValue];
     NSString* message = rideMessage[@"desc"];
     BOOL femaleOnly = [rideMessage[@"femaleOnly"] boolValue];
     NSString *cell = user[@"Phone"];
 
     if([rideMessage[@"driverMessage"] boolValue] == YES) {
-        rating = [user[@"driverRating"] doubleValue];
-    } else {
         rating = [user[@"passengerRating"] doubleValue];
+        isJoin = NO;
+    } else {
+        rating = [user[@"driverRating"] doubleValue];
+        isJoin = YES;
     }
     
     NSString* userName = [NSString stringWithFormat:@"%@ %c.",
@@ -97,8 +110,9 @@
     self.picImageView.layer.masksToBounds = YES;
     self.picImageView.layer.borderWidth = 0;
     self.seatsLabel.text = [NSString stringWithFormat:@"Seats available: %2d",seats];
-    self.seatsSelectView.value = [rideMessage[@"seats"] doubleValue];
+    self.seatsSelectView.value = [selectedMessage[@"seats"] doubleValue];
     [self.seatsSelectView setNeedsDisplay];
+    self.seatsSelectView.userInteractionEnabled = NO;
     
     if (femaleOnly) {
         [self.ladiesOnlyLabel setHidden:NO];
@@ -120,10 +134,10 @@
     [self loadMapWithPickup:pickupCoord dropOff:dropoffCoord];
     
     // get user review
-    [self getUserReview:user.objectId isDriver:[rideMessage[@"driverMessage"] boolValue]];
+    [self getUserReview:user.objectId isDriverMessage:isJoin];
 }
 
-- (void)getUserReview:(NSString *)userID isDriver:(BOOL)isDriver {
+- (void)getUserReview:(NSString *)userID isDriverMessage:(BOOL)isDriver {
     
     [HUD showUIBlockingIndicatorWithText:@"Loading..."];
     [PFCloud callFunctionInBackground:@"GetUserReview"
@@ -137,7 +151,7 @@
                                         [self.tableView reloadData];
                                     } else {
                                         NSLog(@"Failed to post new message");
-                                        [[[UIAlertView alloc] initWithTitle:@"Getting user review failed" message:@"Check your network connection and try again." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
+                                        [[[UIAlertView alloc] initWithTitle:@"Ooops!" message:@"Can't get reviews right now." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
                                     }
                                 }];
 }
@@ -145,10 +159,48 @@
 #pragma mark - UIButton Action.
 - (IBAction)acceptJourneyAction:(id)sender {
     
+    [HUD showUIBlockingIndicatorWithText:@"Accepting..."];
+    [PFCloud callFunctionInBackground:@"AcceptRideMessage"
+                       withParameters:@{@"rideObjId": selectedMessage.objectId,
+                                        @"reason": @"accept",
+                                        @"isDriverMessage": [NSNumber numberWithBool:isJoin]}
+                                block:^(NSString *result, NSError *error) {
+                                    [HUD hideUIBlockingIndicator];
+                                    if (!error) {
+                                        NSLog(@"accept request sent sucessfully");
+                                        
+                                        // send to the RatingViewController that selected message object .
+                                        NSDictionary *messageInfo = [NSDictionary dictionaryWithObject:selectedMessage forKey:@"messageInfo"];
+                                        [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForGetSelectedMessageObject" object:nil userInfo:messageInfo];
+
+                                        [self.navigationController popViewControllerAnimated:YES];
+                                    } else {
+                                        NSLog(@"Failed accept request.");
+                                        [[[UIAlertView alloc] initWithTitle:@"Ooops!" message:@"Can't get messages right now." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
+                                    }
+                                }];
 }
 
 - (IBAction)declineJourneyAction:(id)sender {
     
+    [HUD showUIBlockingIndicatorWithText:@"Declining..."];
+    [PFCloud callFunctionInBackground:@"DeleteRideMessage"
+                       withParameters:@{@"deleteMessageObjId": selectedMessage.objectId,
+                                        @"reason": @"DECLINE_RIDE_MESSAGE"}
+                                block:^(NSString *success, NSError *error) {
+                                    [HUD hideUIBlockingIndicator];
+                                    if (!error) {
+                                        
+                                        NSLog(@"delete request board message sucessfully");
+                                        
+                                        [self.navigationController popViewControllerAnimated:YES];
+                                    } else {
+                                        
+                                        NSLog(@"Getting request message failed");
+                                        
+                                        [[[UIAlertView alloc] initWithTitle:@"Ooops!" message:@"Can't get messages right now." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
+                                    }
+                                }];
 }
 
 #pragma mark - UITableView Data Source.
@@ -160,7 +212,9 @@
     
     static NSString * cellIdentifier = @"AlfredReviewCell";
     MessageBoardReviewTableViewCell *cell = (MessageBoardReviewTableViewCell *)[tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+    
     PFObject *review = arrUserReview[indexPath.row];
+    
     [cell configureCell:review];
     
     return cell;

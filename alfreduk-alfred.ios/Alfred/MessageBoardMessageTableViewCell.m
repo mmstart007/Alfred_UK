@@ -55,12 +55,12 @@
         self.alfredIconImageView.hidden = NO;
         self.seatsLabel.text = [NSString stringWithFormat:@"%2d SEAT,",seats];
         self.priceLabel.text = [NSString stringWithFormat:@"£%5.2lf",pricePerSeat];
-        self.ratingLabel.text = [NSString stringWithFormat:@"%2.1lf", [user[@"driverRating"] doubleValue]];
+        self.ratingLabel.text = [NSString stringWithFormat:@"%.1f", [user[@"driverRating"] doubleValue]];
     } else {
         self.alfredIconImageView.hidden = YES;
         self.seatsLabel.text = [NSString stringWithFormat:@"%2d SEAT",seats];
         self.priceLabel.text = @"";
-        self.ratingLabel.text = [NSString stringWithFormat:@"%2.1lf", [user[@"passengerRating"] doubleValue]];
+        self.ratingLabel.text = [NSString stringWithFormat:@"%.1f", [user[@"passengerRating"] doubleValue]];
     }
     if(femaleOnly) {
         self.ladiesOnlyLabel.hidden = NO;

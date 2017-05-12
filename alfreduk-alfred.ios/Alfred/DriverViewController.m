@@ -1005,13 +1005,14 @@ const int RIDE_CANCEL_EXPIRATION_TIME = 5*60; // in seconds
             vc.destinationAddress = @"Undetermined";
         }
     }
-    if([segue.identifier isEqualToString: @"rateUser"]){
+    if([segue.identifier isEqualToString: @"rateUser"]) {
         
         RideRatingViewController *vc =(RideRatingViewController*)[segue destinationViewController];
         
         //rate only last user, this is wrong
         NSLog(@"Rate to the Passenger =================== /n %@ /n ======================= %@", _lastRideInfo, passenger);
         vc.rideRequest = _lastRideInfo;
+        vc.isBoardMessage = NO;
     }
     
 }

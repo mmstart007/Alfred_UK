@@ -33,4 +33,7 @@
 @property (weak, nonatomic) IBOutlet MKMapView *alfredMapView;
 @property (weak, nonatomic) IBOutlet HCSStarRatingView *seatsSelectView;
 
+
+- (IBAction)cancelJourneyAction:(id)sender;
+
 @end
