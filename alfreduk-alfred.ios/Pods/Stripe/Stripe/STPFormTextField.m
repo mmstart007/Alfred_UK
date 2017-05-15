@@ -7,12 +7,15 @@
 //
 
 #import "STPFormTextField.h"
-#import "STPCardValidator.h"
-#import "STPPhoneNumberValidator.h"
+
 #import "NSString+Stripe.h"
+#import "STPCardValidator.h"
 #import "STPDelegateProxy.h"
+#import "STPPhoneNumberValidator.h"
+#import "STPWeakStrongMacros.h"
 
 #define FAUXPAS_IGNORED_IN_METHOD(...)
+#define FAUXPAS_IGNORED_ON_LINE(...)
 
 @interface STPTextFieldDelegateProxy : STPDelegateProxy<UITextFieldDelegate>
 @property(nonatomic, assign)STPFormTextFieldAutoFormattingBehavior autoformattingBehavior;
@@ -107,6 +110,11 @@ typedef NSAttributedString* (^STPFormTextTransformationBlock)(NSAttributedString
         case STPFormTextFieldAutoFormattingBehaviorNone:
         case STPFormTextFieldAutoFormattingBehaviorExpiration:
             self.textFormattingBlock = nil;
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+            if ([self respondsToSelector:@selector(setTextContentType:)]) {
+                self.textContentType = nil; FAUXPAS_IGNORED_ON_LINE(APIAvailability);
+            }
+#endif
             break;
         case STPFormTextFieldAutoFormattingBehaviorCardNumbers:
             self.textFormattingBlock = ^NSAttributedString *(NSAttributedString *inputString) {
@@ -132,18 +140,28 @@ typedef NSAttributedString* (^STPFormTextTransformationBlock)(NSAttributedString
                 }
                 return [attributedString copy];
             };
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+            if ([self respondsToSelector:@selector(setTextContentType:)]) {
+                self.textContentType = UITextContentTypeCreditCardNumber; FAUXPAS_IGNORED_ON_LINE(APIAvailability);
+            }
+#endif
             break;
         case STPFormTextFieldAutoFormattingBehaviorPhoneNumbers: {
-            __weak id weakself = self;
+            WEAK(self);
             self.textFormattingBlock = ^NSAttributedString *(NSAttributedString *inputString) {
                 if (![STPCardValidator stringIsNumeric:inputString.string]) {
                     return [inputString copy];
                 }
-                __strong id strongself = weakself;
+                STRONG(self);
                 NSString *phoneNumber = [STPPhoneNumberValidator formattedSanitizedPhoneNumberForString:inputString.string];
-                NSDictionary *attributes = [[strongself class] attributesForAttributedString:inputString];
+                NSDictionary *attributes = [[self class] attributesForAttributedString:inputString];
                 return [[NSAttributedString alloc] initWithString:phoneNumber attributes:attributes];
             };
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+            if ([self respondsToSelector:@selector(setTextContentType:)]) {
+                self.textContentType = UITextContentTypeTelephoneNumber; FAUXPAS_IGNORED_ON_LINE(APIAvailability);
+            }
+#endif
             break;
         }
     }
@@ -152,6 +170,10 @@ typedef NSAttributedString* (^STPFormTextTransformationBlock)(NSAttributedString
 - (void)setFormDelegate:(id<STPFormTextFieldDelegate>)formDelegate {
     _formDelegate = formDelegate;
     self.delegate = formDelegate;
+}
+
+- (void)insertText:(NSString *)text {
+    [self setText:[self.text stringByAppendingString:text]];
 }
 
 - (void)deleteBackward {

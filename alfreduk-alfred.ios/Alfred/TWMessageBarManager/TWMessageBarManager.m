@@ -26,9 +26,9 @@ CGFloat const kTWMessageBarManagerPanVelocity = 0.2f;
 CGFloat const kTWMessageBarManagerPanAnimationDuration = 0.0002f;
 
 // Strings (TWMessageBarStyleSheet)
-NSString * const kTWMessageBarStyleSheetImageIconError = @"icon-error.png";
-NSString * const kTWMessageBarStyleSheetImageIconSuccess = @"icon-success.png";
-NSString * const kTWMessageBarStyleSheetImageIconInfo = @"icon-info.png";
+NSString * const kTWMessageBarStyleSheetImageIconError = @"blank logo";
+NSString * const kTWMessageBarStyleSheetImageIconSuccess = @"blank logo";
+NSString * const kTWMessageBarStyleSheetImageIconInfo = @"blank logo";
 
 // Fonts (TWMessageView)
 static UIFont *kTWMessageViewTitleFont = nil;
@@ -539,7 +539,7 @@ static UIColor *kTWDefaultMessageBarStyleSheetInfoStrokeColor = nil;
         {
             if ([styleSheet respondsToSelector:@selector(iconImageForMessageType:)])
             {
-                [[styleSheet iconImageForMessageType:self.messageType] drawInRect:CGRectMake(xOffset, yOffset, kTWMessageViewIconSize, kTWMessageViewIconSize)];
+                [[styleSheet iconImageForMessageType:self.messageType] drawInRect:CGRectMake(xOffset, yOffset + 8, kTWMessageViewIconSize, kTWMessageViewIconSize - 10)];
             }
         }
         CGContextRestoreGState(context);

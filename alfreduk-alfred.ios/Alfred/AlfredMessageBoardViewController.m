@@ -7,7 +7,7 @@
 //
 
 #import <SDWebImage/UIImageView+WebCache.h>
-#import <TWMessageBarManager/TWMessageBarManager.h>
+#import "TWMessageBarManager.h"
 #import <Parse/Parse.h>
 
 #import "AlfredMessageBoardViewController.h"
@@ -137,7 +137,7 @@ const int RIDE_END_EXPIRATION_TIME = 1*60; // in seconds
             selectedMessage = objects.firstObject;
             coast = [NSString stringWithFormat:@"Ride Cost: £%.1f", [selectedMessage[@"price"] doubleValue]];;
         } else {
-            [[[UIAlertView alloc] initWithTitle:@"Ooops!" message:@"Can't get the message right now." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
+            [[[UIAlertView alloc] initWithTitle:@"Alfred" message:@"Can't get the message right now." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
         }
     }];
     
@@ -217,7 +217,7 @@ const int RIDE_END_EXPIRATION_TIME = 1*60; // in seconds
                                         
                                         NSLog(@"Getting request message failed");
                                         
-                                        [[[UIAlertView alloc] initWithTitle:@"Ooops!" message:@"Can't delete the messages right now." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
+                                        [[[UIAlertView alloc] initWithTitle:@"Alfred" message:@"Can't delete the messages right now." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
                                     }
                                 }];
 }
@@ -233,7 +233,7 @@ const int RIDE_END_EXPIRATION_TIME = 1*60; // in seconds
                 [self performSegueWithIdentifier:@"NewDriverMessageSegue" sender:self];
             } else {
                 [[TWMessageBarManager sharedInstance] showMessageWithTitle:@"Alfred"
-                                                               description:@"You should register as driver."
+                                                               description:@"You should register as Driver."
                                                                       type:TWMessageBarMessageTypeError
                                                                   duration:3.0];
             }

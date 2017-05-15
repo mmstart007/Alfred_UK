@@ -8,10 +8,12 @@
 
 
 #import <Foundation/Foundation.h>
-#import "STPPaymentMethod.h"
-#import "STPBlocks.h"
+#import <PassKit/PassKit.h>
+
 #import "STPAddress.h"
+#import "STPBlocks.h"
 #import "STPPaymentConfiguration.h"
+#import "STPPaymentMethod.h"
 #import "STPPaymentResult.h"
 #import "STPUserInformation.h"
 
@@ -25,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
  
  `STPPaymentContext` also provides a unified interface to multiple payment methods - for example, you can write a single integration to accept both credit card payments and Apple Pay.
  
- `STPPaymentContext` requires an "API Adapter" to communicate with your backend API to retrieve and modify a customer's payment methods - see https://stripe.com/docs/mobile/ios#prepare-your-api for how to implement this. You can also look at CheckoutViewController.swift in our example app to see `STPPaymentContext` in action.
+ `STPPaymentContext` requires an "API Adapter" to communicate with your backend API to retrieve and modify a customer's payment methods - see https://stripe.com/docs/mobile/ios/standard#prepare-your-api for how to implement this. You can also look at CheckoutViewController.swift in our example app to see `STPPaymentContext` in action.
  */
 @interface STPPaymentContext : NSObject
 
@@ -66,12 +68,12 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *  If you've already collected some information from your user, you can set it here and it'll be automatically filled out when possible/appropriate in any UI that the payment context creates.
  */
-@property(nonatomic)STPUserInformation *prefilledInformation;
+@property(nonatomic, strong, nullable)STPUserInformation *prefilledInformation;
 
 /**
  *  The view controller that any additional UI will be presented on. If you have a "checkout view controller" in your app, that should be used as the host view controller.
  */
-@property(nonatomic, weak)UIViewController *hostViewController;
+@property(nonatomic, weak, nullable)UIViewController *hostViewController;
 
 /**
  *  This delegate will be notified when the payment context's contents change. @see STPPaymentContextDelegate
@@ -94,32 +96,115 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, readonly, nullable)NSArray<id<STPPaymentMethod>> *paymentMethods;
 
 /**
+ *  The user's currently selected shipping method. May be nil.
+ */
+@property(nonatomic, readonly, nullable)PKShippingMethod *selectedShippingMethod;
+
+/**
+ *  An array of STPShippingMethod objects that describe the supported shipping methods. May be nil.
+ */
+@property(nonatomic, readonly, nullable)NSArray<PKShippingMethod *> *shippingMethods;
+
+/**
+ *  The user's shipping address. May be nil.
+ */
+@property(nonatomic, readonly, nullable)STPAddress *shippingAddress;
+
+/**
  *  The amount of money you're requesting from the user, in the smallest currency unit for the selected currency. For example, to indicate $10 USD, use 1000 (i.e. 1000 cents). For more information see https://stripe.com/docs/api#charge_object-amount . This value must be present and greater than zero in order for Apple Pay to be automatically enabled.
+ *
+ *  @note You should only set either this or `paymentSummaryItems`, not both. The other will be automatically calculated on demand using your `paymentCurrency`. 
  */
 @property(nonatomic)NSInteger paymentAmount;
 
 /**
  *  The three-letter currency code for the currency of the payment (i.e. USD, GBP, JPY, etc). Defaults to USD.
+ *
+ *  @note Changing this property may change the return value of `paymentAmount` or `paymentSummaryItems` (whichever one you didn't directly set yourself).
  */
 @property(nonatomic, copy)NSString *paymentCurrency;
 
 /**
- *  If `paymentContext:didFailToLoadWithError:` is called on your delegate, you can in turn call this method to try loading again (if that hasn't been called, calling this will do nothing). If retrying in turn fails, `paymentContext:didFailToLoadWithError:` will be called again (and you can again call this to keep retrying, etc).
+ *  If you support Apple Pay, you can optionally set the PKPaymentSummaryItems you want to display here instead of using `paymentAmount`. Note that the grand total (the amount of the last summary item) must be greater than zero.
+ *  If not set, a single summary item will be automatically generated using `paymentAmount` and your configuration's `companyName`.
+ *  @see PKPaymentRequest for more information
+ *
+ *  @note You should only set either this or `paymentAmount`, not both. The other will be automatically calculated on demand using your `paymentCurrency.`
+ *
+ *  @warning `PKPaymentSummaryItem` is only available in iOS8+. If you support iOS 7 you should do a runtime availability check before accessing or setting this property. 
+ */
+@property(nonatomic, copy)NSArray<PKPaymentSummaryItem *> *paymentSummaryItems NS_AVAILABLE_IOS(8_0);
+
+/**
+ *  The presentation style used for all view controllers presented modally by the context.
+ *  Since custom transition styles are not supported, you should set this to either
+ *  `UIModalPresentationFullScreen`, `UIModalPresentationPageSheet`, or `UIModalPresentationFormSheet`.
+ *  The default value is `UIModalPresentationFullScreen`.
+ */
+@property(nonatomic, assign) UIModalPresentationStyle modalPresentationStyle;
+
+/**
+ *  If `paymentContext:didFailToLoadWithError:` is called on your delegate, you
+ *  can in turn call this method to try loading again (if that hasn't been called, 
+ *  calling this will do nothing). If retrying in turn fails, `paymentContext:didFailToLoadWithError:` 
+ *  will be called again (and you can again call this to keep retrying, etc).
  */
 - (void)retryLoading;
 
 /**
- *  This creates, configures, and appropriately presents an `STPPaymentMethodsViewController` on top of the payment context's `hostViewController`. It'll be dismissed automatically when the user is done selecting their payment method.
+ *  This creates, configures, and appropriately presents an `STPPaymentMethodsViewController` 
+ *  on top of the payment context's `hostViewController`. It'll be dismissed automatically 
+ *  when the user is done selecting their payment method.
+ *  
+ *  @note This method will do nothing if it is called while STPPaymentContext is 
+ *        already showing a view controller or in the middle of requesting a payment.
  */
 - (void)presentPaymentMethodsViewController;
 
 /**
- *  This creates, configures, and appropriately pushes an `STPPaymentMethodsViewController` onto the navigation stack of the context's `hostViewController`. It'll be popped automatically when the user is done selecting their payment method.
+ *  This creates, configures, and appropriately pushes an `STPPaymentMethodsViewController` 
+ *  onto the navigation stack of the context's `hostViewController`. It'll be popped 
+ *  automatically when the user is done selecting their payment method.
+ *
+ *  @note This method will do nothing if it is called while STPPaymentContext is
+ *        already showing a view controller or in the middle of requesting a payment.
  */
 - (void)pushPaymentMethodsViewController;
 
 /**
- *  Requests payment from the user. This may need to present some supplemental UI to the user, in which case it will be presented on the payment context's `hostViewController`. For instance, if they've selected Apple Pay as their payment method, calling this method will show the payment sheet. If the user has a card on file, this will use that without presenting any additional UI. After this is called, the `paymentContext:didCreatePaymentResult:completion:` and `paymentContext:didFinishWithStatus:error:` methods will be called on the context's `delegate`.
+ *  This creates, configures, and appropriately presents a view controller for 
+ *  collecting shipping address and shipping method on top of the payment context's 
+ *  `hostViewController`. It'll be dismissed automatically when the user is done 
+ *  entering their shipping info.
+ *
+ *  @note This method will do nothing if it is called while STPPaymentContext is
+ *        already showing a view controller or in the middle of requesting a payment.
+ */
+- (void)presentShippingViewController;
+
+/**
+ *  This creates, configures, and appropriately pushes a view controller for 
+ *  collecting shipping address and shipping method onto the navigation stack of 
+ *  the context's `hostViewController`. It'll be popped automatically when the 
+ *  user is done entering their shipping info.
+ *
+ *  @note This method will do nothing if it is called while STPPaymentContext is
+ *        already showing a view controller, or in the middle of requesting a payment.
+ */
+- (void)pushShippingViewController;
+
+/**
+ *  Requests payment from the user. This may need to present some supplemental UI
+ *  to the user, in which case it will be presented on the payment context's 
+ *  `hostViewController`. For instance, if they've selected Apple Pay as their 
+ *  payment method, calling this method will show the payment sheet. If the user
+ *  has a card on file, this will use that without presenting any additional UI.
+ *  After this is called, the `paymentContext:didCreatePaymentResult:completion:` 
+ *  and `paymentContext:didFinishWithStatus:error:` methods will be called on the
+ *  context's `delegate`.
+ *
+ *  @note This method will do nothing if it is called while STPPaymentContext is
+ *        already showing a view controller, or in the middle of requesting a payment.
  */
 - (void)requestPayment;
 
@@ -171,6 +256,28 @@ didCreatePaymentResult:(STPPaymentResult *)paymentResult
 - (void)paymentContext:(STPPaymentContext *)paymentContext
    didFinishWithStatus:(STPPaymentStatus)status
                  error:(nullable NSError *)error;
+
+@optional
+/**
+ *  Inside this method, you should verify that you can ship to the given address.
+ *  You should call the completion block with the results of your validation
+ *  and the available shipping methods for the given address. If you don't implement
+ *  this method, the user won't be prompted to select a shipping method and all
+ *  addresses will be valid.
+ *
+ *  @note If a user updates their shipping address within the Apple Pay dialog,
+ *  this address will be anonymized. For example, in the US, it will only include the
+ *  city, state, and zip code. The payment context will have the user's complete
+ *  shipping address by the time `paymentContext:didFinishWithStatus:error` is
+ *  called.
+ *
+ *  @param paymentContext  The context that updated its shipping address
+ *  @param address The current shipping address
+ *  @param completion      Call this block when you're done validating the shipping address and calculating available shipping methods.
+ */
+- (void)paymentContext:(STPPaymentContext *)paymentContext
+didUpdateShippingAddress:(STPAddress *)address
+            completion:(STPShippingMethodsCompletionBlock)completion;
 
 @end
 

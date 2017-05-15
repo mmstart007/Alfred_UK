@@ -598,6 +598,13 @@
 		86F9923C1B60822600DF7A49 /* AlfredCreditCard.m in Sources */ = {isa = PBXBuildFile; fileRef = 86F9923B1B60822600DF7A49 /* AlfredCreditCard.m */; };
 		94012E931EBA4D7F0002955D /* MGSwipeButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 94012E901EBA4D7F0002955D /* MGSwipeButton.m */; };
 		94012E941EBA4D7F0002955D /* MGSwipeTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 94012E921EBA4D7F0002955D /* MGSwipeTableCell.m */; };
+		945767E51EC6295800B07C98 /* icon-error.png in Resources */ = {isa = PBXBuildFile; fileRef = 945767DD1EC6295800B07C98 /* icon-error.png */; };
+		945767E61EC6295800B07C98 /* icon-error@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 945767DE1EC6295800B07C98 /* icon-error@2x.png */; };
+		945767E71EC6295800B07C98 /* icon-info.png in Resources */ = {isa = PBXBuildFile; fileRef = 945767DF1EC6295800B07C98 /* icon-info.png */; };
+		945767E81EC6295800B07C98 /* icon-info@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 945767E01EC6295800B07C98 /* icon-info@2x.png */; };
+		945767E91EC6295800B07C98 /* icon-success.png in Resources */ = {isa = PBXBuildFile; fileRef = 945767E11EC6295800B07C98 /* icon-success.png */; };
+		945767EA1EC6295800B07C98 /* icon-success@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 945767E21EC6295800B07C98 /* icon-success@2x.png */; };
+		945767EB1EC6295800B07C98 /* TWMessageBarManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 945767E41EC6295800B07C98 /* TWMessageBarManager.m */; };
 		948780811EB13E800025D0CA /* MessagePriceSubmitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 948780801EB13E800025D0CA /* MessagePriceSubmitViewController.m */; };
 		94AF0F4B1EB33E2700CC0D30 /* MessageBoardContactUserTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 94AF0F4A1EB33E2700CC0D30 /* MessageBoardContactUserTableViewController.m */; };
 		94B9374E1EBD289100F7F7B4 /* RequestMessageTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 94B9374D1EBD289100F7F7B4 /* RequestMessageTableViewCell.m */; };
@@ -1417,6 +1424,14 @@
 		94012E901EBA4D7F0002955D /* MGSwipeButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSwipeButton.m; sourceTree = "<group>"; };
 		94012E911EBA4D7F0002955D /* MGSwipeTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSwipeTableCell.h; sourceTree = "<group>"; };
 		94012E921EBA4D7F0002955D /* MGSwipeTableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSwipeTableCell.m; sourceTree = "<group>"; };
+		945767DD1EC6295800B07C98 /* icon-error.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-error.png"; sourceTree = "<group>"; };
+		945767DE1EC6295800B07C98 /* icon-error@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-error@2x.png"; sourceTree = "<group>"; };
+		945767DF1EC6295800B07C98 /* icon-info.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-info.png"; sourceTree = "<group>"; };
+		945767E01EC6295800B07C98 /* icon-info@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-info@2x.png"; sourceTree = "<group>"; };
+		945767E11EC6295800B07C98 /* icon-success.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-success.png"; sourceTree = "<group>"; };
+		945767E21EC6295800B07C98 /* icon-success@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-success@2x.png"; sourceTree = "<group>"; };
+		945767E31EC6295800B07C98 /* TWMessageBarManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWMessageBarManager.h; sourceTree = "<group>"; };
+		945767E41EC6295800B07C98 /* TWMessageBarManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TWMessageBarManager.m; sourceTree = "<group>"; };
 		9487807F1EB13E800025D0CA /* MessagePriceSubmitViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MessagePriceSubmitViewController.h; sourceTree = "<group>"; };
 		948780801EB13E800025D0CA /* MessagePriceSubmitViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MessagePriceSubmitViewController.m; sourceTree = "<group>"; };
 		94AF0F491EB33E2700CC0D30 /* MessageBoardContactUserTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MessageBoardContactUserTableViewController.h; sourceTree = "<group>"; };
@@ -2448,6 +2463,29 @@
 			path = MGSwipeTableCell;
 			sourceTree = "<group>";
 		};
+		945767DB1EC6295800B07C98 /* TWMessageBarManager */ = {
+			isa = PBXGroup;
+			children = (
+				945767DC1EC6295800B07C98 /* Icons */,
+				945767E31EC6295800B07C98 /* TWMessageBarManager.h */,
+				945767E41EC6295800B07C98 /* TWMessageBarManager.m */,
+			);
+			path = TWMessageBarManager;
+			sourceTree = "<group>";
+		};
+		945767DC1EC6295800B07C98 /* Icons */ = {
+			isa = PBXGroup;
+			children = (
+				945767DD1EC6295800B07C98 /* icon-error.png */,
+				945767DE1EC6295800B07C98 /* icon-error@2x.png */,
+				945767DF1EC6295800B07C98 /* icon-info.png */,
+				945767E01EC6295800B07C98 /* icon-info@2x.png */,
+				945767E11EC6295800B07C98 /* icon-success.png */,
+				945767E21EC6295800B07C98 /* icon-success@2x.png */,
+			);
+			path = Icons;
+			sourceTree = "<group>";
+		};
 		9487807D1EB135F30025D0CA /* Message Review Cell */ = {
 			isa = PBXGroup;
 			children = (
@@ -2632,6 +2670,7 @@
 				DCB3FAA11A6E1B0F00389E2A /* Login */,
 				DCB3FAA01A6E1AFF00389E2A /* Forgot Password */,
 				DCB3FA9F1A6E1AB400389E2A /* Registration */,
+				945767DB1EC6295800B07C98 /* TWMessageBarManager */,
 				DC72425B1A6C66950060161D /* Supporting Files */,
 			);
 			path = Alfred;
@@ -3383,7 +3422,6 @@
 				861400A51B671FE500135988 /* ShellScript */,
 				B4AA680387FF619C2C7621EB /* [CP] Embed Pods Frameworks */,
 				C6A71E4AABBEC58C8AB43960 /* [CP] Copy Pods Resources */,
-				946667B81E7277B30000EFAF /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -3477,6 +3515,7 @@
 				86E558321BD3EE6C00F68511 /* AU@2x.png in Resources */,
 				86E558981BD3EE6C00F68511 /* CY.png in Resources */,
 				86E559971BD3EE6D00F68511 /* PR@2x.png in Resources */,
+				945767E71EC6295800B07C98 /* icon-info.png in Resources */,
 				86E558541BD3EE6C00F68511 /* BQ@2x.png in Resources */,
 				86E55A141BD3EE6D00F68511 /* WS.png in Resources */,
 				860109BA1BC4165200AE8A70 /* ExpiryAndCVVSplitCellTableViewCell.xib in Resources */,
@@ -3520,12 +3559,14 @@
 				86E559691BD3EE6D00F68511 /* MZ.png in Resources */,
 				86E5591B1BD3EE6D00F68511 /* KN.png in Resources */,
 				DCF9E07D1AC5DB2D00BA3BBB /* MessageBoardPersonalUserPostTableViewCell.xib in Resources */,
+				945767E81EC6295800B07C98 /* icon-info@2x.png in Resources */,
 				DCB7FFC41AC5EC1400763205 /* MessageBoardPersonalDriverHeadTableViewCell.xib in Resources */,
 				86E5598B1BD3EE6D00F68511 /* PG.png in Resources */,
 				86E5586E1BD3EE6C00F68511 /* discover@2x.png in Resources */,
 				86E5584A1BD3EE6C00F68511 /* BJ@2x.png in Resources */,
 				DCF9E0731AC5D78400BA3BBB /* MessageBoardEditMessageTableViewCell.xib in Resources */,
 				DC74F1631A76F85600E5D808 /* LoginWithTableViewCell.xib in Resources */,
+				945767E91EC6295800B07C98 /* icon-success.png in Resources */,
 				86E558F81BD3EE6D00F68511 /* IE@2x.png in Resources */,
 				86E558C11BD3EE6D00F68511 /* FR@2x.png in Resources */,
 				86E559CF1BD3EE6D00F68511 /* SV@2x.png in Resources */,
@@ -3558,6 +3599,7 @@
 				86E559651BD3EE6D00F68511 /* MX.png in Resources */,
 				86E558AC1BD3EE6C00F68511 /* EG.png in Resources */,
 				86E559051BD3EE6D00F68511 /* IS.png in Resources */,
+				945767E61EC6295800B07C98 /* icon-error@2x.png in Resources */,
 				86E558C91BD3EE6D00F68511 /* GE@2x.png in Resources */,
 				86E559301BD3EE6D00F68511 /* LK@2x.png in Resources */,
 				86E559C61BD3EE6D00F68511 /* SO.png in Resources */,
@@ -3672,12 +3714,14 @@
 				DCF9E04F1AC5C60900BA3BBB /* MessageBoardDriverJoinBottomTableViewCell.xib in Resources */,
 				86E558AA1BD3EE6C00F68511 /* EE.png in Resources */,
 				86E558A41BD3EE6C00F68511 /* DO.png in Resources */,
+				945767E51EC6295800B07C98 /* icon-error.png in Resources */,
 				86E5588F1BD3EE6C00F68511 /* CR@2x.png in Resources */,
 				86E559131BD3EE6D00F68511 /* KG.png in Resources */,
 				86E559D71BD3EE6D00F68511 /* TC@2x.png in Resources */,
 				86E558CC1BD3EE6D00F68511 /* GG.png in Resources */,
 				86E558951BD3EE6C00F68511 /* CW@2x.png in Resources */,
 				86E559BC1BD3EE6D00F68511 /* SJ.png in Resources */,
+				945767EA1EC6295800B07C98 /* icon-success@2x.png in Resources */,
 				86E558FB1BD3EE6D00F68511 /* IM.png in Resources */,
 				86E559E31BD3EE6D00F68511 /* TJ@2x.png in Resources */,
 				86E558851BD3EE6C00F68511 /* CL.png in Resources */,
@@ -4054,20 +4098,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Fabric/Fabric.framework/run\" d189a8e71b86a8b68aedb2b28373e125d0bc3a0f 4fbca784460f1ebce14d5e76d3e1e67b4b6606bbb62b96c87563633a94ce9d1c";
-		};
-		946667B81E7277B30000EFAF /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "SCRIPT_SRC=$(find \"$PROJECT_DIR\" -name 'Instabug_dsym_upload.sh' | head -1)\nif [ ! \"${SCRIPT_SRC}\" ]; then\necho \"Instabug: err: script not found. Make sure that you're including Instabug.bundle in your project directory\"\nexit 1\nfi\nAPP_TOKEN=\"cffcbde018bdf1456464686a8b484859\"\nsource \"${SCRIPT_SRC}\"";
+			shellScript = "\"${PODS_ROOT}/Fabric/run\" 6f8f141b3d42ee00bff67de053802087b54ac5c3 f08d8003000e106490ef913b89af3bab65e1611e049b88ae1faea05329ff13c6";
 		};
 		B4AA680387FF619C2C7621EB /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -4229,6 +4260,7 @@
 				DC9B3BC81ACEF55900FE312D /* MessageBoardStartRideViewController.m in Sources */,
 				DCB7FFC31AC5EC1400763205 /* MessageBoardPersonalDriverHeadTableViewCell.m in Sources */,
 				DC74F14E1A76EDD400E5D808 /* RedeemCouponTableViewCell.m in Sources */,
+				945767EB1EC6295800B07C98 /* TWMessageBarManager.m in Sources */,
 				86B0CD1B1BD408150019CD6F /* PhoneVerifyTableViewController.m in Sources */,
 				DCB3FA9D1A6E169F00389E2A /* ForgotPassPassTableViewController.m in Sources */,
 				861606E51BEA95A500890C13 /* EditProfileTableViewController.m in Sources */,
@@ -4334,7 +4366,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PROVISIONING_PROFILE = "9e82df04-8461-4c2e-851b-d406a3303e2c";
@@ -4377,7 +4409,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PROVISIONING_PROFILE = "9e82df04-8461-4c2e-851b-d406a3303e2c";
 				PROVISIONING_PROFILE_SPECIFIER = All_Pro_0603;

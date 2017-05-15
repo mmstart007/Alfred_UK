@@ -6,12 +6,13 @@
     },
     {
       "idiom" : "universal",
+      "filename" : "alfred bg@2x.png",
       "scale" : "2x"
     },
     {
       "idiom" : "universal",
-      "scale" : "3x",
-      "filename" : "alfred bg.png"
+      "filename" : "alfred bg.png",
+      "scale" : "3x"
     }
   ],
   "info" : {

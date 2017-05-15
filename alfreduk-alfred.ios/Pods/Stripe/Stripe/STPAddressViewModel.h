@@ -15,6 +15,8 @@
 @protocol STPAddressViewModelDelegate <NSObject>
 
 - (void)addressViewModelDidChange:(STPAddressViewModel *)addressViewModel;
+- (void)addressViewModel:(STPAddressViewModel *)addressViewModel addedCellAtIndex:(NSUInteger)index;
+- (void)addressViewModel:(STPAddressViewModel *)addressViewModel removedCellAtIndex:(NSUInteger)index;
 
 @end
 
@@ -27,6 +29,7 @@
 @property(nonatomic, readonly)BOOL isValid;
 
 - (instancetype)initWithRequiredBillingFields:(STPBillingAddressFields)requiredBillingAddressFields;
+- (instancetype)initWithRequiredShippingFields:(PKAddressField)requiredShippingAddressFields;
 - (STPAddressFieldTableViewCell *)cellAtIndex:(NSInteger)index;
 
 @end

@@ -13,7 +13,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="RideRequestDecisionViewController">
             <connections>
-                <outlet property="decisionTextView" destination="JSz-IU-kU2" id="2bF-0p-0L0"/>
+                <outlet property="decisionTextView" destination="Nv9-XE-yC2" id="LQf-h1-xZr"/>
                 <outlet property="popUpView" destination="eFc-ot-kfV" id="arC-az-bA2"/>
                 <outlet property="supportTeamView" destination="0MX-1b-oNc" id="C8M-gF-xEQ"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
@@ -34,15 +34,15 @@
                                 <constraint firstAttribute="width" constant="69" id="ngR-Nf-p72"/>
                             </constraints>
                         </imageView>
-                        <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" editable="NO" text="You have been accepted as the driver" textAlignment="center" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JSz-IU-kU2">
-                            <rect key="frame" x="19" y="100" width="217" height="76"/>
-                            <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Piao deleted board message. So your request was declined." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="5" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Nv9-XE-yC2">
+                            <rect key="frame" x="19" y="92" width="217" height="106"/>
                             <constraints>
-                                <constraint firstAttribute="width" secondItem="JSz-IU-kU2" secondAttribute="height" multiplier="172:60" id="sRk-4q-tO7"/>
+                                <constraint firstAttribute="height" constant="106" id="7EM-bf-0re"/>
                             </constraints>
-                            <fontDescription key="fontDescription" name="Avenir-Book" family="Avenir" pointSize="15"/>
-                            <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
-                        </textView>
+                            <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                            <nil key="textColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
                         <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="0MX-1b-oNc">
                             <rect key="frame" x="8" y="199" width="239" height="50"/>
                             <subviews>
@@ -94,16 +94,16 @@ contact us at info@alfredridesharing.com!</string>
                     <constraints>
                         <constraint firstItem="S9W-2O-ykt" firstAttribute="leading" secondItem="eFc-ot-kfV" secondAttribute="leading" constant="8" id="4he-6N-1pC"/>
                         <constraint firstAttribute="centerX" secondItem="S9W-2O-ykt" secondAttribute="centerX" id="69p-bI-nDf"/>
+                        <constraint firstAttribute="trailing" secondItem="Nv9-XE-yC2" secondAttribute="trailing" constant="19" id="8gc-aC-jZ9"/>
+                        <constraint firstItem="Nv9-XE-yC2" firstAttribute="leading" secondItem="eFc-ot-kfV" secondAttribute="leading" constant="19" id="CNo-NM-eDa"/>
                         <constraint firstItem="0MX-1b-oNc" firstAttribute="centerX" secondItem="S9W-2O-ykt" secondAttribute="centerX" id="DDN-Ar-ofO"/>
                         <constraint firstItem="0MX-1b-oNc" firstAttribute="width" secondItem="S9W-2O-ykt" secondAttribute="width" id="Dpu-8U-pcd"/>
                         <constraint firstAttribute="bottom" secondItem="S9W-2O-ykt" secondAttribute="bottom" constant="8" id="EPg-ls-psR"/>
+                        <constraint firstItem="Nv9-XE-yC2" firstAttribute="top" secondItem="s8R-k0-Ocm" secondAttribute="bottom" constant="17" id="FZj-Zo-OeJ"/>
                         <constraint firstItem="0MX-1b-oNc" firstAttribute="bottom" secondItem="S9W-2O-ykt" secondAttribute="top" constant="-20" id="FgY-pH-Ltn"/>
-                        <constraint firstItem="JSz-IU-kU2" firstAttribute="width" secondItem="eFc-ot-kfV" secondAttribute="width" multiplier="0.85" id="M7x-qg-tXQ"/>
                         <constraint firstAttribute="centerX" secondItem="s8R-k0-Ocm" secondAttribute="centerX" id="NHt-zo-0KS"/>
                         <constraint firstAttribute="width" secondItem="eFc-ot-kfV" secondAttribute="height" multiplier="255:307" id="aEL-th-fzf"/>
                         <constraint firstItem="s8R-k0-Ocm" firstAttribute="top" secondItem="eFc-ot-kfV" secondAttribute="top" constant="13" id="chv-Qd-IWH"/>
-                        <constraint firstItem="JSz-IU-kU2" firstAttribute="centerY" secondItem="eFc-ot-kfV" secondAttribute="centerY" multiplier="0.9" id="ees-I0-VV7"/>
-                        <constraint firstItem="JSz-IU-kU2" firstAttribute="centerX" secondItem="eFc-ot-kfV" secondAttribute="centerX" id="nK7-8Q-rRK"/>
                         <constraint firstAttribute="trailing" secondItem="S9W-2O-ykt" secondAttribute="trailing" constant="8" id="y4M-Re-zyZ"/>
                     </constraints>
                 </view>
@@ -114,7 +114,7 @@ contact us at info@alfredridesharing.com!</string>
                 <constraint firstItem="eFc-ot-kfV" firstAttribute="width" secondItem="i5M-Pr-FkT" secondAttribute="width" multiplier="0.68" id="qJg-fI-Dir"/>
                 <constraint firstItem="eFc-ot-kfV" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="xJ8-6e-vuJ"/>
             </constraints>
-            <point key="canvasLocation" x="418" y="294"/>
+            <point key="canvasLocation" x="417.5" y="293.5"/>
         </view>
     </objects>
     <resources>

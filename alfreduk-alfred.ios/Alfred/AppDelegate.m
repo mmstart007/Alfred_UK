@@ -7,7 +7,6 @@
 //
 
 #import "AppDelegate.h"
-#import <Instabug/Instabug.h>
 #import <CoreLocation/CoreLocation.h>
 #import "LoginTableViewController.h"
 #import "DriverViewController.h"
@@ -36,10 +35,6 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
     [[UIBarButtonItem appearance] setTintColor:[UIColor whiteColor]];
-    
-    // Setup Instabug
-    [Instabug startWithToken:@"cffcbde018bdf1456464686a8b484859" invocationEvent:IBGInvocationEventNone];
-    [Instabug setUserStepsEnabled:YES];
     
     // Setup Fabric
     [Fabric with:@[[Crashlytics class]]];

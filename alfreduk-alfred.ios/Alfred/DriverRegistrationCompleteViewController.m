@@ -26,6 +26,7 @@
     UIBarButtonItem *leftButton = [[UIBarButtonItem alloc] initWithTitle:@""
                                                                    style:UIBarButtonItemStyleDone target:self action:nil];
     self.navigationItem.leftBarButtonItem = leftButton;
+    self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
 }
 -(void)cancelPage:(id)sender{
     [self dismissViewControllerAnimated:YES completion:nil];

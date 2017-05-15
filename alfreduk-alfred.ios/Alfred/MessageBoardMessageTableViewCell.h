@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <Parse/Parse.h>
 #import <SDWebImage/UIImageView+WebCache.h>
-#import <TWMessageBarManager/TWMessageBarManager.h>
+#import "TWMessageBarManager.h"
 
 #import "MGSwipeTableCell/MGSwipeTableCell.h"
 

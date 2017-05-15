@@ -21,7 +21,7 @@
 #import "CHDraggableView.h"
 #import "CHDraggableView+Avatar.h"
 #import <SDWebImage/UIImageView+WebCache.h>
-#import <TWMessageBarManager/TWMessageBarManager.h>
+#import "TWMessageBarManager.h"
 
 
 const int CHOOSE_ALFRED_ALERT_TAG = 1;
@@ -531,7 +531,7 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 5*60; // in seconds
         balance = [PFUser currentUser][@"Balance"];
         if(![[PFUser currentUser][@"PhoneVerified"] boolValue]){
             
-            [[TWMessageBarManager sharedInstance] showMessageWithTitle:@"Ooops! "
+            [[TWMessageBarManager sharedInstance] showMessageWithTitle:@"Alfred "
                                                            description:@"You must verify your phone number to request an Alfred\nGo to your profile to continue."
                                                                   type:TWMessageBarMessageTypeInfo];
 

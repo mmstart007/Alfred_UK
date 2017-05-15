@@ -7,7 +7,7 @@
 //
 
 #import <Parse/Parse.h>
-#import <TWMessageBarManager/TWMessageBarManager.h>
+#import "TWMessageBarManager.h"
 
 
 #import "MessageBoardNewTableViewController.h"

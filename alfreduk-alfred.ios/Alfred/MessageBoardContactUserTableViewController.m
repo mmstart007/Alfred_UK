@@ -108,7 +108,9 @@
     self.picImageView.layer.masksToBounds = YES;
     self.picImageView.layer.borderWidth = 0;
     self.seatsLabel.text = [NSString stringWithFormat:@"Seats available: %2d",seats];
+    self.seatsSelectView.maximumValue = seats;
     self.seatsSelectView.value = [rideMessage[@"seats"] doubleValue];
+    self.seatsSelectView.userInteractionEnabled = NO;
     [self.seatsSelectView setNeedsDisplay];
     
     if (femaleOnly) {
@@ -148,7 +150,7 @@
                                         [self.tableView reloadData];
                                     } else {
                                         NSLog(@"Failed to post new message");
-                                        [[[UIAlertView alloc] initWithTitle:@"Ooops!" message:@"Can't get messages right now." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
+                                        [[[UIAlertView alloc] initWithTitle:@"Alfred" message:@"Can't get messages right now." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
                                     }
                                 }];
 }
@@ -171,7 +173,7 @@
                                         
                                         NSLog(@"Getting request message failed");
                                         
-                                        [[[UIAlertView alloc] initWithTitle:@"Ooops!" message:@"Can't get messages right now." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
+                                        [[[UIAlertView alloc] initWithTitle:@"Alfred" message:@"Can't get messages right now." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
                                     }
                                 }];
 }

@@ -8,7 +8,7 @@
 
 #import <Parse/Parse.h>
 #import <SDWebImage/UIImageView+WebCache.h>
-#import <TWMessageBarManager/TWMessageBarManager.h>
+#import "TWMessageBarManager.h"
 
 #import "AllMessageTabViewController.h"
 #import "AlfredMessageBoardViewController.h"
@@ -33,6 +33,7 @@
     NSString * city;
     NSArray *_rideJoinRequests;
     NSArray *_userBoardMessages;
+
 }
 
 @end
@@ -47,6 +48,7 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForCreateBoardMessage:) name:@"didRequestForCreateBoardMessage" object:nil];
 
     self.tableView.backgroundColor = [UIColor groupTableViewBackgroundColor];
+
 }
 
 - (void)didReceiveMemoryWarning {
@@ -70,42 +72,21 @@
 
 -(void)loadAllMessages {
     
-    PFQuery *query = [PFQuery queryWithClassName:@"BoardMessage"];
-    [query includeKey:@"author"]; //load user data also
-    [query whereKey:@"status" notEqualTo:@"accept"];
-    [query orderByDescending:@"createdAt"];
-    [query  findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
-        if(self.refreshControl.isRefreshing){
-            [self.refreshControl endRefreshing];
-        }
-        if(!error){
-            messageData = [objects mutableCopy];
-            
-            if(objects.count == 0){
-                self.tableView.hidden = YES;
-                return ;
-            }else{
-                self.tableView.hidden = NO;
-                [self.tableView reloadData];
-            }
-        }else{
-            
-            if(error.code == 209){
-                //TODO: Login user again
-                
-            }
-            self.tableView.hidden = YES;
-            messageData = nil;
-            
-            [[[UIAlertView alloc] initWithTitle:@"Getting all message failed" message:@"Check your network connection and try again." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
-
-//            [[TWMessageBarManager sharedInstance] showMessageWithTitle:@"Ooops! "
-//                                                           description:@"Can't get messages right now."
-//                                                                  type:TWMessageBarMessageTypeError];
-            
-            NSLog(@"Failed to get city messages");
-        }
-    }];
+    [PFCloud callFunctionInBackground:@"GetAllMessages"
+                       withParameters:@{@"requestType": @"all"}
+                                block:^(NSArray *objects, NSError *error) {
+                                    
+                                    if(self.refreshControl.isRefreshing) {
+                                        [self.refreshControl endRefreshing];
+                                    }
+                                    if(!error){
+                                        messageData = [objects mutableCopy];
+                                        [self.tableView reloadData];
+                                    }else{
+                                        [[[UIAlertView alloc] initWithTitle:@"Getting all message failed" message:@"Check your network connection and try again." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
+                                        NSLog(@"Failed to get city messages");
+                                    }
+                                }];
 }
 
 #pragma mark - Table view data source
@@ -135,16 +116,18 @@
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     
     selectedMessageDict = messageData[indexPath.row];
-    PFUser *user = selectedMessageDict[@"author"];
-    if (![user.objectId isEqualToString:[[PFUser currentUser] objectId]]) {
-        bool driverMessage = [selectedMessageDict[@"driverMessage"] boolValue];
-        if (!driverMessage) {
+    bool driverMessage = [selectedMessageDict[@"driverMessage"] boolValue];
+    
+    if (driverMessage) {
+        [self performSegueWithIdentifier:@"MessageBoardDriverDetailSegueID" sender:self];
+    } else {
+        if ([[PFUser currentUser][@"EnabledAsDriver"] boolValue]) {
             [self performSegueWithIdentifier:@"MessagePriceSubmitSegueID" sender:self];
         } else {
-            [self performSegueWithIdentifier:@"MessageBoardDriverDetailSegueID" sender:self];
+            [[TWMessageBarManager sharedInstance] showMessageWithTitle:@"Alfred "
+                                                           description:@"You should register as Driver."
+                                                                  type:TWMessageBarMessageTypeError];
         }
-    } else {
-        
     }
 }
 

@@ -161,7 +161,7 @@
              
          } else {
              
-             [[TWMessageBarManager sharedInstance] showMessageWithTitle:@"Ooops! "
+             [[TWMessageBarManager sharedInstance] showMessageWithTitle:@"Alfred "
                                                             description:@"Can't add the Balance. Please check your Internet connection."
                                                                    type:TWMessageBarMessageTypeError];
              
@@ -306,7 +306,7 @@
         if(!error){
             
             //NSLog(cardsArray);
-            cards = objects;
+            cards = [objects mutableCopy];
             long index = 0;
             for(PFObject* card  in cards){
                 

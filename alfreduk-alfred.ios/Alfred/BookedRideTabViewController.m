@@ -8,7 +8,7 @@
 
 #import <Parse/Parse.h>
 #import <SDWebImage/UIImageView+WebCache.h>
-#import <TWMessageBarManager/TWMessageBarManager.h>
+#import "TWMessageBarManager.h"
 
 #import "BookedRideTabViewController.h"
 #import "MessageBoardMessageTableViewCell.h"
@@ -62,7 +62,7 @@
 -(void)loadAcceptedMessages {
     
     [PFCloud callFunctionInBackground:@"GetAllMessages"
-                       withParameters:@{@"isRequest": @NO}
+                       withParameters:@{@"requestType": @"accept"}
                                 block:^(NSArray *object, NSError *error) {
                                     
                                     [HUD hideUIBlockingIndicator];
@@ -80,7 +80,7 @@
                                         
                                         NSLog(@"Getting request message failed");
                                         
-                                        [[[UIAlertView alloc] initWithTitle:@"Ooops!" message:@"Can't get messages right now." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
+                                        [[[UIAlertView alloc] initWithTitle:@"Alfred" message:@"Can't get messages right now." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
                                     }
                                 }];
 }

@@ -7,7 +7,10 @@
 //
 
 #import "STPApplePayPaymentMethod.h"
+
+#import "STPImageLibrary+Private.h"
 #import "STPImageLibrary.h"
+#import "STPLocalizationUtils.h"
 
 @implementation STPApplePayPaymentMethod
 
@@ -15,8 +18,13 @@
     return [STPImageLibrary applePayCardImage];
 }
 
+- (UIImage *)templateImage {
+    // No template for Apple Pay
+    return [STPImageLibrary applePayCardImage];
+}
+
 - (NSString *)label {
-    return NSLocalizedString(@"Apple Pay", nil);
+    return STPLocalizedString(@"Apple Pay", @"Text for Apple Pay payment method");
 }
 
 - (BOOL)isEqual:(id)object {

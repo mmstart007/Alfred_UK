@@ -204,7 +204,7 @@
     NSLog(@"%@", [NSString stringWithFormat:@"CVV: %@",self.cvvTextField.text]);
     
     //genera un token con el nuevo card y lo guarda
-    [Stripe createTokenWithCard:card completion:^(STPToken *token, NSError *error) {
+    [[STPAPIClient sharedClient] createTokenWithCard:card completion:^(STPToken *token, NSError *error) {
        
         if (error) {
             NSLog(@"Error in card");
@@ -231,7 +231,7 @@
                         [self addCardToCustomer:stpTokenID];
                         
                     }else{
-                        [[TWMessageBarManager sharedInstance] showMessageWithTitle:@"Ooops! "
+                        [[TWMessageBarManager sharedInstance] showMessageWithTitle:@"Alfred"
                                                                        description:@"Can't add the card to your wallet"
                                                                               type:TWMessageBarMessageTypeError];
                         //NSLog(@"%@", error.localizedDescription);
@@ -267,7 +267,7 @@
                                         
                                         [self.navigationController popViewControllerAnimated:YES];
                                     } else {
-                                        [[TWMessageBarManager sharedInstance] showMessageWithTitle:@"Ooops! "
+                                        [[TWMessageBarManager sharedInstance] showMessageWithTitle:@"Alfred"
                                                                                        description:@"Can't add the card to your wallet"
                                                                                               type:TWMessageBarMessageTypeError];
                                     }

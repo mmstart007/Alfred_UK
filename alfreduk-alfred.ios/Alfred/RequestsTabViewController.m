@@ -17,7 +17,8 @@
 
 @interface RequestsTabViewController ()<UITableViewDelegate> {
     PFObject *selectedMessage;
-    NSMutableArray *_arrRideJoinRequest;
+    NSMutableArray *arrRideJoinRequest;
+    NSMutableArray *arrMyBoardMessage;
     int _rideTakeCount;
     int _rideJoinCount;
 }
@@ -29,8 +30,10 @@
 - (void)viewDidLoad {
     
     [super viewDidLoad];
-    _arrRideJoinRequest = [[NSMutableArray alloc] init];
-
+    
+    arrRideJoinRequest = [[NSMutableArray alloc]init];
+    arrMyBoardMessage = [[NSMutableArray alloc]init];
+    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForRequestPriceBoardMessage:) name:@"didRequestForRequestPriceBoardMessage" object:nil];
 
     self.tableView.backgroundColor = [UIColor groupTableViewBackgroundColor];
@@ -61,7 +64,7 @@
 -(void)loadRequestMessages {
     
     [PFCloud callFunctionInBackground:@"GetAllMessages"
-                       withParameters:@{@"isRequest": @YES}
+                       withParameters:@{@"requestType": @"request"}
                                 block:^(NSArray *object, NSError *error) {
                                     
                                     [HUD hideUIBlockingIndicator];
@@ -72,7 +75,8 @@
                                         
                                         NSLog(@"get all request board message sucessfully");
                                         
-                                        _arrRideJoinRequest = [object mutableCopy];
+                                        arrMyBoardMessage = [object objectAtIndex:1];
+                                        arrRideJoinRequest = [object objectAtIndex:0];
                                         [self.tableView reloadData];
                                         
                                     } else {
@@ -96,9 +100,7 @@
                                         
                                         NSLog(@"delete request board message sucessfully");
                                         
-                                        [_arrRideJoinRequest removeObjectAtIndex:indexPath.row];
-                                        [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-                                        [self.tableView reloadData];
+                                        [self loadRequestMessages];
                                         
                                     } else {
                                         
@@ -110,39 +112,73 @@
 }
 
 #pragma mark - UITableView Delegate.
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     
-    return _arrRideJoinRequest.count;
+    return 2;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+
+    switch (section) {
+        case 0:
+            return arrMyBoardMessage.count;
+            break;
+        case 1:
+            return arrRideJoinRequest.count;
+            break;
+    }
+    return 0;
 }
 
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
-    return 210;
+    switch (indexPath.section) {
+            case 0:
+                return 210;
+                break;
+            case 1:
+                return 210;
+                break;
+    }
+    return 0;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    PFObject *rideJoinRequest = [_arrRideJoinRequest objectAtIndex:indexPath.row];
-    
     static NSString * cellIdentifier = @"RequestRideCell";
     RequestMessageTableViewCell *cell = (RequestMessageTableViewCell *)[tableView dequeueReusableCellWithIdentifier:cellIdentifier];
-    
-    /* Delete button */
-    cell.rightButtons = @[[MGSwipeButton buttonWithTitle:@"" icon:[UIImage imageNamed:@"delete"] backgroundColor:[UIColor redColor]  callback:^BOOL(MGSwipeTableCell *sender) {
+
+    if (indexPath.section == 0) {
+        /* Delete button */
+        cell.rightButtons = @[[MGSwipeButton buttonWithTitle:@"" icon:[UIImage imageNamed:@"delete"] backgroundColor:[UIColor redColor]  callback:^BOOL(MGSwipeTableCell *sender) {
+            
+            NSLog(@"Convenience callback for swipe buttons!");
+            
+            PFObject *deleteMessage = arrMyBoardMessage[indexPath.row];
+            NSString *messageObjectId = deleteMessage.objectId;
+            NSString *status = deleteMessage[@"status"];
+            
+            if ([status isEqualToString:@"accept"])
+            {
+                [[TWMessageBarManager sharedInstance] showMessageWithTitle:@"Alfred "
+                                                               description:@"You can't delete this message right now."
+                                                                      type:TWMessageBarMessageTypeError];
+            } else {
+                [self deleteRequestMessage:messageObjectId indexPathForDelete:indexPath];
+            }
+            
+            return true;
+            
+        }]];
         
-        NSLog(@"Convenience callback for swipe buttons!");
+        cell.rightSwipeSettings.transition = MGSwipeTransition3D;
         
-        PFObject *deleteMessage = _arrRideJoinRequest[indexPath.row];
-        NSString *messageObjectId = deleteMessage.objectId;
+        PFObject *myMessageObj = arrMyBoardMessage[indexPath.row];
+        [cell configureMyMessageCell:myMessageObj];
         
-        [self deleteRequestMessage:messageObjectId indexPathForDelete:indexPath];
-        
-        return true;
-        
-    }]];
-    
-    cell.rightSwipeSettings.transition = MGSwipeTransition3D;
-    
-    [cell configureRequestMessageCell:rideJoinRequest];
+    } else if (indexPath.section == 1) {
+        PFObject *requestMessageObj = arrRideJoinRequest[indexPath.row];
+        [cell configureRequestMessageCell:requestMessageObj];
+    }
     
     return cell;
     
@@ -151,8 +187,34 @@
 #pragma mark - Table view data source
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
 
-    selectedMessage = _arrRideJoinRequest[indexPath.row];
-    [self performSegueWithIdentifier:@"MessageRequestSegueID" sender:self];
+    if(indexPath.section == 1) {
+        selectedMessage = arrRideJoinRequest[indexPath.row];
+        [self performSegueWithIdentifier:@"MessageRequestSegueID" sender:self];
+    }
+}
+
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
+    
+    switch (section) {
+            case 0:
+                if (arrMyBoardMessage.count > 0) {
+                    return @"MY MESSAGES";
+                } else {
+                    return nil;
+                }
+                break;
+            case 1:
+                if (arrRideJoinRequest.count > 0) {
+                    return @"REQUEST MESSAGES";
+                } else {
+                    return nil;
+                }
+            break;
+            
+        default:
+            break;
+    }
+    return nil;
 }
 
 #pragma mark - Navigation

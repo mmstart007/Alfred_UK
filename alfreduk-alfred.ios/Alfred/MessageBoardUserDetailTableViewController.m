@@ -59,12 +59,19 @@
     //user data
     PFUser * user;
     PFObject *rideMessage = selectedMessage[@"rideMessage"];
+    bool isBooked = rideMessage[@"isBooked"];
     
     PFUser *from, *to;
     from = selectedMessage[@"from"];
     to = selectedMessage[@"to"];
     if ([from.objectId isEqualToString:[[PFUser currentUser] objectId]]) {
         user = to;
+        
+        if (isBooked) { // If requester is current user, can't accept the message.
+            self.acceptButton.enabled = NO;
+        } else {
+            self.acceptButton.enabled = YES;
+        }
     } else {
         user = from;
     }
@@ -73,14 +80,19 @@
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     [formatter setDateFormat:@"hh:mm MMM dd, yyyy"];
     NSString* rideTime = [formatter stringFromDate:date];
-    int seats = [rideMessage[@"seats"] intValue];
     NSString* dropAddress = rideMessage[@"dropoffAddress"];
     NSString* originAddress = rideMessage[@"pickupAddress"];
-    double pricePerSeat = [rideMessage[@"pricePerSeat"] doubleValue];
     NSString* message = rideMessage[@"desc"];
-    BOOL femaleOnly = [rideMessage[@"femaleOnly"] boolValue];
     NSString *cell = user[@"Phone"];
-
+    NSString* userName = [NSString stringWithFormat:@"%@ %c.", user[@"FirstName"], [(NSString*)user[@"LastName"] characterAtIndex:0]];
+    NSString* pic = user[@"ProfilePicUrl"];
+    BOOL femaleOnly = [rideMessage[@"femaleOnly"] boolValue];
+    
+    // price per seat
+    int totalPrice = [selectedMessage[@"price"] intValue];
+    int seats = [selectedMessage[@"seats"] intValue];
+    float pricePerSeat = (float)totalPrice / (float)seats;
+    
     if([rideMessage[@"driverMessage"] boolValue] == YES) {
         rating = [user[@"passengerRating"] doubleValue];
         isJoin = NO;
@@ -88,13 +100,6 @@
         rating = [user[@"driverRating"] doubleValue];
         isJoin = YES;
     }
-    
-    NSString* userName = [NSString stringWithFormat:@"%@ %c.",
-                          user[@"FirstName"],
-                          [ (NSString*)user[@"LastName"] characterAtIndex:0]];
-    
-    NSString* pic = user[@"ProfilePicUrl"];
-    
     if (![pic isKindOfClass:[NSNull class]]) {
         [self.picImageView sd_setImageWithURL:[NSURL URLWithString:pic] placeholderImage:[UIImage imageNamed:@"blank profile"]];
     }
@@ -111,15 +116,16 @@
     self.picImageView.layer.borderWidth = 0;
     self.seatsLabel.text = [NSString stringWithFormat:@"Seats available: %2d",seats];
     self.seatsSelectView.value = [selectedMessage[@"seats"] doubleValue];
-    [self.seatsSelectView setNeedsDisplay];
+    self.seatsSelectView.maximumValue = seats;
     self.seatsSelectView.userInteractionEnabled = NO;
+    [self.seatsSelectView setNeedsDisplay];
     
     if (femaleOnly) {
         [self.ladiesOnlyLabel setHidden:NO];
     } else {
         [self.ladiesOnlyLabel setHidden:YES];
     }
-
+    
     self.alfredMapView.delegate = self;
     pickupCoord.latitude = (CLLocationDegrees)[rideMessage[@"pickupLat"] doubleValue];
     pickupCoord.longitude = (CLLocationDegrees)[rideMessage[@"pickupLong"] doubleValue];
@@ -151,7 +157,7 @@
                                         [self.tableView reloadData];
                                     } else {
                                         NSLog(@"Failed to post new message");
-                                        [[[UIAlertView alloc] initWithTitle:@"Ooops!" message:@"Can't get reviews right now." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
+                                        [[[UIAlertView alloc] initWithTitle:@"Alfred" message:@"Can't get reviews right now." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
                                     }
                                 }];
 }
@@ -176,7 +182,7 @@
                                         [self.navigationController popViewControllerAnimated:YES];
                                     } else {
                                         NSLog(@"Failed accept request.");
-                                        [[[UIAlertView alloc] initWithTitle:@"Ooops!" message:@"Can't get messages right now." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
+                                        [[[UIAlertView alloc] initWithTitle:@"Alfred" message:@"Can't get messages right now." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
                                     }
                                 }];
 }
@@ -198,7 +204,7 @@
                                         
                                         NSLog(@"Getting request message failed");
                                         
-                                        [[[UIAlertView alloc] initWithTitle:@"Ooops!" message:@"Can't get messages right now." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
+                                        [[[UIAlertView alloc] initWithTitle:@"Alfred" message:@"Can't get messages right now." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
                                     }
                                 }];
 }

@@ -14,7 +14,7 @@
 @property BOOL openRatingView;
 
 @property (weak, nonatomic) IBOutlet UIView *popUpView;
-@property (weak, nonatomic) IBOutlet UITextView *decisionTextView;
+@property (weak, nonatomic) IBOutlet UILabel *decisionTextView;
 @property (weak, nonatomic) IBOutlet UIView *supportTeamView;
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *topLayoutConstraint;

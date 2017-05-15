@@ -7,8 +7,10 @@
 //
 
 #import "STPObscuredCardView.h"
-#import "STPImageLibrary.h"
+
 #import "STPImageLibrary+Private.h"
+#import "STPImageLibrary.h"
+#import "STPLocalizationUtils.h"
 
 @interface STPObscuredCardView()<UITextFieldDelegate>
 
@@ -32,19 +34,19 @@
         
         UITextField *last4Field = [UITextField new];
         last4Field.delegate = self;
-        last4Field.keyboardType = UIKeyboardTypeNumberPad;
+        last4Field.keyboardType = UIKeyboardTypePhonePad;
         [self addSubview:last4Field];
         _last4Field = last4Field;
         
         UITextField *expField = [UITextField new];
         expField.delegate = self;
-        expField.keyboardType = UIKeyboardTypeNumberPad;
+        expField.keyboardType = UIKeyboardTypePhonePad;
         [self addSubview:expField];
         _expField = expField;
         
         UITextField *cvcField = [UITextField new];
         cvcField.delegate = self;
-        cvcField.keyboardType = UIKeyboardTypeNumberPad;
+        cvcField.keyboardType = UIKeyboardTypePhonePad;
         cvcField.secureTextEntry = YES;
         [self addSubview:cvcField];
         _cvcField = cvcField;
@@ -107,9 +109,9 @@
     self.last4Field.text = card.last4;
     self.expField.text = [NSString stringWithFormat:@"%lu/%lu", (unsigned long)card.expMonth, (unsigned long)(card.expYear % 100)];
     if (card.brand == STPCardBrandAmex) {
-        self.cvcField.text = @"XXXX";
+        self.cvcField.text = STPLocalizedString(@"XXXX", @"Placeholder text for Amex CVC field (4 digits)");
     } else {
-        self.cvcField.text = @"XXX";
+        self.cvcField.text = STPLocalizedString(@"XXX", @"Placeholder text for non-Amex CVC field (3 digits)");
     }
     [self setNeedsLayout];
 }

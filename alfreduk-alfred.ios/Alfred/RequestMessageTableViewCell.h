@@ -11,7 +11,7 @@
 
 #import "MGSwipeTableCell/MGSwipeTableCell.h"
 #import <SDWebImage/UIImageView+WebCache.h>
-#import <TWMessageBarManager/TWMessageBarManager.h>
+#import "TWMessageBarManager.h"
 
 
 @interface RequestMessageTableViewCell : MGSwipeTableCell
@@ -30,5 +30,6 @@
 @property (weak, nonatomic) IBOutlet UILabel *ladiesOnlyLabel;
 
 - (void) configureRequestMessageCell:(PFObject *)messageData;
+- (void)configureMyMessageCell:(PFObject *)message;
 
 @end

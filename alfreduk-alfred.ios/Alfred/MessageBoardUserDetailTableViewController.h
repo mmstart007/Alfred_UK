@@ -30,6 +30,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *ladiesOnlyLabel;
 @property (weak, nonatomic) IBOutlet MKMapView *alfredMapView;
 @property (weak, nonatomic) IBOutlet HCSStarRatingView *seatsSelectView;
+@property (weak, nonatomic) IBOutlet UIButton *acceptButton;
 
 - (IBAction)acceptJourneyAction:(id)sender;
 - (IBAction)declineJourneyAction:(id)sender;

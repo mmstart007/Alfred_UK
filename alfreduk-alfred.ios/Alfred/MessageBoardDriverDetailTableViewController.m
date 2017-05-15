@@ -112,8 +112,8 @@
     self.picImageView.layer.masksToBounds = YES;
     self.picImageView.layer.borderWidth = 0;
     self.seatsLabel.text = [NSString stringWithFormat:@"Seats available: %2d",availableSeats];
-    //self.seatsSelectView.value = [selectedMessage[@"seats"] doubleValue];
-    //[self.seatsSelectView setNeedsDisplay];
+    self.seatsSelectView.maximumValue = availableSeats;
+    [self.seatsSelectView setNeedsDisplay];
     
     if (femaleOnly) {
         [self.ladiesOnlyLabel setHidden:NO];
@@ -152,7 +152,7 @@
                                         [self.tableView reloadData];
                                     } else {
                                         NSLog(@"Failed to post new message");
-                                        [[[UIAlertView alloc] initWithTitle:@"Ooops!" message:@"Can't get messages right now." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
+                                        [[[UIAlertView alloc] initWithTitle:@"Alfred" message:@"Can't get messages right now." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
                                     }
                                 }];
 }
@@ -214,7 +214,7 @@
                                         [self.navigationController popViewControllerAnimated:YES];
                                     } else {
                                         NSLog(@"Join request failed");
-                                        [[[UIAlertView alloc] initWithTitle:@"Ooops!" message:@"Can't get messages right now." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
+                                        [[[UIAlertView alloc] initWithTitle:@"Alfred" message:@"Can't get messages right now." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
                                     }
                                 }];
 }

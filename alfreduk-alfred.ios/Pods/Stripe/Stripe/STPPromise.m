@@ -8,6 +8,9 @@
 
 #import "STPPromise.h"
 
+#import "STPDispatchFunctions.h"
+#import "STPWeakStrongMacros.h"
+
 @interface STPPromise<T>()
 
 @property(atomic)T value;
@@ -49,21 +52,13 @@
         return;
     }
     self.value = value;
-    if ([NSThread isMainThread]) {
+    stpDispatchToMainThreadIfNecessary(^{
         for (STPPromiseValueBlock valueBlock in self.successCallbacks) {
             valueBlock(value);
         }
         self.successCallbacks = nil;
         self.errorCallbacks = nil;
-    } else {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            for (STPPromiseValueBlock valueBlock in self.successCallbacks) {
-                valueBlock(value);
-            }
-            self.successCallbacks = nil;
-            self.errorCallbacks = nil;
-        });
-    }
+    });
 }
 
 - (void)fail:(NSError *)error {
@@ -71,41 +66,31 @@
         return;
     }
     self.error = error;
-    if ([NSThread isMainThread]) {
+    stpDispatchToMainThreadIfNecessary(^{
         for (STPPromiseErrorBlock errorBlock in self.errorCallbacks) {
             errorBlock(error);
         }
         self.successCallbacks = nil;
         self.errorCallbacks = nil;
-    } else {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            for (STPPromiseErrorBlock errorBlock in self.errorCallbacks) {
-                errorBlock(error);
-            }
-            self.successCallbacks = nil;
-            self.errorCallbacks = nil;
-        });
-    }
+    });
 }
 
 - (void)completeWith:(STPPromise *)promise {
-    __weak typeof(self) weakself = self;
+    WEAK(self);
     [[promise onSuccess:^(id value) {
-        [weakself succeed:value];
+        STRONG(self);
+        [self succeed:value];
     }] onFailure:^(NSError * _Nonnull error) {
-        [weakself fail:error];
+        STRONG(self);
+        [self fail:error];
     }];
 }
 
 - (instancetype)onSuccess:(STPPromiseValueBlock)callback {
     if (self.value) {
-        if ([NSThread isMainThread]) {
+        stpDispatchToMainThreadIfNecessary( ^{
             callback(self.value);
-        } else {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                callback(self.value);
-            });
-        }
+        });
     } else {
         self.successCallbacks = [self.successCallbacks arrayByAddingObject:callback];
     }
@@ -114,13 +99,9 @@
 
 - (instancetype)onFailure:(STPPromiseErrorBlock)callback {
     if (self.error) {
-        if ([NSThread isMainThread]) {
+        stpDispatchToMainThreadIfNecessary( ^{
             callback(self.error);
-        } else {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                callback(self.error);
-            });
-        }
+        });
     } else {
         self.errorCallbacks = [self.errorCallbacks arrayByAddingObject:callback];
     }
@@ -180,11 +161,13 @@
 }
 
 - (void)voidCompleteWith:(STPVoidPromise *)promise {
-    __weak typeof(self)weakself = self;
+    WEAK(self);
     [[promise voidOnSuccess:^{
-        [weakself succeed];
+        STRONG(self);
+        [self succeed];
     }] onFailure:^(NSError *error) {
-        [weakself fail:error];
+        STRONG(self);
+        [self fail:error];
     }];
 }
 
