@@ -37,7 +37,8 @@
     UIBarButtonItem *rightButton = [[UIBarButtonItem alloc] initWithTitle:@"Cancel"
                                                                     style:UIBarButtonItemStyleDone target:self action:@selector(cancelPage:)];
     self.navigationItem.rightBarButtonItem = rightButton;
-    
+    self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
+
     frontButton.layer.cornerRadius = 50;
     frontButton.layer.masksToBounds = YES;
 
