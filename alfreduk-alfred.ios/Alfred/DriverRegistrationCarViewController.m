@@ -15,27 +15,27 @@
 #define PICK_IMAGE_ACTION_SHEET_TAG 100
 
 
-@interface DriverRegistrationCarViewController ()<SWRevealViewControllerDelegate,UIActionSheetDelegate>
-{
+@interface DriverRegistrationCarViewController ()<SWRevealViewControllerDelegate,UIActionSheetDelegate> {
 
 
 }
+
 @property (weak, nonatomic) IBOutlet UILabel *userLabel;
+
 @end
 
 @implementation DriverRegistrationCarViewController
+
 @synthesize uploadButton,pictureButton,urlImage,imageData;
+
+
 - (void)viewDidLoad {
-    
-    
 
     [super viewDidLoad];
 
     [[uploadButton layer] setBorderWidth:1.0f];
     [[uploadButton layer] setBorderColor:[UIColor blackColor].CGColor];
-    
     [_userLabel setText:[NSString stringWithFormat:@"Hi, %@", [[NSUserDefaults standardUserDefaults] valueForKey:@"Name"]] ];
-    
     [self.navigationController.navigationBar setTranslucent:YES];
     self.navigationController.navigationBar.shadowImage = [UIImage new];
     [self.navigationController.navigationBar setBackgroundImage:[[UIImage alloc] init] forBarMetrics:UIBarMetricsDefault];
