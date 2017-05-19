@@ -79,10 +79,10 @@
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     [formatter setDateFormat:@"hh:mm MMM dd, yyyy"];
     NSString* rideTime = [formatter stringFromDate:date];
-    int seats = [rideMessage[@"seats"] intValue];
+    int seats = [selectedMessage[@"seats"] intValue];
     NSString* dropAddress = rideMessage[@"dropoffAddress"];
     NSString* originAddress = rideMessage[@"pickupAddress"];
-    double pricePerSeat = [rideMessage[@"pricePerSeat"] doubleValue];
+    double pricePerSeat = [selectedMessage[@"price"] doubleValue];
     NSString* message = rideMessage[@"desc"];
     BOOL femaleOnly = [rideMessage[@"femaleOnly"] boolValue];
     NSString *cell = user[@"Phone"];

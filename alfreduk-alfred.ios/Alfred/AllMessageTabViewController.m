@@ -46,6 +46,9 @@
     messageData = [[NSMutableArray alloc] init];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForCreateBoardMessage:) name:@"didRequestForCreateBoardMessage" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForAcceptBoardMessage:) name:@"didRequestForAcceptBoardMessage" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForDeleteBoardMessage:) name:@"didRequestForDeleteBoardMessage" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForAutoDeclineBoardMessage:) name:@"didRequestForAutoDeclineBoardMessage" object:nil];
 
     self.tableView.backgroundColor = [UIColor groupTableViewBackgroundColor];
 
@@ -67,6 +70,18 @@
 
 -(void)didRequestForCreateBoardMessage:(NSNotification *)notification {
 
+    [self loadAllMessages];
+}
+
+- (void)didRequestForAcceptBoardMessage:(NSNotification *)notification {
+    [self loadAllMessages];
+}
+
+- (void)didRequestForDeleteBoardMessage:(NSNotification *)notification {
+    [self loadAllMessages];
+}
+
+- (void)didRequestForAutoDeclineBoardMessage:(NSNotification *)notification {
     [self loadAllMessages];
 }
 

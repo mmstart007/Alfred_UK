@@ -4558,6 +4558,7 @@
                                     <outlet property="profilePicImageView" destination="5XQ-Me-QAp" id="NbR-W3-RMp"/>
                                     <outlet property="ratingLabel" destination="VWN-8u-0fI" id="G3M-TX-ikv"/>
                                     <outlet property="seatsLabel" destination="gug-ru-42J" id="ozj-SL-MgY"/>
+                                    <outlet property="showmoreLabel" destination="sB8-bB-4mX" id="EOA-3n-qGM"/>
                                     <outlet property="titleLabel" destination="hXG-ft-mwg" id="LZO-qY-cdz"/>
                                 </connections>
                             </tableViewCell>

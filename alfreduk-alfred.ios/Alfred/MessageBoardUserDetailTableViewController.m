@@ -59,21 +59,16 @@
     //user data
     PFUser * user;
     PFObject *rideMessage = selectedMessage[@"rideMessage"];
-    bool isBooked = rideMessage[@"isBooked"];
-    
+
     PFUser *from, *to;
     from = selectedMessage[@"from"];
     to = selectedMessage[@"to"];
     if ([from.objectId isEqualToString:[[PFUser currentUser] objectId]]) {
         user = to;
-        
-        if (isBooked) { // If requester is current user, can't accept the message.
-            self.acceptButton.enabled = NO;
-        } else {
-            self.acceptButton.enabled = YES;
-        }
+        self.acceptButton.enabled = NO;
     } else {
         user = from;
+        self.acceptButton.enabled = YES;
     }
     
     NSDate *date = rideMessage[@"date"];
@@ -91,7 +86,7 @@
     // price per seat
     int totalPrice = [selectedMessage[@"price"] intValue];
     int seats = [selectedMessage[@"seats"] intValue];
-    float pricePerSeat = (float)totalPrice / (float)seats;
+    float pricePerSeat = (float)totalPrice;
     
     if([rideMessage[@"driverMessage"] boolValue] == YES) {
         rating = [user[@"passengerRating"] doubleValue];

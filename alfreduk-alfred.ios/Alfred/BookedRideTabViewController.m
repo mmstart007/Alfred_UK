@@ -37,6 +37,8 @@
     [super viewDidLoad];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForAcceptBoardMessage:) name:@"didRequestForAcceptBoardMessage" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForDeleteBoardMessage:) name:@"didRequestForDeleteBoardMessage" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForAutoDeclineBoardMessage:) name:@"didRequestForAutoDeclineBoardMessage" object:nil];
 
 }
 
@@ -51,6 +53,14 @@
 }
 
 - (void)didRequestForAcceptBoardMessage:(NSNotification *)notification {
+    [self loadAcceptedMessages];
+}
+
+- (void)didRequestForDeleteBoardMessage:(NSNotification *)notification {
+    [self loadAcceptedMessages];
+}
+
+- (void)didRequestForAutoDeclineBoardMessage:(NSNotification *)notification {
     [self loadAcceptedMessages];
 }
 

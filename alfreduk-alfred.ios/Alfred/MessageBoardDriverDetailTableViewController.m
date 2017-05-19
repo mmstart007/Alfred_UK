@@ -199,7 +199,7 @@
 #pragma mark - UIButton Action.
 - (IBAction)joinAlfredAction:(id)sender {
     
-    int price = (int)pricePerSeat * seat;
+    int price = (int)pricePerSeat;
     [HUD showUIBlockingIndicatorWithText:@"Joining..."];
     [PFCloud callFunctionInBackground:@"RequestToBoardMessage"
                        withParameters:@{@"boardMessageId": self.selectedMessage.objectId,

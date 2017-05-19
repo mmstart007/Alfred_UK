@@ -28,6 +28,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *seatsLabel;
 @property (weak, nonatomic) IBOutlet UILabel *priceLabel;
 @property (weak, nonatomic) IBOutlet UILabel *ladiesOnlyLabel;
+@property (weak, nonatomic) IBOutlet UILabel *showmoreLabel;
 
 - (void) configureRequestMessageCell:(PFObject *)messageData;
 - (void)configureMyMessageCell:(PFObject *)message;

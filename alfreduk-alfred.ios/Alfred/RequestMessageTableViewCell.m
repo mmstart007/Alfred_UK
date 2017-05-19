@@ -105,6 +105,7 @@
     NSDateFormatter * formatter = [[NSDateFormatter alloc]init];
     [formatter setDateFormat:@"MMM dd, HH:mm"];
     
+    self.showmoreLabel.hidden = YES;
     self.dateLabel.text = [formatter stringFromDate:date];
     self.nameLabel.text = userName;
     self.titleLabel.text = title;

@@ -35,6 +35,9 @@
     arrMyBoardMessage = [[NSMutableArray alloc]init];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForRequestPriceBoardMessage:) name:@"didRequestForRequestPriceBoardMessage" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForAcceptBoardMessage:) name:@"didRequestForAcceptBoardMessage" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForDeleteBoardMessage:) name:@"didRequestForDeleteBoardMessage" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForAutoDeclineBoardMessage:) name:@"didRequestForAutoDeclineBoardMessage" object:nil];
 
     self.tableView.backgroundColor = [UIColor groupTableViewBackgroundColor];
     self.tableView.delegate = self;
@@ -57,6 +60,18 @@
 #pragma mark - Get new request message from push notification
 -(void)didRequestForRequestPriceBoardMessage:(NSNotification *)notification {
     
+    [self loadRequestMessages];
+}
+
+- (void)didRequestForAcceptBoardMessage:(NSNotification *)notification {
+    [self loadRequestMessages];
+}
+
+- (void)didRequestForDeleteBoardMessage:(NSNotification *)notification {
+    [self loadRequestMessages];
+}
+
+- (void)didRequestForAutoDeclineBoardMessage:(NSNotification *)notification {
     [self loadRequestMessages];
 }
 
