@@ -27,6 +27,7 @@
 @end
 
 @implementation WithdrawalViewController
+
 -(void)viewDidLoad{
 
     [super viewDidLoad];
@@ -47,8 +48,8 @@
     floatingButton.backgroundColor =  [UIColor colorWithRed:80.0f/255 green:180.0f/255 blue:190.0f/255 alpha:1.0];
     [floatingButton setImage:[UIImage imageNamed:@"withdrawal"] forState:UIControlStateNormal];
     [floatingButton addTarget:self action:@selector(requestWithdrawal:) forControlEvents:UIControlEventTouchUpInside];
-      [self.view addSubview:floatingButton];
-        _pendingWithdrawalAmmount = 0;
+    [self.view addSubview:floatingButton];
+    _pendingWithdrawalAmmount = 0;
     [self getWithdrawalsList];
 }
 
@@ -150,4 +151,9 @@
     }
 }
 
+
+
 @end
+
+
+

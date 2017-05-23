@@ -317,9 +317,9 @@
                 NSLog(@"Create driver request properly");
                 
                 /* Enable as driver of the current user */
-                PFUser *currentUser = [PFUser currentUser];
+                /*PFUser *currentUser = [PFUser currentUser];
                 currentUser[@"EnabledAsDriver"] = @YES;
-                [currentUser saveInBackground];
+                [currentUser saveInBackground]; */
                 
                 [self performSegueWithIdentifier:@"DriverCompletePush" sender:self];
             }
