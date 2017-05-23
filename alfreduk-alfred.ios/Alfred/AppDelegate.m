@@ -275,8 +275,8 @@
             [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForDeleteBoardMessage" object:alertMessage];
         }
         if ([keyAlert isEqualToString:@"END_RIDE_MESSAGE"]) {
-            NSString* alertMessage = mainAlert[@"alert"];
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForEndBoardMessage" object:alertMessage];
+            NSString* rideMessageObjectId = userInfo[@"rid"];
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForEndBoardMessage" object:rideMessageObjectId];
         }
         if ([keyAlert isEqualToString:@"AUTO_DECLINE_BOARDMESSAGE"]) {
             NSString* alertMessage = mainAlert[@"alert"];
@@ -359,8 +359,8 @@
             [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForDeleteBoardMessage" object:alertMessage];
         }
         if ([keyAlert isEqualToString:@"END_RIDE_MESSAGE"]) {
-            NSString* alertMessage = mainAlert[@"alert"];
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForEndBoardMessage" object:alertMessage];
+            NSString* rideMessageObjectId = userInfo[@"rid"];
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"didRequestForEndBoardMessage" object:rideMessageObjectId];
         }
         if ([keyAlert isEqualToString:@"AUTO_DECLINE_BOARDMESSAGE"]) {
             NSString* alertMessage = mainAlert[@"alert"];

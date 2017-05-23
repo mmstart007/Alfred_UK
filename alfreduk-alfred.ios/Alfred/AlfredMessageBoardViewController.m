@@ -35,6 +35,7 @@ const int RIDE_END_EXPIRATION_TIME = 1*60; // in seconds
     NSArray *messageData;
     NSTimer *endRideTimer;
     NSString *endRideId;
+    NSString *reason;
     PFObject *selectedMessage;
     NSString *coast;
     NSUserDefaults *userDefault;
@@ -119,6 +120,7 @@ const int RIDE_END_EXPIRATION_TIME = 1*60; // in seconds
     [self showPushView:pushMessage acceptedStatus:NO ratingView:NO];
 }
 
+/* Accept Board Message */
 - (void)didRequestForAcceptBoardMessage:(NSNotification *)notification {
     
     NSArray *arrObject = [notification object];
@@ -126,21 +128,7 @@ const int RIDE_END_EXPIRATION_TIME = 1*60; // in seconds
     endRideId = arrObject[1];
 
     [self showPushView:pushMessage acceptedStatus:YES ratingView:NO];
-    
-    PFQuery *requestMessageQuery = [PFQuery queryWithClassName:@"RequestMessage"];
-    [requestMessageQuery includeKey:@"from"];
-    [requestMessageQuery includeKey:@"to"];
-    [requestMessageQuery includeKey:@"rideMessage"];
-    [requestMessageQuery whereKey:@"objectId" equalTo:endRideId];
-    [requestMessageQuery findObjectsInBackgroundWithBlock:^(NSArray * _Nullable objects, NSError * _Nullable error) {
-        if (!error) {
-            selectedMessage = objects.firstObject;
-            coast = [NSString stringWithFormat:@"Ride Cost: £%.1f", [selectedMessage[@"price"] doubleValue]];;
-        } else {
-            [[[UIAlertView alloc] initWithTitle:@"Alfred" message:@"Can't get the message right now." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
-        }
-    }];
-    
+    [self getEndRideMessage:endRideId];
     
     [endRideTimer invalidate];
     endRideTimer = [NSTimer scheduledTimerWithTimeInterval: RIDE_END_EXPIRATION_TIME
@@ -151,6 +139,28 @@ const int RIDE_END_EXPIRATION_TIME = 1*60; // in seconds
 
 }
 
+- (void)getEndRideMessage:(NSString *)endRideObjectId {
+    
+    PFQuery *requestMessageQuery = [PFQuery queryWithClassName:@"RequestMessage"];
+    [requestMessageQuery includeKey:@"from"];
+    [requestMessageQuery includeKey:@"to"];
+    [requestMessageQuery includeKey:@"rideMessage"];
+    [requestMessageQuery whereKey:@"objectId" equalTo:endRideObjectId];
+    [requestMessageQuery findObjectsInBackgroundWithBlock:^(NSArray * _Nullable objects, NSError * _Nullable error) {
+        if (!error) {
+            selectedMessage = objects.firstObject;
+            coast = [NSString stringWithFormat:@"Ride Cost: £%.1f", [selectedMessage[@"price"] doubleValue]];
+            if ([reason isEqualToString:@"END_RIDE_MESSAGE"]) {
+                reason = @"";
+                [self showPushView:coast acceptedStatus:NO ratingView:YES];
+            }
+        } else {
+            [[[UIAlertView alloc] initWithTitle:@"Alfred" message:@"Can't get the message right now." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
+        }
+    }];
+}
+
+/* Delete Board Message */
 - (void)didRequestForDeleteBoardMessage:(NSNotification *)notification {
     [endRideTimer invalidate];
     NSString *pushMessage = [notification object];
@@ -158,23 +168,36 @@ const int RIDE_END_EXPIRATION_TIME = 1*60; // in seconds
     [self showPushView:pushMessage acceptedStatus:NO ratingView:NO];
 }
 
+/* End Board Message */
 - (void)didRequestForEndBoardMessage:(NSNotification *)notification {
 
-    [self showPushView:coast acceptedStatus:NO ratingView:YES];
+    endRideId = [notification object];
+    reason = @"END_RIDE_MESSAGE";
+    [self getEndRideMessage:endRideId];
+    
 }
 
+/* Auto Decline Board Message when user accept the message */
 - (void)didRequestForAutoDeclineBoardMessage:(NSNotification *)notification {
     NSString *pushMessage = [notification object];
 
     [self showPushView:pushMessage acceptedStatus:NO ratingView:NO];
 }
 
+/* Local notification when accept the Message */
 - (void)didRequestForGetSelectedMessageObject:(NSNotification *)notification {
     
     NSDictionary *dict = notification.userInfo;
     selectedMessage = [dict valueForKey:@"messageInfo"];
     double price = [selectedMessage[@"price"] doubleValue];
     coast = [NSString stringWithFormat:@"Ride Cost: £%.1f", price];
+
+    [endRideTimer invalidate];
+    endRideTimer = [NSTimer scheduledTimerWithTimeInterval: RIDE_END_EXPIRATION_TIME
+                                                    target: self
+                                                  selector: @selector(didEndRide:)
+                                                  userInfo: nil
+                                                   repeats: NO];
 }
 
 - (void)showPushView:(NSString *)description acceptedStatus:(BOOL)isAccepted ratingView:(BOOL)openRatingView {
@@ -198,28 +221,10 @@ const int RIDE_END_EXPIRATION_TIME = 1*60; // in seconds
     [self performSegueWithIdentifier:@"rateUser" sender:nil];
 }
 
+/* End Board Message */
 - (void)didEndRide:(id)sender {
     
-    [HUD showUIBlockingIndicatorWithText:@"Endining..."];
-    [PFCloud callFunctionInBackground:@"DeleteRideMessage"
-                       withParameters:@{@"deleteMessageObjId": endRideId,
-                                        @"reason": @"END_RIDE_MESSAGE"}
-                                block:^(NSString *success, NSError *error) {
-                                    [HUD hideUIBlockingIndicator];
-                                    if (!error) {
-                                        
-                                        NSLog(@"total coast for rating with local ========= %@", coast);
-                                        [self showPushView:coast acceptedStatus:NO ratingView:YES];
-                                        
-                                        NSLog(@"delete request board message sucessfully");
-                                        
-                                    } else {
-                                        
-                                        NSLog(@"Getting request message failed");
-                                        
-                                        [[[UIAlertView alloc] initWithTitle:@"Alfred" message:@"Can't delete the messages right now." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
-                                    }
-                                }];
+    [self showPushView:coast acceptedStatus:NO ratingView:YES];
 }
 
 #pragma mark - UIActionSheet Delegate.

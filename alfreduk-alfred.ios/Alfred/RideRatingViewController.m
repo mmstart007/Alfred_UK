@@ -7,7 +7,9 @@
 
 @interface RideRatingViewController ()<UITableViewDataSource>{
     PFUser *ratedUser;
+    NSString *endRideId;
     double price;
+    int seats;
     BOOL isDriver;
     BOOL isDriverMessage;
 }
@@ -34,6 +36,7 @@
         from = rideMessage[@"from"];
         to = rideMessage[@"to"];
         PFObject *requestMessageObj = rideMessage[@"rideMessage"];
+        endRideId = [rideMessage objectId];
         isDriverMessage = [requestMessageObj[@"driverMessage"] boolValue];
         
         if ([from.objectId isEqualToString:[[PFUser currentUser] objectId]]) {
@@ -52,6 +55,7 @@
             }
         }
         price = [self.rideMessage[@"price"] doubleValue];
+        seats = [self.rideMessage[@"seats"] intValue];
 
     } else {
         if([[PFUser currentUser][@"UserMode"] boolValue]){
@@ -66,7 +70,8 @@
             isDriver = NO;
         };
         assert(ratedUser!= nil);
-        price = [self.rideRequest[@"price"] doubleValue] /100;
+        price = [self.rideRequest[@"price"] doubleValue] / 100;
+        seats = [self.rideMessage[@"seats"] intValue];
     }
     
     self.priceLabel.text = [NSString stringWithFormat:@"£%5.2lf",price];
@@ -113,19 +118,42 @@
     [PFCloud callFunctionInBackground:@"CreateRating"
                        withParameters:@{@"to": ratedUser.objectId,
                                         @"isDriver": [NSNumber numberWithBool:isDriver],
-                                        @"rating": [NSNumber numberWithDouble:computeRate]}
+                                        @"rating": [NSNumber numberWithDouble:computeRate],
+                                        @"pricePerSeat": [NSNumber numberWithDouble:price],
+                                        @"seats":[NSNumber numberWithInt:seats]}
                                 block:^(NSString *success, NSError *error) {
                                     
-                                    [HUD hideUIBlockingIndicator];
-                                    
-                                    if(error){
+                                    if(error) {
                                         NSLog(@"Rating save failed =========================== \n %@", error.localizedDescription);
                                     } else {
-                                        [[NSNotificationCenter defaultCenter] postNotificationName:@"didEndedRating" object:nil];
-                                        [self dismissViewControllerAnimated:YES completion:nil];
-                                    }
-                                }];
 
+                                        if (isBoardMessage) {
+                                            
+                                            /* Delete ride message when user ended rate to each other. */
+                                            [PFCloud callFunctionInBackground:@"DeleteRideMessage"
+                                                               withParameters:@{@"deleteMessageObjId": endRideId,
+                                                                                @"reason": @"END_RIDE_MESSAGE"}
+                                                                        block:^(NSString *success, NSError *error) {
+                                                                            
+                                                                            [HUD hideUIBlockingIndicator];
+                                                                            [self dismissViewControllerAnimated:YES completion:nil];
+                                                                            if (!error) {
+                                                                                
+                                                                                NSLog(@"delete request board message sucessfully");
+                                                                                
+                                                                            } else {
+                                                                                
+                                                                                NSLog(@"Getting request message failed");
+                                                                                
+                                                                            }
+                                            }];
+                                        } else {
+                                            [HUD hideUIBlockingIndicator];
+                                            [[NSNotificationCenter defaultCenter] postNotificationName:@"didEndedRating" object:nil];
+                                            [self dismissViewControllerAnimated:YES completion:nil];
+                                        }
+                                    }
+    }];
 }
 
 - (IBAction)backAction:(id)sender {

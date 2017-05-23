@@ -287,8 +287,7 @@
     }
     else{
         
-        
-
+        /* Register as driver */
         PFFile *frontImage = [PFFile fileWithName:@"frontImage.png" data:frontImageData];
         
         [frontImage saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
@@ -313,17 +312,20 @@
         
         [registrationRequest saveInBackgroundWithBlock:^(BOOL succeed, NSError *error){
             
-            if(succeed){
+            [HUD hideUIBlockingIndicator];
+            if(succeed) {
                 NSLog(@"Create driver request properly");
+                
+                /* Enable as driver of the current user */
+                PFUser *currentUser = [PFUser currentUser];
+                currentUser[@"EnabledAsDriver"] = @YES;
+                [currentUser saveInBackground];
+                
                 [self performSegueWithIdentifier:@"DriverCompletePush" sender:self];
             }
-            [HUD hideUIBlockingIndicator];
         }];
-        
-        
     }
 }
-
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
@@ -334,8 +336,7 @@
         detailViewController.insuranceImageData = insuranceImageData;
         detailViewController.frontImageData = frontImageData;
         detailViewController.backImageData = backImageData;
-
-        
+      
     }
 }
 
