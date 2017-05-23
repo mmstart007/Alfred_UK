@@ -56,6 +56,9 @@
         }
         price = [self.rideMessage[@"price"] doubleValue];
         seats = [self.rideMessage[@"seats"] intValue];
+        double totalPrice = price * seats;
+        
+        self.priceLabel.text = [NSString stringWithFormat:@"£%5.2lf",totalPrice];
 
     } else {
         if([[PFUser currentUser][@"UserMode"] boolValue]){
@@ -72,9 +75,8 @@
         assert(ratedUser!= nil);
         price = [self.rideRequest[@"price"] doubleValue] / 100;
         seats = [self.rideMessage[@"seats"] intValue];
+        self.priceLabel.text = [NSString stringWithFormat:@"£%5.2lf",price];
     }
-    
-    self.priceLabel.text = [NSString stringWithFormat:@"£%5.2lf",price];
 
     [ratedUser fetchIfNeededInBackgroundWithBlock:^(PFObject * _Nullable object, NSError * _Nullable error) {
         

@@ -149,7 +149,10 @@ const int RIDE_END_EXPIRATION_TIME = 1*60; // in seconds
     [requestMessageQuery findObjectsInBackgroundWithBlock:^(NSArray * _Nullable objects, NSError * _Nullable error) {
         if (!error) {
             selectedMessage = objects.firstObject;
-            coast = [NSString stringWithFormat:@"Ride Cost: £%.1f", [selectedMessage[@"price"] doubleValue]];
+            double price = [selectedMessage[@"price"] doubleValue];
+            double seats = [selectedMessage[@"seats"] doubleValue];
+            double totalCoast = price * seats;
+            coast = [NSString stringWithFormat:@"Ride Cost: £%.1f", totalCoast];
             if ([reason isEqualToString:@"END_RIDE_MESSAGE"]) {
                 reason = @"";
                 [self showPushView:coast acceptedStatus:NO ratingView:YES];
@@ -190,7 +193,9 @@ const int RIDE_END_EXPIRATION_TIME = 1*60; // in seconds
     NSDictionary *dict = notification.userInfo;
     selectedMessage = [dict valueForKey:@"messageInfo"];
     double price = [selectedMessage[@"price"] doubleValue];
-    coast = [NSString stringWithFormat:@"Ride Cost: £%.1f", price];
+    double seats = [selectedMessage[@"seats"] doubleValue];
+    double totalCoast = price * seats;
+    coast = [NSString stringWithFormat:@"Ride Cost: £%.1f", totalCoast];
 
     [endRideTimer invalidate];
     endRideTimer = [NSTimer scheduledTimerWithTimeInterval: RIDE_END_EXPIRATION_TIME

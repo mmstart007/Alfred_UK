@@ -109,7 +109,7 @@
     self.picImageView.layer.borderWidth = 0;
     self.seatsLabel.text = [NSString stringWithFormat:@"Seats available: %2d",seats];
     self.seatsSelectView.maximumValue = seats;
-    self.seatsSelectView.value = [rideMessage[@"seats"] doubleValue];
+    self.seatsSelectView.value = seats;
     self.seatsSelectView.userInteractionEnabled = NO;
     [self.seatsSelectView setNeedsDisplay];
     
