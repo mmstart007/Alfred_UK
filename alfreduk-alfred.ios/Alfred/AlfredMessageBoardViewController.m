@@ -14,8 +14,6 @@
 #import "MessageBoardMessageTableViewCell.h"
 #import "MessageBoardDriverDetailTableViewController.h"
 #import "MessageBoardUserDetailTableViewController.h"
-#import "MessageBoardPersonalUserTableViewController.h"
-#import "MessageBoardPersonalDriverTableViewController.h"
 #import "RideRatingViewController.h"
 #import "AlfredMessage.h"
 #import "MDButton.h"

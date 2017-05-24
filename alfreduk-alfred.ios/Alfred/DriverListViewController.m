@@ -9,7 +9,6 @@
 #import "DriverListViewController.h"
 #import <Parse/Parse.h>
 
-#import "DriverCalloutNotActiveViewController.h"
 #import "DriverCalloutPopupViewController.h"
 #import "AlfredListTableViewCell.h"
 #import <SDWebImage/UIImageView+WebCache.h>
@@ -60,9 +59,9 @@
 //    self.navigationController.navigationBar.translucent = YES;
 //    self.navigationController.view.backgroundColor = [UIColor clearColor];
 //    self.navigationController.navigationBar.backgroundColor = [UIColor clearColor];
-
-  
+ 
 }
+
 -(void)viewDidAppear:(BOOL)animated{
     
 }

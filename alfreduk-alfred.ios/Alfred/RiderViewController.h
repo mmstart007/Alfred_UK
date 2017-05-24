@@ -18,7 +18,7 @@
 #import "RideRequestDecisionViewController.h"
 #import "RideRatingViewController.h"
 #import "DriverCalloutPopupViewController.h"
-#import "DriverCalloutNotActiveViewController.h"
+
 
 @interface RiderViewController : UIViewController<UIGestureRecognizerDelegate,MKMapViewDelegate,CLLocationManagerDelegate, UIAlertViewDelegate>{
     BOOL mapChangedFromUserInteraction;

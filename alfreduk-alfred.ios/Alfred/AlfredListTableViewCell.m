@@ -46,6 +46,9 @@
     [self.availableSeatsLabel setText: [NSString stringWithFormat:@"%1d", numberOfSeats]];
     bool ladiesOnly = [driverLocation[@"ladiesOnly"] boolValue];
     
+//    self.ladiesOnlyLabel.layer.cornerRadius = 5;
+//    self.ladiesOnlyLabel.layer.masksToBounds = YES;
+
     //check if the ride if only for ladies
     self.ladiesOnlyLabel.hidden = !ladiesOnly ;
 

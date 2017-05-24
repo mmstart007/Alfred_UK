@@ -223,12 +223,13 @@
 
 - (IBAction)decrementSeats:(id)sender {
     
+    self.incrementButton.enabled = TRUE;
     int seats = [self.seatsLabel.text intValue];
-    seats -=1;
     if(seats == 1) {
         self.decrementButton.enabled = FALSE;
+        return;
     }
-    self.incrementButton.enabled = TRUE;
+    seats -=1;
     self.seatsLabel.text = [NSString stringWithFormat:@"%d",seats];
 }
 
@@ -284,6 +285,8 @@
     
     //TODO validate fields here
     
+    [self.notesTextView resignFirstResponder];
+    [self.titleTextField resignFirstResponder];
     if(pickupAddress == nil){
         [[TWMessageBarManager sharedInstance] showMessageWithTitle:@"Error! "
                                                        description:@"Please enter a pickup location"
@@ -316,7 +319,7 @@
         return;
         return;
     }
-    if(!(_notesTextView.text.length > 4)){
+    if(!(self.notesTextView.text.length > 4)){
         
         [[TWMessageBarManager sharedInstance] showMessageWithTitle:@"Error! "
                                                        description:@"Please give some notes of your travel"
@@ -324,7 +327,7 @@
         return;
         return;
     }
-    
+
     [HUD showUIBlockingIndicatorWithText:@"Please wait.."];
 
     [PFCloud callFunctionInBackground:@"CreateBoardMessage"

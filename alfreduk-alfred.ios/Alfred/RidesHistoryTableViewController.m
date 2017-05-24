@@ -10,7 +10,6 @@
 #import "SWRevealViewController.h"
 
 
-#import "RidesHistoryDetailTableViewCell.h"
 #import <SDWebImage/UIImageView+WebCache.h>
 #import <Parse/Parse.h>
 

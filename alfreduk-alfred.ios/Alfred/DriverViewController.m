@@ -13,7 +13,6 @@
 #import <SDWebImage/UIImageView+WebCache.h>
 #import <Parse/Parse.h>
 #import "RideSettingsViewController.h"
-#import "DriverHeadViewController.h"
 #import "CHDraggingCoordinator.h"
 #import "CHDraggableView.h"
 #import "CHDraggableView+Avatar.h"

@@ -148,6 +148,8 @@
     
     //TODO validate fields here
     
+    [self.notesTextView resignFirstResponder];
+    [self.titleTextField resignFirstResponder];
     if(pickupAddress == nil){
 
         [[TWMessageBarManager sharedInstance] showMessageWithTitle:@"Error! "
@@ -180,7 +182,7 @@
         return;
         return;
     }
-    if(!(_notesTextView.text.length > 4)){
+    if(!(self.notesTextView.text.length > 4)){
         
         [[TWMessageBarManager sharedInstance] showMessageWithTitle:@"Error! "
                                                        description:@"Please give some notes of your travel"
@@ -295,12 +297,13 @@
 
 - (IBAction)decrementSeats:(id)sender {
     
+    self.incrementButton.enabled = TRUE;
     int seats = [self.seatsLabel.text intValue];
-    seats -=1;
     if(seats == 1){
         self.decrementButton.enabled = FALSE;
+        return;
     }
-    self.incrementButton.enabled = TRUE;
+    seats -=1;
     self.seatsLabel.text = [NSString stringWithFormat:@"%d",seats];
 }
 
@@ -308,10 +311,11 @@
     
     self.priceIncrementButton.enabled = YES;
     
-    _travelPrice = _travelPrice - 1;
     if(_travelPrice == 1){
         self.priceDecrementButton.enabled = NO;
+        return;
     }
+    _travelPrice = _travelPrice - 1;
     [self updatePriceLabel];
 }
 

@@ -65,10 +65,11 @@
     
     self.priceIncrementButton.enabled = YES;
     
-    _travelPrice = _travelPrice - 1;
-    if(_travelPrice == 1){
+    if(_travelPrice == 1) {
         self.priceDecrementButton.enabled = NO;
+        return;
     }
+    _travelPrice = _travelPrice - 1;
     [self updatePriceLabel];
 }
 

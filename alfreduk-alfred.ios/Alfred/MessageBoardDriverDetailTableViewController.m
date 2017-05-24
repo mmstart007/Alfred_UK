@@ -9,12 +9,9 @@
 #import "MessageBoardDriverDetailTableViewController.h"
 #import "SWRevealViewController.h"
 #import "MessageBoardReviewTableViewCell.h"
-#import "MessageBoardDriverDetailHeadTableViewCell.h"
-#import "MessageBoardDriverDetailUserTableViewCell.h"
-#import "MessageBoardBlankTableViewCell.h"
-#import "MessageBoardDriverJoinTableViewController.h"
 #import "PickupAnnotation.h"
 #import "DropoffAnnotation.h"
+#import "HUD.h"
 
 
 #import <SDWebImage/UIImageView+WebCache.h>
@@ -184,16 +181,6 @@
 #pragma mark - UITableView Delegate.
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return 92;
-}
-
-#pragma mark - Navigation
-
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    if ([[segue identifier] isEqualToString:@"ShowDriverJoin"]){
-        MessageBoardDriverJoinTableViewController *vc = [segue destinationViewController];
-
-        vc.message = selectedMessage;
-    }
 }
 
 #pragma mark - UIButton Action.

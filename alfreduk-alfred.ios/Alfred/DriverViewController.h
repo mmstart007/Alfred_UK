@@ -12,8 +12,6 @@
 #import "DropoffAnnotation.h"
 #import "CMMapLauncher.h"
 #import "RideRatingViewController.h"
-#import "MessageBoardStartRideViewController.h"
-#import "MessageBoardUsersViewController.h"
 #import "UserAnnotation.h"
 
 #import "HCSStarRatingView/HCSStarRatingView.h"
