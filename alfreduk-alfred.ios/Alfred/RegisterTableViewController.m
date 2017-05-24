@@ -23,9 +23,11 @@
 @end
 
 @implementation RegisterTableViewController
+
 @synthesize firstNameLabel,lastNameLabel,emailLabel,passwordLabel,retypePasswordLabel,phoneLabel,textFieldData,successRegistration,validations,useridForNext,submitButton;
 
 - (void)viewDidLoad {
+    
     [super viewDidLoad];
     
     [self.navigationController.navigationBar setTranslucent:YES];
@@ -33,7 +35,6 @@
     [self.navigationController.navigationBar setBackgroundImage:[[UIImage alloc] init] forBarMetrics:UIBarMetricsDefault];
     self.navigationController.navigationBar.shadowImage = [[UIImage alloc] init];
     self.navigationController.navigationBar.backgroundColor = [UIColor clearColor];
-    
     self.navigationController.navigationBar.topItem.title = @"";
 
     UIBarButtonItem *rightButton = [[UIBarButtonItem alloc] initWithTitle:@"Cancel"
@@ -42,7 +43,7 @@
     self.navigationController.navigationBar.tintColor = [UIColor blackColor];
 
     
-   // self.tableView.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"alfred bg"]];
+    // self.tableView.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"alfred_bg"]];
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 
     textFieldData = [[NSMutableArray alloc]init];
@@ -50,16 +51,6 @@
     {
         [textFieldData addObject:@""];
     }
-    
-
-    
-    
-    
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
-    
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
 }
 
 -(void)cancelPage:(id)sender{
@@ -93,11 +84,9 @@
     return 3;
 }
 
-
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *simpleTableIdentifier = @"LogoTableViewCell";
     LogoTableViewCell *cell = (LogoTableViewCell *)[tableView dequeueReusableCellWithIdentifier:simpleTableIdentifier];
-    
     
     if (cell == nil)
     {
@@ -137,7 +126,6 @@
     if ([indexPath section]==2) {
         static NSString *simpleTableIdentifier = @"RegisterFieldTableViewCell";
         RegisterFieldTableViewCell *cell = (RegisterFieldTableViewCell *)[tableView dequeueReusableCellWithIdentifier:simpleTableIdentifier];
-        
         
         if (cell == nil)
         {
@@ -240,8 +228,6 @@
             [submitButton addTarget:self action:@selector(subCheck) forControlEvents:UIControlEventTouchUpInside];
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
             
-            
-            
         }
 
         cell.selectionStyle = UITableViewCellEditingStyleNone;
@@ -280,9 +266,6 @@
         [textFieldData replaceObjectAtIndex:5 withObject:textField.text];
         
     }
-    
-   
-    
 }
 
 -(BOOL)checkAlphas:(NSString*)string{
@@ -322,8 +305,6 @@
     } else {
         return YES;
     }
-    
-    
 }
 
 -(BOOL)checkBasicValidations{
@@ -471,7 +452,6 @@
         detailViewController.userid =[PFUser currentUser][@"email"];
     }
 }
-
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     

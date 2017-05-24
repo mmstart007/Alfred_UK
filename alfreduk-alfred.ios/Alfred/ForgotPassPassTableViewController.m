@@ -25,7 +25,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    //self.tableView.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"alfred bg"]];
+    //self.tableView.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"alfred_bg"]];
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     
     

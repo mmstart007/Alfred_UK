@@ -185,7 +185,7 @@
             
         }]];
         
-        cell.rightSwipeSettings.transition = MGSwipeTransition3D;
+        cell.rightSwipeSettings.transition = MGSwipeStateSwipingRightToLeft;
         
         PFObject *myMessageObj = arrMyBoardMessage[indexPath.row];
         [cell configureMyMessageCell:myMessageObj];
