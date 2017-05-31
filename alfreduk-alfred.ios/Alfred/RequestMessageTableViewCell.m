@@ -27,19 +27,23 @@
     PFObject *rideMessage = message[@"rideMessage"];
     BOOL isDriverMessage = [rideMessage[@"driverMessage"] boolValue];
     
-    if(isDriverMessage) {
-        self.alfredIconImageView.hidden = NO;
-    } else {
-        self.alfredIconImageView.hidden = YES;
-    }
-    
     PFUser *from, *to;
     from = message[@"from"];
     to = message[@"to"];
     if ([from.objectId isEqualToString:[[PFUser currentUser] objectId]]) {
         user = to;
+        if(isDriverMessage) {
+            self.alfredIconImageView.hidden = NO;
+        } else {
+            self.alfredIconImageView.hidden = YES;
+        }
     } else {
         user = from;
+        if(isDriverMessage) {
+            self.alfredIconImageView.hidden = YES;
+        } else {
+            self.alfredIconImageView.hidden = NO;
+        }
     }
     
     int seats = [message[@"seats"] intValue];

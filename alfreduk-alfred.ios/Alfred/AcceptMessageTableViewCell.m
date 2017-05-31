@@ -34,15 +34,19 @@
     if ([from.objectId isEqualToString:[[PFUser currentUser] objectId]]) {
         user = to;
         if(isDriverMessage) {
+            self.alfredIconImageView.hidden = NO;
             self.ratingLabel.text = [NSString stringWithFormat:@"%.1f", [user[@"driverRating"] doubleValue]];
         } else {
+            self.alfredIconImageView.hidden = YES;
             self.ratingLabel.text = [NSString stringWithFormat:@"%.1f", [user[@"passengerRating"] doubleValue]];
         }
     } else {
         user = from;
         if(isDriverMessage) {
+            self.alfredIconImageView.hidden = YES;
             self.ratingLabel.text = [NSString stringWithFormat:@"%.1f", [user[@"passengerRating"] doubleValue]];
         } else {
+            self.alfredIconImageView.hidden = NO;
             self.ratingLabel.text = [NSString stringWithFormat:@"%.1f", [user[@"driverRating"] doubleValue]];
         }
     }
@@ -75,11 +79,6 @@
     self.seatsLabel.text = [NSString stringWithFormat:@"%2d SEAT,",seats];
     self.priceLabel.text = [NSString stringWithFormat:@"£%5.2lf",pricePerSeat];
     
-    if(isDriverMessage) {
-        self.alfredIconImageView.hidden = NO;
-    } else {
-        self.alfredIconImageView.hidden = YES;
-    }
     if(femaleOnly) {
         self.ladiesOnlyLabel.hidden = NO;
     } else {

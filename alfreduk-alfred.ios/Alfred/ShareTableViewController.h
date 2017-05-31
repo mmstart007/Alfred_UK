@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <Social/Social.h>
 #import <MessageUI/MessageUI.h>
+#import <MessageUI/MFMessageComposeViewController.h>
 
 @interface ShareTableViewController : UITableViewController<MFMessageComposeViewControllerDelegate,MFMailComposeViewControllerDelegate>
 {

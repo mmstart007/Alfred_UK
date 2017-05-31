@@ -172,6 +172,8 @@ const int RIDE_END_EXPIRATION_TIME = 1*60; // in seconds
 /* End Board Message */
 - (void)didRequestForEndBoardMessage:(NSNotification *)notification {
 
+    [endRideTimer invalidate];
+
     endRideId = [notification object];
     reason = @"END_RIDE_MESSAGE";
     [self getEndRideMessage:endRideId];
@@ -180,6 +182,9 @@ const int RIDE_END_EXPIRATION_TIME = 1*60; // in seconds
 
 /* Auto Decline Board Message when user accept the message */
 - (void)didRequestForAutoDeclineBoardMessage:(NSNotification *)notification {
+
+    [endRideTimer invalidate];
+
     NSString *pushMessage = [notification object];
 
     [self showPushView:pushMessage acceptedStatus:NO ratingView:NO];

@@ -11,13 +11,7 @@
 
 #import <Parse/Parse.h>
 
-
-
-
-
-
-
-@interface ShareTableViewController ()<SWRevealViewControllerDelegate,UITableViewDelegate,UIActionSheetDelegate>{
+@interface ShareTableViewController ()<SWRevealViewControllerDelegate,UITableViewDelegate,UIActionSheetDelegate,MFMessageComposeViewControllerDelegate, MFMailComposeViewControllerDelegate> {
 
     
     NSString *_promoCode;
@@ -30,29 +24,17 @@
 
 - (void)viewDidLoad {
 
-    
     [super viewDidLoad];
    
-        self.tableView.delegate = self;
-//    promoCode = [prefs valueForKey:@"promoCode"];
+    self.tableView.delegate = self;
 
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForFacebook:) name:@"didRequestForFacebook" object:nil];
-
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForTwitter:) name:@"didRequestForTwitter" object:nil];
-
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForMessage:) name:@"didRequestForMessage" object:nil];
-
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForWatsapp:) name:@"didRequestForWatsapp" object:nil];
-
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRequestForMail:) name:@"didRequestForMail" object:nil];
 
-
-    
-   
-    
-    
     UIImage *drawerImage = [[UIImage imageNamed:@"menu"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-    
     UIBarButtonItem *revealButtonItem = [[UIBarButtonItem alloc] initWithImage:drawerImage
                                                                          style:UIBarButtonItemStylePlain target:self action:@selector(revealToggle:)];
     
@@ -61,29 +43,18 @@
     
     _shareActionSheet.delegate = self;
     
-    
-    
     SWRevealViewController *revealViewController = self.revealViewController;
     self.navigationItem.leftBarButtonItem = revealButtonItem;
-    self.navigationItem.rightBarButtonItem = nil;
     self.navigationItem.title = @"SHARE";
     
     
-    if ( revealViewController ){
+    if (revealViewController ) {
+        
         [self.view addGestureRecognizer:revealViewController.panGestureRecognizer];
-        
-        
         [self.navigationItem.leftBarButtonItem setTarget:self.revealViewController];
         [self.view addGestureRecognizer:self.revealViewController.panGestureRecognizer];
     }
 
-    
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
-    
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
-    
     [self generatePromoCode];
 }
 
@@ -95,26 +66,20 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"didRequestForMessage" object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"didRequestForWatsapp" object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"didRequestForMail" object:nil];
-    
-    
 }
 
--(void)tableView:(UITableView *)tableView   didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     
     if(indexPath.section == 1){
         if(indexPath.row == 0){
             
             [_shareActionSheet showInView:self.view];
           
-        
         }
-    
     }
-    
-
 }
+
 -(void)generatePromoCode{
-    
     
     NSString *userID = [[PFUser currentUser] objectId];
     int length = (int)[userID length];
@@ -146,22 +111,12 @@
         default:
             break;
     }
-
-
-
-
 }
+
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
-
-
-
-
-
-
-
 
 -(void)didRequestForFacebook:(NSNotification *)notification
 {
@@ -185,14 +140,10 @@
         [self dismissViewControllerAnimated:YES completion:nil];
         
     }];
-
-    
 }
 
 -(void)didRequestForTwitter:(NSNotification *)notification
 {
- 
-    
     if ([SLComposeViewController isAvailableForServiceType:SLServiceTypeTwitter])
     {
         SLComposeViewController *tweetSheet = [SLComposeViewController composeViewControllerForServiceType:SLServiceTypeTwitter];
@@ -217,6 +168,9 @@
 
 -(void)didRequestForMessage:(NSNotification *)notification
 {
+    UIColor *borderColor = [UIColor colorWithRed:80.0f/255 green:180.0f/255 blue:190.0f/255 alpha:1.0f];
+    [UIBarButtonItem appearanceWhenContainedIn:[UINavigationBar class], nil].tintColor = borderColor;
+
     if(![MFMessageComposeViewController canSendText]) {
         UIAlertView *warningAlert = [[UIAlertView alloc] initWithTitle:@"Error" message:@"Your device doesn't support SMS!" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
         [warningAlert show];
@@ -226,9 +180,35 @@
 
     MFMessageComposeViewController *messageController = [[MFMessageComposeViewController alloc] init];
     messageController.messageComposeDelegate = self;
-         [messageController setBody:shareText];
-         [self presentViewController:messageController animated:YES completion:nil];
+    messageController.body = shareText;
+    [self presentViewController:messageController animated:YES completion:nil];
+}
+
+- (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult) result
+{
+    switch (result) {
+        case MessageComposeResultCancelled:
+            break;
+            
+        case MessageComposeResultFailed:
+        {
+            UIAlertView *warningAlert = [[UIAlertView alloc] initWithTitle:@"Error" message:@"Failed to send SMS!" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+            [warningAlert show];
+            break;
+        }
+        
+        case MessageComposeResultSent:
+            break;
+            
+        default:
+            break;
+    }
     
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+-(void)cancelPage:(id)sender{
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 -(void)didRequestForWatsapp:(NSNotification *)notification
@@ -258,35 +238,15 @@
     // Email Content
     NSString *messageBody = [NSString stringWithFormat:@"Get £10 credit off your first Alfred ride. \nSign up now with the invite code: %@",_promoCode];
     
+    [UIBarButtonItem appearanceWhenContainedIn:[UINavigationBar class], nil].tintColor = [UIColor whiteColor];
+
     MFMailComposeViewController *mc = [[MFMailComposeViewController alloc] init];
     mc.mailComposeDelegate = self;
     [mc setSubject:emailTitle];
     [mc setMessageBody:messageBody isHTML:NO];
     
-         [self presentViewController:mc animated:YES completion:NULL];
-    
-}
-- (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult) result
-{
-    switch (result) {
-        case MessageComposeResultCancelled:
-            break;
-            
-        case MessageComposeResultFailed:
-        {
-            UIAlertView *warningAlert = [[UIAlertView alloc] initWithTitle:@"Error" message:@"Failed to send SMS!" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-            [warningAlert show];
-            break;
-        }
-            
-        case MessageComposeResultSent:
-            break;
-            
-        default:
-            break;
-    }
-    
-    [self dismissViewControllerAnimated:YES completion:nil];
+    [self presentViewController:mc animated:YES completion:NULL];
+
 }
 
 - (void) mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error
@@ -312,6 +272,7 @@
     // Close the Mail Interface
     [self dismissViewControllerAnimated:YES completion:NULL];
 }
+
 /*
 // Override to support conditional editing of the table view.
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
