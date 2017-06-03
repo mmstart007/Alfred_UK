@@ -34,7 +34,7 @@
 
 - (IBAction)addBalance:(id)sender {
     
-    [ self.amountTextField resignFirstResponder ];
+    [self.amountTextField resignFirstResponder];
     if(self.amountTextField.text.length == 0) {
         [self shake];
     } else if([self.amountTextField.text doubleValue] >500) {
@@ -43,6 +43,7 @@
         [delegate addBalanceView:self didAddedBalance:[self.amountTextField.text doubleValue]];
     }
 }
+
 -(void )setCardString:(NSString *)cardString{
     [self.cardTextField setText:cardString];
 }
@@ -50,4 +51,8 @@
 - (IBAction)cancel:(id)sender {
     [delegate addBalanceViewCanceled:self];
 }
+
+
+
+
 @end

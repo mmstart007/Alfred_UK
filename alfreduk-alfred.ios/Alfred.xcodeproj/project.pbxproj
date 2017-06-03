@@ -2654,13 +2654,14 @@
 				DC27229F1AB4A3A900F22D85 /* Add Credit Card */,
 				86B118661BCABAE300AAAE95 /* WalletViewController.h */,
 				86B118671BCABAE300AAAE95 /* WalletViewController.m */,
-				86A368721BCB519F00346831 /* AddBalanceView.h */,
-				86A368731BCB519F00346831 /* AddBalanceView.m */,
 				86A368771BCB6F7200346831 /* AddBalanceDelegate.h */,
 				861AB0541C7978C600563465 /* BankInfoTableViewController.h */,
 				861AB0551C7978C600563465 /* BankInfoTableViewController.m */,
 				868A50841C79066E00E2F0E0 /* WithdrawalViewController.h */,
 				868A50851C79066F00E2F0E0 /* WithdrawalViewController.m */,
+				86A368751BCB51B500346831 /* AddBalanceView.xib */,
+				86A368721BCB519F00346831 /* AddBalanceView.h */,
+				86A368731BCB519F00346831 /* AddBalanceView.m */,
 				861AB04F1C794D9200563465 /* WithdrawalView.xib */,
 				861AB0511C79566D00563465 /* WithdrawalView.h */,
 				861AB0521C79566D00563465 /* WithdrawalView.m */,
@@ -2686,7 +2687,6 @@
 				DC74F1291A76D6EC00E5D808 /* MyWalletRedeemBottomTableViewCell.h */,
 				DC74F12A1A76D6EC00E5D808 /* MyWalletRedeemBottomTableViewCell.m */,
 				DC74F12B1A76D6EC00E5D808 /* MyWalletRedeemBottomTableViewCell.xib */,
-				86A368751BCB51B500346831 /* AddBalanceView.xib */,
 			);
 			name = "My Wallet Cells";
 			sourceTree = "<group>";

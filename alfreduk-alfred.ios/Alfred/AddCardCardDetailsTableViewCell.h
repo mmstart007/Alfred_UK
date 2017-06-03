@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 
 @interface AddCardCardDetailsTableViewCell : UITableViewCell <UITextFieldDelegate>
+
 @property (weak, nonatomic) IBOutlet UITextField *cardNumberTextField;
 
 @end

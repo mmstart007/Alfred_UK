@@ -21,7 +21,8 @@
     double balance;
     NSMutableArray * cards;
     long defaultCardIndex;
-    KLCPopup* popup ;
+    KLCPopup* popup;
+    PFUser *currentUser;
 }
 
 @end
@@ -137,40 +138,42 @@
     
 }
 
+#pragma mark - AddBalanceDelegate
+
 -(void)addBalanceView:(AddBalanceView*)view didAddedBalance:(double )balanceAdded{
 
     [popup dismissPresentingPopup];
+    
     int amountInCents =  balanceAdded * 100;//in cents
+    
     NSMutableDictionary *details = [[NSMutableDictionary alloc] init];
     details[@"amount"] = [NSNumber numberWithInt:amountInCents];
     details[@"currency"] = @"gbp";
-    details[@"customer"]  = [PFUser currentUser][@"stripeCustomerId"];
+    details[@"customer"]  = currentUser[@"stripeCustomerId"];
     details[@"card"] = cards[defaultCardIndex][@"StripeToken"]; //stripe token for card
     
     [HUD showUIBlockingIndicatorWithText:@"Please wait.."];
-    [PFCloud callFunctionInBackground:@"chargeCustomer" withParameters:details block:^(id object, NSError *error)
-     {
-         if (!error)
-         {
-             NSLog(@"Added ammount to user wallet");
-             balance = balance + amountInCents;
-             
-             [PFUser currentUser][@"Balance"] = [NSNumber numberWithLong:balance];
-             [[PFUser currentUser]saveInBackground];
-             [self.balanceLabel setText:[NSString stringWithFormat:@"%3.2lf", balance/100]];
-             
-         } else {
-             
-             [[TWMessageBarManager sharedInstance] showMessageWithTitle:@"Alfred "
-                                                            description:@"Can't add the Balance. Please check your Internet connection."
-                                                                   type:TWMessageBarMessageTypeError];
-             
-         }
-         [HUD hideUIBlockingIndicator];
-         
-     }];
-
-    
+    [PFCloud callFunctionInBackground:@"chargeCustomer" withParameters:details block:^(id object, NSError *error) {
+        
+        if (!error) {
+            NSLog(@"Added ammount to user wallet");
+            balance = balance + amountInCents;
+            
+            currentUser[@"Balance"] = [NSNumber numberWithLong:balance];
+            [currentUser saveInBackground];
+            [self.balanceLabel setText:[NSString stringWithFormat:@"%3.2lf", balance/100]];
+            
+        } else {
+            
+            [[TWMessageBarManager sharedInstance] showMessageWithTitle:@"Alfred "
+                                                           description:@"Can't add the Balance. Please check your Internet connection."
+                                                                  type:TWMessageBarMessageTypeError];
+            
+        }
+        [HUD hideUIBlockingIndicator];
+        
+    }];
+   
 }
 
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -297,28 +300,39 @@
 
 -(void)updateWallet {
 
-    balance = [[PFUser currentUser][@"Balance"] intValue];
-    [self.balanceLabel setText:[NSString stringWithFormat:@"%3.2lf", balance/100.0]];
-    
-    PFQuery *query = [PFQuery queryWithClassName:@"Card"];
-    [query whereKey:@"User" equalTo:[PFUser currentUser]];
-    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError * error){
-        if(!error){
+    PFQuery *userQuery = [PFUser query];
+    [userQuery getObjectInBackgroundWithId:[PFUser currentUser].objectId block:^(PFObject * _Nullable object, NSError * _Nullable error) {
+        [HUD hideUIBlockingIndicator];
+        if (error) {
+            NSLog(@"Failed to get User Rating Object");
+        } else {
+            currentUser = (PFUser *)object;
+            NSLog(@"%@", currentUser);
             
-            //NSLog(cardsArray);
-            cards = [objects mutableCopy];
-            long index = 0;
-            for(PFObject* card  in cards){
-                
-                if([card[@"isDefault"] boolValue]){
-                    defaultCardIndex = index;
-                    break;
+            balance = [currentUser[@"Balance"] intValue];
+            [self.balanceLabel setText:[NSString stringWithFormat:@"%3.2lf", balance/100.0]];
+            
+            PFQuery *query = [PFQuery queryWithClassName:@"Card"];
+            [query whereKey:@"User" equalTo:currentUser];
+            [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError * error){
+                if(!error){
+                    
+                    //NSLog(cardsArray);
+                    cards = [objects mutableCopy];
+                    long index = 0;
+                    for(PFObject* card  in cards){
+                        
+                        if([card[@"isDefault"] boolValue]){
+                            defaultCardIndex = index;
+                            break;
+                        }
+                        index++;
+                    }
+                    [self.tableView reloadData];
+                }else{
+                    NSLog(@"Failed to load user cards");
                 }
-                index++;
-            }
-            [self.tableView reloadData];
-        }else{
-            NSLog(@"Failed to load user cards");
+            }];
         }
     }];
 }

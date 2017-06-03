@@ -24,6 +24,7 @@
 
 
 @protocol AddBalanceDelegate
+
 -(void)addBalanceViewCanceled:(AddBalanceView*)view;
 -(void)addBalanceView:(AddBalanceView*)view didAddedBalance:(double)balance;
 

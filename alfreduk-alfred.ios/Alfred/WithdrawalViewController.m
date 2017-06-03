@@ -21,6 +21,7 @@
     double _pendingWithdrawalAmmount;
 
 }
+
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (weak, nonatomic) IBOutlet MDButton *addButton;
 
@@ -34,6 +35,7 @@
     _withdrawalsList =nil;
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.addButton.imageView.image = [UIImage imageNamed:@"withdrawl"];
     
     self.title = @"Withdrawals";
@@ -71,7 +73,6 @@
     }];
 }
 
-
 #pragma mark - Table view
 
 -(UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -91,7 +92,7 @@
     [formatter setDateFormat:@"MM dd, yyyy"];
     
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
-    
+
     statusLabel.text = request[@"status"];
     dateLabel.text = [formatter stringFromDate:request[@"date"]];
     return cell;
@@ -106,13 +107,13 @@
 - (IBAction)requestWithdrawal:(id)sender {
     
     NSLog(@"Withdrawal request");
-    PFObject *bankInfo = [PFUser currentUser][@"BankInfo"];
+    /*PFObject *bankInfo = [PFUser currentUser][@"BankInfo"];
     if(bankInfo == nil){
         //the user have not bank info so he cant withdrawal
         [[[UIAlertView alloc] initWithTitle:@"Oops!" message:@"You need to enter your bank details in order to withdrawal money from your Alfred wallet.\nThis can be added in your profile.\nThe withdrawals request are processed once per week." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
     
         return;
-    }
+    } */
     
     NSArray *nib = [[NSBundle mainBundle] loadNibNamed:@"WithdrawalView" owner:self options:nil];
     WithdrawalView * view =(WithdrawalView*) [nib objectAtIndex:0];
@@ -123,9 +124,12 @@
     [_popup show];
 }
 
+#pragma mark - WithdrawalViewDelegate
+
 -(void)withdrawalView:(UIView *)view didRequestWitdrawalWithAmount:(NSNumber *)amount{
 
     [_popup dismiss:YES];
+    
     PFObject *withdrawallRequest = [PFObject objectWithClassName:@"WithdrawalRequest"];
     withdrawallRequest[@"user"] = [PFUser currentUser];
     double amountInCents = [amount doubleValue] * 100;
@@ -134,22 +138,34 @@
     double requestedWithdrawalAmount = [amount doubleValue] * 100;
     
     if(requestedWithdrawalAmount > amountThatCanWithdraw){
-       [[ [UIAlertView alloc] initWithTitle:@"Oops!" message:@"The amount that you requested exceed your current balance plus pending withdrawals" delegate:nil cancelButtonTitle:@"Accept" otherButtonTitles:nil  , nil] show ];
+       [[ [UIAlertView alloc] initWithTitle:@"Oops!" message:@"The amount that you requested exceed your current balance plus pending withdrawals" delegate:nil cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show ];
     
     } else {
-    
+        
         withdrawallRequest[@"amount"] = [NSNumber numberWithDouble:amountInCents];
         withdrawallRequest[@"date"] = [NSDate dateWithTimeIntervalSinceNow:0];
         withdrawallRequest[@"status"] = @"Pending";
         
         [HUD showUIBlockingIndicatorWithText:@"Requesting"];
-        [withdrawallRequest saveInBackgroundWithBlock:^(BOOL succeeded, NSError * _Nullable error) {
+        
+        [withdrawallRequest saveInBackgroundWithBlock:^(BOOL succeded, NSError * _Nullable error) {
             [HUD hideUIBlockingIndicator];
-            [self getWithdrawalsList];
-            
+            if (succeded) {
+                // Get all withdraw list
+                [self getWithdrawalsList];
+                
+                // Update current user Balance
+                double totalBalance = balanceInCents - amountInCents;
+                [PFUser currentUser][@"Balance"] = [NSNumber numberWithDouble:totalBalance];
+                [[PFUser currentUser] saveInBackground];
+            } else {
+                [[ [UIAlertView alloc] initWithTitle:@"Oops!" message:@"Your withdraw request was failed. Please check your network connection." delegate:nil cancelButtonTitle:@"Accept" otherButtonTitles:nil  , nil] show ];
+            }
         }];
     }
 }
+
+
 
 
 
