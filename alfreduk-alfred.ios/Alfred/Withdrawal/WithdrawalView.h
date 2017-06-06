@@ -15,8 +15,10 @@
 @end
 
 @interface WithdrawalView : UIView
-@property (strong, nonatomic) IBOutlet UITextField *textField;
+
 @property id delegate;
+
+@property (strong, nonatomic) IBOutlet UITextField *textField;
 @property (weak, nonatomic) IBOutlet UITextField *amountTextField;
 
 @end

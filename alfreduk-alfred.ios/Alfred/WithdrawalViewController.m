@@ -65,7 +65,7 @@
             
             [self.tableView reloadData];
             for( PFObject *request in objects){
-                if([request[@"status"] isEqualToString:@"Pending"]){
+                if([request[@"status"] isEqualToString:@"Pending"]) {
                     _pendingWithdrawalAmmount += [request[@"amount"] doubleValue];
                 }
             }
@@ -137,31 +137,49 @@
     double amountThatCanWithdraw = balanceInCents - _pendingWithdrawalAmmount;
     double requestedWithdrawalAmount = [amount doubleValue] * 100;
     
-    if(requestedWithdrawalAmount > amountThatCanWithdraw){
+    if(requestedWithdrawalAmount > amountThatCanWithdraw) {
        [[ [UIAlertView alloc] initWithTitle:@"Oops!" message:@"The amount that you requested exceed your current balance plus pending withdrawals" delegate:nil cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show ];
     
     } else {
         
-        withdrawallRequest[@"amount"] = [NSNumber numberWithDouble:amountInCents];
-        withdrawallRequest[@"date"] = [NSDate dateWithTimeIntervalSinceNow:0];
-        withdrawallRequest[@"status"] = @"Pending";
-        
         [HUD showUIBlockingIndicatorWithText:@"Requesting"];
         
-        [withdrawallRequest saveInBackgroundWithBlock:^(BOOL succeded, NSError * _Nullable error) {
-            [HUD hideUIBlockingIndicator];
-            if (succeded) {
-                // Get all withdraw list
-                [self getWithdrawalsList];
-                
-                // Update current user Balance
-                double totalBalance = balanceInCents - amountInCents;
-                [PFUser currentUser][@"Balance"] = [NSNumber numberWithDouble:totalBalance];
-                [[PFUser currentUser] saveInBackground];
-            } else {
-                [[ [UIAlertView alloc] initWithTitle:@"Oops!" message:@"Your withdraw request was failed. Please check your network connection." delegate:nil cancelButtonTitle:@"Accept" otherButtonTitles:nil  , nil] show ];
-            }
-        }];
+//        [PFCloud callFunctionInBackground:@"createPayOut"
+//                           withParameters:@{@"amount": [NSNumber numberWithDouble:amountInCents],
+//                                            @"currency": @"gbp"}
+//                                    block:^(NSString *success, NSError *error) {
+//                                        
+//                                        if (!error) {
+//                                            NSLog(@"Payout created sucessfully");
+
+                                            withdrawallRequest[@"amount"] = [NSNumber numberWithDouble:amountInCents];
+                                            withdrawallRequest[@"date"] = [NSDate dateWithTimeIntervalSinceNow:0];
+                                            withdrawallRequest[@"status"] = @"Pending";
+                                            
+                                            [withdrawallRequest saveInBackgroundWithBlock:^(BOOL succeded, NSError * _Nullable error) {
+                                                [HUD hideUIBlockingIndicator];
+                                                if (succeded) {
+                                                    // Get all withdraw list
+                                                    [self getWithdrawalsList];
+                                                    
+                                                    // Update current user Balance
+                                                    double totalBalance = balanceInCents - amountInCents;
+                                                    [PFUser currentUser][@"Balance"] = [NSNumber numberWithDouble:totalBalance];
+                                                    [[PFUser currentUser] saveInBackground];
+                                                } else {
+                                                    [[ [UIAlertView alloc] initWithTitle:@"Oops!" message:@"Your withdraw request was failed. Please check your network connection." delegate:nil cancelButtonTitle:@"Accept" otherButtonTitles:nil  , nil] show ];
+                                                }
+                                            }];
+
+//                                        } else {
+//                                            NSLog(@"Failed create withdraw.");
+//                                            
+//                                            [HUD hideUIBlockingIndicator];
+//
+//                                            [[[UIAlertView alloc] initWithTitle:@"Withdraw failed" message:@"Check your network connection and try again." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
+//                                        }
+//                                    }];
+        
     }
 }
 
