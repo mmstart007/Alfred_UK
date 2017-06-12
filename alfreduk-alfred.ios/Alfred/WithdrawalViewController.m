@@ -144,13 +144,13 @@
         
         [HUD showUIBlockingIndicatorWithText:@"Requesting"];
         
-//        [PFCloud callFunctionInBackground:@"createPayOut"
-//                           withParameters:@{@"amount": [NSNumber numberWithDouble:amountInCents],
-//                                            @"currency": @"gbp"}
-//                                    block:^(NSString *success, NSError *error) {
-//                                        
-//                                        if (!error) {
-//                                            NSLog(@"Payout created sucessfully");
+        [PFCloud callFunctionInBackground:@"createPayOut"
+                           withParameters:@{@"amount": [NSNumber numberWithDouble:amountInCents],
+                                            @"currency": @"gbp"}
+                                    block:^(NSString *success, NSError *error) {
+                                        
+                                        if (!error) {
+                                            NSLog(@"Payout created sucessfully");
 
                                             withdrawallRequest[@"amount"] = [NSNumber numberWithDouble:amountInCents];
                                             withdrawallRequest[@"date"] = [NSDate dateWithTimeIntervalSinceNow:0];
@@ -171,14 +171,14 @@
                                                 }
                                             }];
 
-//                                        } else {
-//                                            NSLog(@"Failed create withdraw.");
-//                                            
-//                                            [HUD hideUIBlockingIndicator];
-//
-//                                            [[[UIAlertView alloc] initWithTitle:@"Withdraw failed" message:@"Check your network connection and try again." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
-//                                        }
-//                                    }];
+                                        } else {
+                                            NSLog(@"Failed create withdraw.");
+                                            
+                                            [HUD hideUIBlockingIndicator];
+
+                                            [[[UIAlertView alloc] initWithTitle:@"Withdraw failed" message:@"Check your network connection and try again." delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil, nil] show];
+                                        }
+                                    }];
         
     }
 }

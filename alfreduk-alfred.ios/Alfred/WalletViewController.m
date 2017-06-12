@@ -301,9 +301,12 @@
 -(void)updateWallet {
 
     PFQuery *userQuery = [PFUser query];
+
+    [HUD showUIBlockingIndicatorWithText:@"Loading.."];
+
     [userQuery getObjectInBackgroundWithId:[PFUser currentUser].objectId block:^(PFObject * _Nullable object, NSError * _Nullable error) {
-        [HUD hideUIBlockingIndicator];
         if (error) {
+            [HUD hideUIBlockingIndicator];
             NSLog(@"Failed to get User Rating Object");
         } else {
             currentUser = (PFUser *)object;
@@ -315,6 +318,9 @@
             PFQuery *query = [PFQuery queryWithClassName:@"Card"];
             [query whereKey:@"User" equalTo:currentUser];
             [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError * error){
+
+                [HUD hideUIBlockingIndicator];
+                
                 if(!error){
                     
                     //NSLog(cardsArray);

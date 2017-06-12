@@ -100,8 +100,20 @@
 }
 
 #pragma mark - UITextField Delegate
--(BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
+-(BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
     self.navigationItem.rightBarButtonItem = doneButton;
+    return YES;
+}
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    
+    if (textField == firstNameTextField) {
+        [lastNameTextField becomeFirstResponder];
+    } else if (textField == lastNameTextField) {
+        [emaiTextField becomeFirstResponder];
+    } else if (textField == emaiTextField) {
+        [emaiTextField resignFirstResponder];
+    }
     return YES;
 }
 

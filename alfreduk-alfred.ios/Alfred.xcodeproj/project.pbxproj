@@ -2958,9 +2958,9 @@
 		DCB3FAA11A6E1B0F00389E2A /* Login */ = {
 			isa = PBXGroup;
 			children = (
+				DC74F1641A76FC8000E5D808 /* Login Cells */,
 				DC74F1521A76F53100E5D808 /* LoginTableViewController.h */,
 				DC74F1531A76F53100E5D808 /* LoginTableViewController.m */,
-				DC74F1641A76FC8000E5D808 /* Login Cells */,
 				8643C0D21B5484C50043BE7A /* AlfredLoginViewController.h */,
 				8643C0D31B5484C50043BE7A /* AlfredLoginViewController.m */,
 			);

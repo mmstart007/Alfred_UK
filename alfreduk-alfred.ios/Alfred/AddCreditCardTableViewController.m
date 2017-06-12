@@ -153,6 +153,7 @@
 }
 
 -(void)saveCard {
+    
     [self.errorLabel setText:@""];
     NSLog(@"Adding card");
     //check field details
@@ -170,16 +171,16 @@
     
     }else if(self.expiryTextField.text.length ==0){
         [self.errorLabel setText:@"Expiration date is required."];
-            [self shake:self.expiryView];
+        [self shake:self.expiryView];
         return;
     }else if(self.cvvTextField.text.length == 0){
         [self.errorLabel setText:@"CVV is required."];
-                [self shake:self.cvvView];
+        [self shake:self.cvvView];
         return;
         
     }else if(self.zipCodeTextField.text.length==0){
         [self.errorLabel setText:@"ZIP code is required."];
-                [self shake:self.zipView];
+        [self shake:self.zipView];
     
         return;
     }

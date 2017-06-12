@@ -8,6 +8,16 @@
 
 #import <UIKit/UIKit.h>
 
-@interface BankInfoTableViewController : UITableViewController
+@interface BankInfoTableViewController : UITableViewController <UITextFieldDelegate>
+
+
+@property (weak, nonatomic) IBOutlet UITextField *sortCodeTextField;
+@property (weak, nonatomic) IBOutlet UITextField *accountNumberTextField;
+@property (weak, nonatomic) IBOutlet UITextField *confirmAccountNumberTextField;
+@property (weak, nonatomic) IBOutlet UILabel *errorLabel;
+
+
+- (IBAction)cancelAction:(id)sender;
+- (IBAction)saveAction:(id)sender;
 
 @end
