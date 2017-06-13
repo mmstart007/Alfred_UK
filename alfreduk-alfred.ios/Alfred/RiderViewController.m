@@ -1686,12 +1686,22 @@ const int RIDE_REQUEST_EXPIRATION_TIME = 5*60; // in seconds
 -(void)driverAnnotationCallout:(DriverAnnotation*)driverAnnot{
     
     long  selectedDriverIndex  =  [arrayOfDriverAnnotations indexOfObject:driverAnnot];
-    
     _selectedDriverLocation = driversArray[selectedDriverIndex];
+
     //get the user for the selected driver
     _selectedDriver = _selectedDriverLocation[@"driver"];
     
-    [self performSegueWithIdentifier:@"DriverDetailsSegue" sender:self];
+    bool ladiesOnly = [_selectedDriverLocation[@"ladiesOnly"] boolValue];
+    bool isFemale = [[PFUser currentUser][@"Female"] boolValue];
+    if (!isFemale) {
+        if (!ladiesOnly) {
+            [self performSegueWithIdentifier:@"DriverDetailsSegue" sender:self];
+        } else {
+            [[[UIAlertView alloc] initWithTitle:@"Oops" message:@"Ladies only require." delegate:nil cancelButtonTitle:@"Accept" otherButtonTitles:nil] show];
+        }
+    } else {
+        [self performSegueWithIdentifier:@"DriverDetailsSegue" sender:self];
+    }
 }
 
 - (void)didReceiveMemoryWarning {

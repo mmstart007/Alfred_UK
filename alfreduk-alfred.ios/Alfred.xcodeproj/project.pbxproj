@@ -3009,9 +3009,6 @@
 			children = (
 				DC74F0C21A7499B900E5D808 /* RiderViewController.h */,
 				DC74F0C31A7499B900E5D808 /* RiderViewController.m */,
-				865426D11BC8BA1E0008B9DF /* AlfredListTableViewCell.h */,
-				865426D21BC8BA1E0008B9DF /* AlfredListTableViewCell.m */,
-				865426D31BC8BA1E0008B9DF /* AlfredListTableViewCell.xib */,
 			);
 			name = User;
 			sourceTree = "<group>";
@@ -3023,6 +3020,9 @@
 				DC7CE0E01A9E519C00DF4824 /* DriverViewController.m */,
 				863512661B5F39CD0007B65E /* DriverListViewController.h */,
 				863512671B5F39CD0007B65E /* DriverListViewController.m */,
+				865426D11BC8BA1E0008B9DF /* AlfredListTableViewCell.h */,
+				865426D21BC8BA1E0008B9DF /* AlfredListTableViewCell.m */,
+				865426D31BC8BA1E0008B9DF /* AlfredListTableViewCell.xib */,
 			);
 			name = Driver;
 			sourceTree = "<group>";
